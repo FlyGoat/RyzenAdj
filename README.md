@@ -41,9 +41,17 @@ then the command line should be:
 
 ## Build
 ### Linux
-This project is using cmake, you can search for guides online about how to compile a cmake based program.
+This project uses cmake for building. You can search for guides online about how to compile a cmake based program or:
 
-Please ensure you have libpci depdency before compile.
+```
+mkdir build && cd build
+cmake ..
+make
+```
+
+Please make sure that you have libpci dependency before compiling. On Ubuntu, libpci can be simply be added by:
+
+`sudo apt install libpci-dev
 
 ### Windows
 It can be built by Visual Studio automaticly. However, as for now, MingW can't be used to compile for some reason.
