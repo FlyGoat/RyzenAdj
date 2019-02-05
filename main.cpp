@@ -8,7 +8,7 @@
 #define STRINGIFY2(X) #X
 #define STRINGIFY(X) STRINGIFY2(X)
 
-#define VER_STR "v0.0.1"
+#define VER_STR "v0.0.2"
 
 #define _do_adjust(ARG, OPT) \
 do{ \
@@ -85,7 +85,7 @@ int main(int argc, const char **argv)
     memset(args, 0, sizeof(*args));
 
     smu_service_req(nb, 0x3, args);
-    if(args->arg0 != 0x5){
+    if(args->arg0 != 0x5 && args->arg0 != 0x5){
         printf("Not a Ryzen NB SMU, BIOS Interface Ver: 0x%x",args->arg0);
         err = -1;
         goto out_err;
