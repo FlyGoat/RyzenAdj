@@ -77,6 +77,13 @@ int main(int argc, const char **argv)
     args = (smu_service_args_t *)malloc(sizeof(*args));
     memset(args, 0, sizeof(*args));
 
+    smu_service_req(nb, 0x3, args);
+    if(args->arg0 != 0x5){
+        printf("Not a Ryzen NB SMU, BIOS Interface Ver: 0x%x",args->arg0);
+        err = -1;
+        goto out_err;
+    }
+
     _do_adjust(stapm_limit, 0x1a);
     _do_adjust(fast_limit, 0x1b);
     _do_adjust(slow_limit, 0x1c);
@@ -84,7 +91,7 @@ int main(int argc, const char **argv)
     _do_adjust(stapm_time, 0x1e);
     _do_adjust(tctl_temp, 0x1f);
 
-
+out_err:
     free(args);
 out_free_pci_obj:   
     free_pci_obj(pci_obj);
