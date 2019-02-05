@@ -40,6 +40,7 @@ int main(int argc, const char **argv)
     int err = 0;
 
     uint32_t stapm_limit = 0, fast_limit = 0, slow_limit = 0, slow_time = 0, stapm_time = 0, tctl_temp = 0;
+    uint32_t vrm_current = 0, vrmsoc_current = 0, vrmmax_current = 0, vrmsocmax_current = 0, psi0_current = 0, psi0soc_current = 0;
 
     struct argparse_option options[] = {
         OPT_HELP(),
@@ -49,9 +50,15 @@ int main(int argc, const char **argv)
         OPT_U32('a', "stapm-limit", &stapm_limit, "Sustained power limit (10e-3 W)"),
         OPT_U32('b', "fast-limit", &fast_limit, "Fast PPT power limit (10e-3 W)"),
         OPT_U32('c', "slow-limit", &slow_limit, "Slow PPT power limit (10e-3 W)"),
-        OPT_U32('d', "slow-time", &slow_time, "Slow PPT constant time"),
-        OPT_U32('e', "stapm-time", &stapm_time, "STAMP constant time"),
+        OPT_U32('d', "slow-time", &slow_time, "Slow PPT constant time (ms)"),
+        OPT_U32('e', "stapm-time", &stapm_time, "STAMP constant time (ms)"),
         OPT_U32('f', "tctl-temp", &tctl_temp, "Tctl temperature (℃)"),
+        OPT_U32('g', "vrm-current", &vrm_current, "Vrm Current Limit (mA)"),
+        OPT_U32('j', "vrmsoc-current", &vrmsoc_current, "Vrm SoC Current Limit (mA)"),
+        OPT_U32('k', "vrmmax-current", &vrmmax_current, "Vrm Maximum Current Limit (mA)"),
+        OPT_U32('l', "vrmsocmax-current", &vrmsocmax_current, "Vrm SoC Maximum Current Limit (mA)"),
+        OPT_U32('m', "psi0-current", &psi0_current, "PSI0 Current Limit (mA)"),
+        OPT_U32('n', "psi0soc-current", &psi0soc_current, "PSI0 SoC Current Limit (mA)"),
         OPT_END(),
     };
 
@@ -83,6 +90,7 @@ int main(int argc, const char **argv)
         err = -1;
         goto out_err;
     }
+    memset(args, 0, sizeof(*args));
 
     _do_adjust(stapm_limit, 0x1a);
     _do_adjust(fast_limit, 0x1b);
@@ -90,6 +98,12 @@ int main(int argc, const char **argv)
     _do_adjust(slow_time, 0x1d);
     _do_adjust(stapm_time, 0x1e);
     _do_adjust(tctl_temp, 0x1f);
+    _do_adjust(vrm_current, 0x20);
+    _do_adjust(vrmsoc_current, 0x21);
+    _do_adjust(vrmmax_current, 0x22);
+    _do_adjust(vrmsocmax_current, 0x23);
+    _do_adjust(psi0_current, 0x24);
+    _do_adjust(psi0soc_current, 0x25);
 
 out_err:
     free(args);

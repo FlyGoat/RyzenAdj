@@ -24,12 +24,18 @@ Options
     -i, --info                Show information (W.I.P.)
 
 Settings
-    -a, --stapm-limit=<u32>   Sustained power limit (10e-3 W)
-    -b, --fast-limit=<u32>    Fast PPT power limit (10e-3 W)
-    -c, --slow-limit=<u32>    Slow PPT power limit (10e-3 W)
-    -d, --slow-time=<u32>     Slow PPT constant time
-    -e, --stapm-time=<u32>    STAMP constant time
-    -f, --tctl-temp=<u32>     Tctl temperature (℃)
+    -a, --stapm-limit=<u32>           Sustained power limit (10e-3 W)
+    -b, --fast-limit=<u32>            Fast PPT power limit (10e-3 W)
+    -c, --slow-limit=<u32>            Slow PPT power limit (10e-3 W)
+    -d, --slow-time=<u32>             Slow PPT constant time (ms)
+    -e, --stapm-time=<u32>            STAMP constant time (ms)
+    -f, --tctl-temp=<u32>             Tctl temperature (℃)
+    -g, --vrm-current=<u32>           Vrm Current Limit (mA)
+    -j, --vrmsoc-current=<u32>        Vrm SoC Current Limit (mA)
+    -k, --vrmmax-current=<u32>        Vrm Maximum Current Limit (mA)
+    -l, --vrmsocmax-current=<u32>     Vrm SoC Maximum Current Limit (mA)
+    -m, --psi0-current=<u32>          PSI0 Current Limit (mA)
+    -n, --psi0soc-current=<u32>       PSI0 SoC Current Limit (mA)
 ``` 
 
 ### demo
