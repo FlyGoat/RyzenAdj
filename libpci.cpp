@@ -15,10 +15,6 @@ nb_t get_nb(pci_obj_t obj){
     nb_t nb;
     nb = pci_get_dev(obj, 0, 0, 0, 0);
     pci_fill_info(nb, PCI_FILL_IDENT | PCI_FILL_BASES | PCI_FILL_CLASS);
-    if (nb->vendor_id != AMD_VENDOR_ID){
-        printf("Not a Ryzen NB Device\n");
-        return NULL;
-    }
     return nb;
 }
 

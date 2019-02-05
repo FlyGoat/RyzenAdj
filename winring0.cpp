@@ -20,10 +20,6 @@ pci_obj_t init_pci_obj(){
 }
 
 nb_t get_nb(pci_obj_t obj){
-    if(ReadPciConfigDword(nb_pci_address, 0x2C) >> 16 != NB_DEVICE_ID){
-        printf("Not a Ryzen NB Device\n");
-        return NULL;
-    }
     return &nb_pci_address;
 }
 
