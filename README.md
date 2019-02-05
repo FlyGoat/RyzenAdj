@@ -46,26 +46,36 @@ then the command line should be:
 ```
 
 ## Build
+
+### Build Requirements
+
+Building this tool requires C & C++ compilers as well as **cmake**. It
+requires privileged access to NB PCI config space, in order to compile it
+one must have pcilib library & headers available.
+
 ### Linux
-This project uses cmake for building. You can search for guides online about how to compile a cmake based program or:
 
-```
-mkdir build && cd build
-cmake ..
-make
-```
+Please make sure that you have libpci dependency before compiling. On
+Debian-based distros this is covered by installing **pcilib-dev** package:
 
-Please make sure that you have libpci dependency before compiling. On Ubuntu, libpci can be simply be added by:
+    sudo apt install libpci-dev
 
-`sudo apt install libpci-dev
+The simplest way to build it:
+
+    cmake CMakeLists.txt
+    make
 
 ### Windows
-It can be built by Visual Studio automaticly. However, as for now, MingW can't be used to compile for some reason.
 
-Required dll is included in ./prebuilt of source tree. Please put the dll library and sys driver in the same folder with ryzenadj.exe.
+It can be built by Visual Studio automaticly. However, as for now, MingW can't
+be used to compile for some reason.
+
+Required dll is included in ./prebuilt of source tree. Please put the dll
+library and sys driver in the same folder with ryzenadj.exe.
 
 ## TODO
 - Determine the unit of time
 - Add more options
-- Code cleanup (The original program was written in C but now it's C++ in order to call VC++ library)
+- Code cleanup (The original program was written in C but now it's C++ in
+order to call VC++ library)
 
