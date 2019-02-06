@@ -3,6 +3,8 @@ Adjust power management settings for Ryzen Processors.
 
 Based on: [FlyGoat/ryzen_nb_smu](https://github.com/flygoat/ryzen_nb_smu)
 
+Thanks a lot to "JustSkill" for his Amazing GUI interface!
+
 ## Usage
 The command line interface is identical on both Windows and Unix-Like OS.
 
