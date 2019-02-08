@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: LGPL
 /* Copyright (C) 2018-2019 Jiaxun Yang <jiaxun.yang@flygoat.com> */
 /* Access PCI Config Space - libpci */
 
@@ -18,18 +18,22 @@ nb_t get_nb(pci_obj_t obj){
     return nb;
 }
 
-int free_pci_obj(pci_obj_t obj){
-    pci_cleanup(obj);
-    return 0;
+void free_nb(nb_t nb){
+    pci_free_dev(nb);
 }
 
-u32 nb_reg_read(nb_t nb, u32 addr)
+
+void free_pci_obj(pci_obj_t obj){
+    pci_cleanup(obj);
+}
+
+u32 smn_reg_read(nb_t nb, u32 addr)
 {
     pci_write_long(nb, NB_PCI_REG_ADDR_ADDR, (addr & (~0x3)));
     return pci_read_long(nb, NB_PCI_REG_DATA_ADDR);
 }
 
-void nb_reg_write(nb_t nb, u32 addr, u32 data)
+void smn_reg_write(nb_t nb, u32 addr, u32 data)
 {
     pci_write_long(nb, NB_PCI_REG_ADDR_ADDR, addr);
     pci_write_long(nb, NB_PCI_REG_DATA_ADDR, data);

@@ -15,7 +15,7 @@ do{ \
     while(ARG != 0){    \
         memset(args, 0, sizeof(*args));\
         args->arg0 = ARG; \
-        if(smu_service_req(nb, OPT, args) == 0x1){   \
+        if(smu_service_req(mp1_smu, OPT, args) == 0x1){   \
             printf("Sucessfully Set " STRINGIFY(ARG) " to %x\n", args->arg0);    \
             break;  \
         } else {    \
@@ -37,6 +37,7 @@ int main(int argc, const char **argv)
     nb_t nb;
     int info = 0;
     smu_service_args_t *args;
+    smu_t *mp1_smu, *psmu;
     int err = 0;
 
     uint32_t stapm_limit = 0, fast_limit = 0, slow_limit = 0, slow_time = 0, stapm_time = 0, tctl_temp = 0;
@@ -81,11 +82,23 @@ int main(int argc, const char **argv)
         goto out_free_pci_obj;
     }
 
+    mp1_smu = get_smu(nb, TYPE_MP1);
+    if(!mp1_smu){
+        err = -1;
+        goto out_free_nb;
+    }
+
+    psmu = get_smu(nb, TYPE_PSMU);
+    if(!psmu){
+        err = -1;
+        goto out_free_mp1_smu;
+    }
+
     args = (smu_service_args_t *)malloc(sizeof(*args));
     memset(args, 0, sizeof(*args));
 
-    smu_service_req(nb, 0x3, args);
-    if(args->arg0 != 0x5 && args->arg0 != 0x5){
+    smu_service_req(mp1_smu, 0x3, args);
+    if(args->arg0 != 0x5 && args->arg0 != 0x6){
         printf("Not a Ryzen NB SMU, BIOS Interface Ver: 0x%x",args->arg0);
         err = -1;
         goto out_err;
@@ -107,6 +120,11 @@ int main(int argc, const char **argv)
 
 out_err:
     free(args);
+    free_smu(psmu);
+out_free_mp1_smu:
+    free_smu(mp1_smu);
+out_free_nb:
+    free_nb(nb);
 out_free_pci_obj:   
     free_pci_obj(pci_obj);
     return err;
