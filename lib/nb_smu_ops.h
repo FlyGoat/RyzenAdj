@@ -68,10 +68,7 @@ typedef struct {
 typedef uint32_t *nb_t;
 typedef bool *pci_obj_t;
 #else
-extern "C"
-{
-  #include <pci/pci.h>
-}
+#include <pci/pci.h>
 typedef struct pci_dev *nb_t;
 typedef struct pci_access *pci_obj_t;
 #endif
@@ -81,7 +78,7 @@ typedef struct {
   u32 msg;
   u32 rep;
   u32 arg_base;
-} smu_t;
+} *smu_t;
 
 
 pci_obj_t init_pci_obj();
@@ -97,9 +94,9 @@ u32 smn_reg_read(nb_t nb, u32 addr);
 void smn_reg_write(nb_t nb, u32 addr, u32 data);
 
 
-smu_t *get_smu(nb_t nb, int smu_type);
-void free_smu(smu_t *smu);
-u32 smu_service_req(smu_t *smu ,u32 id ,smu_service_args_t *args);
+smu_t get_smu(nb_t nb, int smu_type);
+void free_smu(smu_t smu);
+u32 smu_service_req(smu_t smu ,u32 id ,smu_service_args_t *args);
 
 
 #endif

@@ -4,7 +4,7 @@
 
 #include "nb_smu_ops.h"
 
-u32 smu_service_req(smu_t *smu ,u32 id ,smu_service_args_t *args)
+u32 smu_service_req(smu_t smu ,u32 id ,smu_service_args_t *args)
 {
     u32 response = 0x0;
     DBG("SMU_SERVICE REQ_ID:0x%x\n", id);
@@ -40,12 +40,12 @@ u32 smu_service_req(smu_t *smu ,u32 id ,smu_service_args_t *args)
     return response;
 }
 
-smu_t *get_smu(nb_t nb, int smu_type) {
-    smu_t *smu;
+smu_t get_smu(nb_t nb, int smu_type) {
+    smu_t smu;
     uint32_t rep; /* REP of test message */
     smu_service_args_t arg = {0, 0, 0, 0, 0, 0}; /* Test message shuld have no arguments */
 
-    smu = (smu_t *)malloc((sizeof(smu_t)));
+    smu = (smu_t)malloc((sizeof(smu_t)));
     smu->nb = nb;
     /* Fill SMU information */
     switch(smu_type){
@@ -77,6 +77,6 @@ err:
     return NULL;
 }
 
-void free_smu(smu_t *smu) {
+void free_smu(smu_t smu) {
     free((void *)smu);
 }
