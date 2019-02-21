@@ -171,13 +171,18 @@ namespace RyzenAdjUI_WPF {
             }
         }
 
-        public void Button_Click (object sender, RoutedEventArgs e) {
+        public void Apply_Click (object sender, RoutedEventArgs e) {
             if (RunExe ()) {
                 MessageBox.Show ("Settings successfully applied!");
             } else {
                 MessageBox.Show ("ERROR: Failed to apply settings.");
             }
             // System.Windows.Application.Current.Shutdown();
+        }
+
+        public void Exit_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Application.Current.Shutdown();
         }
 
         // Returns true if successful, else returns false.
