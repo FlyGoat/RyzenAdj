@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="323.4" Width="787.333" Background="#72262F49" AllowsTransparency="True" WindowStyle="None" BorderThickness="1" WindowStartupLocation="CenterScreen" BorderBrush="#FF0E0D4E" Topmost="True" MouseLeftButtonDown="Window_MouseDown" Loaded="Window_Loaded">
     <Grid>
-        <Label Content="ryzen mobile adjustment tool" HorizontalAlignment="Left" Margin="15,2,0,0" VerticalAlignment="Top" FontFamily="AMDRTG" FontSize="16" Width="413" Foreground="White"/>
+        <Label Content="Ryzen Mobile Adjustment Tool" HorizontalAlignment="Left" Margin="15,2,0,0" VerticalAlignment="Top" FontFamily="AMDRTG" FontSize="16" Width="413" Foreground="White"/>
         <Rectangle Fill="#FF1B2329" HorizontalAlignment="Left" Height="40" Margin="15,50,0,0" VerticalAlignment="Top" Width="150" Opacity="0.7"/>
         <Label Content="STAPM Limit (W)" HorizontalAlignment="Left" Margin="20,55,0,0" VerticalAlignment="Top" Foreground="White"/>
         <Ellipse x:Name="rcheckBox1" HorizontalAlignment="Left" Height="15" Margin="130,61,0,0" VerticalAlignment="Top" Width="15" Stroke="White" RenderTransformOrigin="0.5,0.5" MouseDown="RcheckBox1_MouseDown" Fill="#FF1B2329"/>
@@ -44,8 +44,8 @@
         <Label x:Name="lab4" Content="{Binding Value, ElementName=slider4, StringFormat=\{0:0\}}" HorizontalAlignment="Left" Margin="180,205,0,0" VerticalAlignment="Top" Foreground="White" Visibility="Hidden"/>
         <Slider x:Name="slider5" HorizontalAlignment="Left" Margin="228,259,0,0" VerticalAlignment="Top" Width="525" Maximum="100000" Minimum="20000" IsSnapToTickEnabled="True" TickFrequency="5000" Visibility="Hidden"/>
         <Label x:Name="lab5" Content="{Binding Value, ElementName=slider5}" HorizontalAlignment="Left" Margin="168,255,0,0" VerticalAlignment="Top" Foreground="White" Cursor="None" ContentStringFormat="{}{0:D2}" Visibility="Hidden"/>
-        <Button Content="apply" HorizontalAlignment="Left" Margin="690,10,0,0" VerticalAlignment="Top" Width="75" BorderBrush="#00707070" Background="#00DDDDDD" Foreground="White" FontFamily="AMDRTG" Click="Button_Click"/>
+        <Button Content="Apply" HorizontalAlignment="Left" Margin="690,10,0,0" VerticalAlignment="Top" Width="75" BorderBrush="#00707070" Background="#00DDDDDD" Foreground="White" FontFamily="AMDRTG" Click="Button_Click"/>
         <Ellipse x:Name="rcheckBox6" HorizontalAlignment="Left" Height="15" Margin="749,297,0,0" VerticalAlignment="Top" Width="15" Stroke="White" RenderTransformOrigin="0.5,0.5" MouseDown="RcheckBox6_MouseDown" Fill="#FF1B2329"/>
-        <Label Content="Autostart with Windows" HorizontalAlignment="Left" Margin="607,291,0,0" VerticalAlignment="Top" Foreground="White"/>
+        <Label Content="Apply settings upon boot" HorizontalAlignment="Left" Margin="607,291,0,0" VerticalAlignment="Top" Foreground="White"/>
     </Grid>
 </Window>
