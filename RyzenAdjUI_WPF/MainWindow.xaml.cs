@@ -304,7 +304,7 @@ namespace RyzenAdjUI_WPF {
                         {
                             case "stapm-limit":
                                 rcheckBox1.Fill = Brushes.Green;
-                                slider1.Value = double.Parse(typeValue);
+                                slider1.Value = double.Parse(typeValue.Substring(0, typeValue.Length - 4));
                                 cube1.Visibility = Visibility.Visible;
                                 rect1s.Visibility = Visibility.Visible;
                                 slider1.Visibility = Visibility.Visible;
@@ -312,7 +312,7 @@ namespace RyzenAdjUI_WPF {
                                 break;
                             case "fast-limit":
                                 rcheckBox2.Fill = Brushes.Green;
-                                slider2.Value = double.Parse(typeValue);
+                                slider2.Value = double.Parse(typeValue.Substring(0, typeValue.Length - 4));
                                 cube2.Visibility = Visibility.Visible;
                                 rect2s.Visibility = Visibility.Visible;
                                 slider2.Visibility = Visibility.Visible;
@@ -320,7 +320,7 @@ namespace RyzenAdjUI_WPF {
                                 break;
                             case "slow-limit":
                                 rcheckBox3.Fill = Brushes.Green;
-                                slider3.Value = double.Parse(typeValue);
+                                slider3.Value = double.Parse(typeValue.Substring(0, typeValue.Length - 4));
                                 cube3.Visibility = Visibility.Visible;
                                 rect3s.Visibility = Visibility.Visible;
                                 slider3.Visibility = Visibility.Visible;
