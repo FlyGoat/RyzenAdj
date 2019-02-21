@@ -368,13 +368,13 @@ namespace RyzenAdjUI_WPF {
             {
                 try
                 {
-                    //Process.Start (new ProcessStartInfo {
-                    //  FileName = $"{dir}\\ryzenadj.exe",
-                    //    UseShellExecute = false,
-                    //  CreateNoWindow = true,
-                    //Arguments = args,
-                    //RedirectStandardOutput = true
-                    //});
+                    Process.Start (new ProcessStartInfo {
+                      FileName = $"{dir}\\ryzenadj.exe",
+                        UseShellExecute = false,
+                      CreateNoWindow = true,
+                    Arguments = args,
+                    RedirectStandardOutput = true
+                    });
                 }
                 catch
                 {
