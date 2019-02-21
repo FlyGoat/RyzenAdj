@@ -48,5 +48,27 @@
         <Button Content="Exit" HorizontalAlignment="Left" Margin="701,9,0,0" VerticalAlignment="Top" Width="75" BorderBrush="#00707070" Background="#00DDDDDD" Foreground="White" FontFamily="AMDRTG" Click="Exit_Click"/>
         <Ellipse x:Name="rcheckBox6" HorizontalAlignment="Left" Height="15" Margin="749,297,0,0" VerticalAlignment="Top" Width="15" Stroke="White" RenderTransformOrigin="0.5,0.5" MouseDown="RcheckBox6_MouseDown" Fill="#FF1B2329"/>
         <Label Content="Apply settings upon boot" HorizontalAlignment="Left" Margin="607,291,0,0" VerticalAlignment="Top" Foreground="White"/>
+        <Label Content="Advanced Settings" HorizontalAlignment="Left" Margin="20,294,0,0" VerticalAlignment="Top" Foreground="White"/>
+        <Ellipse x:Name="rcheckBox7" HorizontalAlignment="Left" Height="15" Margin="129,302,0,0" VerticalAlignment="Top" Width="15" Stroke="White" RenderTransformOrigin="0.5,0.5" MouseDown="RcheckBox7_MouseDown" Fill="#FF1B2329"/>
+        <Label Content="PPT Slow Constant Time (ms)" HorizontalAlignment="Left" Margin="20,325,0,-27.4" VerticalAlignment="Top" Foreground="White"/>
+        <Ellipse x:Name="rcheckBox8" HorizontalAlignment="Left" Margin="183,330,0,-27.4" Width="15" Stroke="White" RenderTransformOrigin="0.5,0.5" MouseDown="RcheckBox8_MouseDown" Fill="#FF1B2329" Height="15" VerticalAlignment="Top"/>
+        <Label Content="VRM SoC Current Limit (mA)" HorizontalAlignment="Left" Margin="20,355,0,-59.4" VerticalAlignment="Top" Foreground="White" Height="26"/>
+        <Ellipse x:Name="rcheckBox9" HorizontalAlignment="Left" Margin="183,360,0,-52.4" Width="15" Stroke="White" RenderTransformOrigin="0.5,0.5" MouseDown="RcheckBox9_MouseDown" Fill="#FF1B2329" Height="15" VerticalAlignment="Top"/>
+        <Label Content="VRM Current Limit (mA)" HorizontalAlignment="Left" Margin="20,385,0,-87.4" VerticalAlignment="Top" Foreground="White" Height="24"/>
+        <Ellipse x:Name="rcheckBox10" HorizontalAlignment="Left" Margin="183,390,0,-85.4" Width="15" Stroke="White" RenderTransformOrigin="0.5,0.5" MouseDown="RcheckBox10_MouseDown" Fill="#FF1B2329" Height="15" VerticalAlignment="Top"/>
+        <Label Content="VRM SoC Max Current (mA)" HorizontalAlignment="Left" Margin="20,417,0,-118.4" VerticalAlignment="Top" Foreground="White" Height="23"/>
+        <Ellipse x:Name="rcheckBox11" HorizontalAlignment="Left" Margin="183,420,0,-114.4" Width="15" Stroke="White" RenderTransformOrigin="0.5,0.5" MouseDown="RcheckBox11_MouseDown" Fill="#FF1B2329" Height="15" VerticalAlignment="Top"/>
+        <Label Content="PSI0 Current Limit (mA)" HorizontalAlignment="Left" Margin="20,445,0,-148.4" VerticalAlignment="Top" Foreground="White" Height="25"/>
+        <Ellipse x:Name="rcheckBox12" HorizontalAlignment="Left" Margin="183,450,0,-143.4" Width="15" Stroke="White" RenderTransformOrigin="0.5,0.5" MouseDown="RcheckBox12_MouseDown" Fill="#FF1B2329" Height="15" VerticalAlignment="Top"/>
+        <Label Content="PSI0 Soc Current Limit (mA)" HorizontalAlignment="Left" Margin="20,475,0,-183.4" VerticalAlignment="Top" Foreground="White" Height="30"/>
+        <Ellipse x:Name="rcheckBox13" HorizontalAlignment="Left" Margin="183,480,0,-172.4" Width="15" Stroke="White" RenderTransformOrigin="0.5,0.5" MouseDown="RcheckBox13_MouseDown" Fill="#FF1B2329" Height="15" VerticalAlignment="Top"/>
+        <Label Content="max" HorizontalAlignment="Left" Margin="92,241,0,0" VerticalAlignment="Top" Foreground="White" Width="33"/>
+        <TextBox x:Name="rtextbox8" HorizontalAlignment="Left" Height="23" Margin="215,329,0,-30.4" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Visibility="Hidden"/>
+        <TextBox x:Name="rtextbox9" HorizontalAlignment="Left" Height="23" Margin="215,358,0,-59.4" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Visibility="Hidden"/>
+        <TextBox x:Name="rtextbox10" HorizontalAlignment="Left" Height="23" Margin="215,386,0,-87.4" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Visibility="Hidden"/>
+        <TextBox x:Name="rtextbox11" HorizontalAlignment="Left" Height="23" Margin="215,416,0,-117.4" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Visibility="Hidden"/>
+        <TextBox x:Name="rtextbox12" HorizontalAlignment="Left" Height="23" Margin="215,445,0,-146.4" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Visibility="Hidden"/>
+        <TextBox x:Name="rtextbox13" HorizontalAlignment="Left" Height="23" Margin="215,474,0,-175.4" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Visibility="Hidden"/>
+        <Label Content="WARNING: You have enabled advanced settings!&#xD;&#xA;These settings do not need to be modified under normal circumstances.&#xD;&#xA;Only override these values if you know what you are doing!" HorizontalAlignment="Left" Margin="364,386,0,-188.4" VerticalAlignment="Top" Foreground="White" Height="124" Width="419"/>
     </Grid>
 </Window>

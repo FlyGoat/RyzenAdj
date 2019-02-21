@@ -171,6 +171,104 @@ namespace RyzenAdjUI_WPF {
             }
         }
 
+        public void RcheckBox7_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (rcheckBox7.Fill != Brushes.Green)
+            {
+                rcheckBox7.Fill = Brushes.Green;
+                this.Height += 200;
+            }
+            else
+            {
+                rcheckBox7.Fill = Brushes.Transparent;
+                this.Height -= 200;
+            }
+        }
+
+        private void RcheckBox8_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (rcheckBox8.Fill != Brushes.Green)
+            {
+                rcheckBox8.Fill = Brushes.Green;
+                rtextbox8.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                rcheckBox8.Fill = Brushes.Transparent;
+                rtextbox8.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void RcheckBox9_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (rcheckBox9.Fill != Brushes.Green)
+            {
+                rcheckBox9.Fill = Brushes.Green;
+                rtextbox9.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                rcheckBox9.Fill = Brushes.Transparent;
+                rtextbox9.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void RcheckBox10_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (rcheckBox10.Fill != Brushes.Green)
+            {
+                rcheckBox10.Fill = Brushes.Green;
+                rtextbox10.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                rcheckBox10.Fill = Brushes.Transparent;
+                rtextbox10.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void RcheckBox11_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (rcheckBox11.Fill != Brushes.Green)
+            {
+                rcheckBox11.Fill = Brushes.Green;
+                rtextbox11.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                rcheckBox11.Fill = Brushes.Transparent;
+                rtextbox11.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void RcheckBox12_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (rcheckBox12.Fill != Brushes.Green)
+            {
+                rcheckBox12.Fill = Brushes.Green;
+                rtextbox12.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                rcheckBox12.Fill = Brushes.Transparent;
+                rtextbox12.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void RcheckBox13_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (rcheckBox13.Fill != Brushes.Green)
+            {
+                rcheckBox13.Fill = Brushes.Green;
+                rtextbox13.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                rcheckBox13.Fill = Brushes.Transparent;
+                rtextbox13.Visibility = Visibility.Hidden;
+            }
+        }
+
         public void Apply_Click (object sender, RoutedEventArgs e) {
             if (RunExe ()) {
                 MessageBox.Show ("Settings successfully applied!");
@@ -187,12 +285,22 @@ namespace RyzenAdjUI_WPF {
 
         // Returns true if successful, else returns false.
         public bool RunExe () {
-            int spm = 15;
-            int sfl = 30;
-            int ssl = 25;
-            int tmp = 80;
-            int vrm = 30000;
+            int[] parameters_values = new int[11];
+            int spm = -1;
+            int sfl = -1;
+            int ssl = -1;
+            int tmp = -1;
+            int vrm = -1;
 
+            int spt = -1;
+            int vsc = -1;
+            int vcl = -1;
+            int vsm = -1;
+            int pcl = -1;
+            int psc = -1;
+        
+
+            string[] parameter_names = { "stapm-limit", "fast-limit", "slow-limit", "tctl-temp", "vrmmax-current", "slow-time", "vrmsoc-current", "vrm-current", "vrmsocmax-current", "psi0-current", "psi0soc-current" };
             if (rcheckBox1.Fill == Brushes.Green)
                 spm = int.Parse (slider1.Value.ToString ());
             if (rcheckBox2.Fill == Brushes.Green)
@@ -203,29 +311,94 @@ namespace RyzenAdjUI_WPF {
                 tmp = int.Parse (slider4.Value.ToString ());
             if (rcheckBox5.Fill == Brushes.Green)
                 vrm = int.Parse (slider5.Value.ToString ());
+            if (rcheckBox8.Fill == Brushes.Green && rtextbox8.Text.Trim() != "")
+                spt = int.Parse(rtextbox8.Text);
+            if (rcheckBox9.Fill == Brushes.Green && rtextbox9.Text.Trim() != "")
+                vsc = int.Parse(rtextbox9.Text);
+            if (rcheckBox10.Fill == Brushes.Green && rtextbox10.Text.Trim() != "")
+                vcl = int.Parse(rtextbox10.Text);
+            if (rcheckBox11.Fill == Brushes.Green && rtextbox11.Text.Trim() != "")
+                vsm = int.Parse(rtextbox11.Text);
+            if (rcheckBox12.Fill == Brushes.Green && rtextbox12.Text.Trim() != "")
+                pcl = int.Parse(rtextbox12.Text);
+            if (rcheckBox13.Fill == Brushes.Green && rtextbox13.Text.Trim() != "")
+                psc = int.Parse(rtextbox13.Text);
 
-            string vrmhex = vrm.ToString ("X");
+            parameters_values[0] = spm;
+            parameters_values[1] = sfl;
+            parameters_values[2] = ssl;
+            parameters_values[3] = tmp;
+            parameters_values[4] = vrm;
+            parameters_values[5] = spt;
+            parameters_values[6] = vsc;
+            parameters_values[7] = vcl;
+            parameters_values[8] = vsm;
+            parameters_values[9] = pcl;
+            parameters_values[10] = psc;
 
-            string args = $"--stapm-limit={spm}000 --fast-limit={sfl}000 --slow-limit={ssl}000 --tctl-temp={tmp} --vrmmax-current=0x{vrmhex}";
+            string args = $"";
 
-            try {
-                Process.Start (new ProcessStartInfo {
-                    FileName = $"{dir}\\ryzenadj.exe",
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        Arguments = args,
-                        RedirectStandardOutput = true
-                });
-            } catch {
-                MessageBox.Show ("Can't find ryzenadj.exe folder");
+            int counter = 0;
+            foreach (string key in parameter_names)
+            {
+                if (parameters_values[counter] == -1)
+                {
+                }
+                else if (key == "stapm-limit" || key == "fast-limit" || key == "slow-limit")
+                {
+                    //MessageBox.Show(key + ": " + parameters_values[counter]);
+                    args += $" --{key}={parameters_values[counter]}000";
+                }
+                else if (key == "tctl-temp" || key == "slow-time")
+                {
+                    //MessageBox.Show(key + ": " + parameters_values[counter]);
+                    args += $" --{key}={parameters_values[counter]}";
+                }
+                else
+                {
+                    string hex = parameters_values[counter].ToString("X");
+                    //MessageBox.Show(key + ": " + hex);
+                    args += $" --{key}=0x{hex}";
+                }
+                counter++;
+            }
+
+            MessageBoxResult dialogResult = MessageBox.Show("Execute the following args: \n" + args, "Are you sure?", MessageBoxButton.YesNo);
+            if (dialogResult == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    //Process.Start (new ProcessStartInfo {
+                    //  FileName = $"{dir}\\ryzenadj.exe",
+                    //    UseShellExecute = false,
+                    //  CreateNoWindow = true,
+                    //Arguments = args,
+                    //RedirectStandardOutput = true
+                    //});
+                }
+                catch
+                {
+                    MessageBox.Show("Can't find ryzenadj.exe folder");
+                    return false;
+                }
+                CreateBat();
+                if (rcheckBox6.Fill == Brushes.Green)
+                {
+                    AutoStart();
+                }
+                else
+                {
+                    ClearAutoStart();
+                }
+            }
+            else if (dialogResult == MessageBoxResult.No)
+            {
+                MessageBox.Show("Aborted.");
                 return false;
             }
-            CreateBat();
-            if (rcheckBox6.Fill == Brushes.Green) {
-                AutoStart ();
-            } else {
-                ClearAutoStart ();
-            }
+
+
+            
             return true;
 
         }
@@ -250,26 +423,86 @@ namespace RyzenAdjUI_WPF {
         }
 
         public void CreateBat () {
-            int spm = 15;
-            int sfl = 30;
-            int ssl = 25;
-            int tmp = 80;
-            int vrm = 30000;
+            int[] parameters_values = new int[11];
+            int spm = -1;
+            int sfl = -1;
+            int ssl = -1;
+            int tmp = -1;
+            int vrm = -1;
 
+            int spt = -1;
+            int vsc = -1;
+            int vcl = -1;
+            int vsm = -1;
+            int pcl = -1;
+            int psc = -1;
+            
+
+            string[] parameter_names = { "stapm-limit", "fast-limit", "slow-limit", "tctl-temp", "vrmmax-current", "slow-time", "vrmsoc-current", "vrm-current", "vrmsocmax-current", "psi0-current", "psi0soc-current" };
             if (rcheckBox1.Fill == Brushes.Green)
-                spm = int.Parse (slider1.Value.ToString ());
+                spm = int.Parse(slider1.Value.ToString());
             if (rcheckBox2.Fill == Brushes.Green)
-                sfl = int.Parse (slider2.Value.ToString ());
+                sfl = int.Parse(slider2.Value.ToString());
             if (rcheckBox3.Fill == Brushes.Green)
-                ssl = int.Parse (slider3.Value.ToString ());
+                ssl = int.Parse(slider3.Value.ToString());
             if (rcheckBox4.Fill == Brushes.Green)
-                tmp = int.Parse (slider4.Value.ToString ());
+                tmp = int.Parse(slider4.Value.ToString());
             if (rcheckBox5.Fill == Brushes.Green)
-                vrm = int.Parse (slider5.Value.ToString ());
+                vrm = int.Parse(slider5.Value.ToString());
+            if (rcheckBox8.Fill == Brushes.Green)
+                spt = int.Parse(rtextbox8.Text);
+            if (rcheckBox9.Fill == Brushes.Green)
+                vsc = int.Parse(rtextbox9.Text);
+            if (rcheckBox10.Fill == Brushes.Green)
+                vcl = int.Parse(rtextbox10.Text);
+            if (rcheckBox11.Fill == Brushes.Green)
+                vsm = int.Parse(rtextbox11.Text);
+            if (rcheckBox12.Fill == Brushes.Green)
+                pcl = int.Parse(rtextbox12.Text);
+            if (rcheckBox13.Fill == Brushes.Green)
+                psc = int.Parse(rtextbox13.Text);
 
-            string vrmhex = vrm.ToString ("X");
+            parameters_values[0] = spm;
+            parameters_values[1] = sfl;
+            parameters_values[2] = ssl;
+            parameters_values[3] = tmp;
+            parameters_values[4] = vrm;
+            parameters_values[5] = spt;
+            parameters_values[6] = vsc;
+            parameters_values[7] = vcl;
+            parameters_values[8] = vsm;
+            parameters_values[9] = pcl;
+            parameters_values[10] = psc;
 
-            string bat = $"%~dp0\\ryzenadj.exe --stapm-limit={spm}000 --fast-limit={sfl}000 --slow-limit={ssl}000 --tctl-temp={tmp} --vrmmax-current=0x{vrmhex}";
+            string bat = $"%~dp0\\ryzenadj.exe";
+
+            int counter = 0;
+            foreach (string key in parameter_names)
+            {
+                
+                if (parameters_values[counter] == -1)
+                {
+                    //MessageBox.Show(key + " is missing at counter " + counter);
+                }
+                else if (key == "stapm-limit" || key == "fast-limit" || key == "slow-limit")
+                {
+                    //MessageBox.Show(key + ": " + parameters_values[counter]);
+                    bat += $" --{key}={parameters_values[counter]}000";
+                }
+                else if (key == "tctl-temp" || key == "slow-time")
+                {
+                    //MessageBox.Show(key + ": " + parameters_values[counter]);
+                    bat += $" --{key}={parameters_values[counter]}";
+                }
+                else
+                {
+                    string hex = parameters_values[counter].ToString("X");
+                    //MessageBox.Show(key + ": " + hex);
+                    bat += $" --{key}=0x{hex}";
+                }
+                counter++;
+            }
+
 
             if (!File.Exists (batFilePath)) {
                 using (FileStream fs = File.Create (batFilePath)) {
@@ -342,8 +575,62 @@ namespace RyzenAdjUI_WPF {
                                 slider5.Visibility = Visibility.Visible;
                                 lab5.Visibility = Visibility.Visible;
                                 break;
+                            case "slow-time":
+                                if (rcheckBox7.Fill != Brushes.Green)
+                                {
+                                    RcheckBox7_MouseDown(null, null);
+                                }
+                                rcheckBox8.Fill = Brushes.Green;
+                                rtextbox8.Text = typeValue.Trim();
+                                rtextbox8.Visibility = Visibility.Visible;
+                                break;
+                            case "vrmsoc-current":
+                                if (rcheckBox7.Fill != Brushes.Green)
+                                {
+                                    RcheckBox7_MouseDown(null, null);
+                                }
+                                rcheckBox9.Fill = Brushes.Green;
+                                rtextbox9.Text = Convert.ToString(Convert.ToDouble(Convert.ToInt64(typeValue.Trim(), 16)));
+                                rtextbox9.Visibility = Visibility.Visible;
+                                break;
+                            case "vrm-current":
+                                if (rcheckBox7.Fill != Brushes.Green)
+                                {
+                                    RcheckBox7_MouseDown(null, null);
+                                }
+                                rcheckBox10.Fill = Brushes.Green;
+                                rtextbox10.Text = Convert.ToString(Convert.ToDouble(Convert.ToInt64(typeValue.Trim(), 16)));
+                                rtextbox10.Visibility = Visibility.Visible;
+                                break;
+                            case "vrmsocmax-current":
+                                if (rcheckBox7.Fill != Brushes.Green)
+                                {
+                                    RcheckBox7_MouseDown(null, null);
+                                }
+                                rcheckBox11.Fill = Brushes.Green;
+                                rtextbox11.Text = Convert.ToString(Convert.ToDouble(Convert.ToInt64(typeValue.Trim(), 16)));
+                                rtextbox11.Visibility = Visibility.Visible;
+                                break;
+                            case "psi0-current":
+                                if (rcheckBox7.Fill != Brushes.Green)
+                                {
+                                    RcheckBox7_MouseDown(null, null);
+                                }
+                                rcheckBox12.Fill = Brushes.Green;
+                                rtextbox12.Text = Convert.ToString(Convert.ToDouble(Convert.ToInt64(typeValue.Trim(), 16)));
+                                rtextbox12.Visibility = Visibility.Visible;
+                                break;
+                            case "psi0soc-current":
+                                if (rcheckBox7.Fill != Brushes.Green)
+                                {
+                                    RcheckBox7_MouseDown(null, null);
+                                }
+                                rcheckBox13.Fill = Brushes.Green;
+                                rtextbox13.Text = Convert.ToString(Convert.ToDouble(Convert.ToInt64(typeValue.Trim(), 16)));
+                                rtextbox13.Visibility = Visibility.Visible;
+                                break;
                             default:
-
+                                MessageBox.Show("WARN: Unsupported settings value: " + type + " with the value of: " + typeValue + " has been ignored.");
                                 break;
                         }
                         //MessageBox.Show(type);
@@ -352,5 +639,6 @@ namespace RyzenAdjUI_WPF {
             }
         }
 
+        
     }
 }
