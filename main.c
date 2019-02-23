@@ -8,8 +8,6 @@
 #define STRINGIFY2(X) #X
 #define STRINGIFY(X) STRINGIFY2(X)
 
-#define VER_STR "v0.0.2"
-
 #define _do_adjust(ARG) \
 do{ \
     while(ARG != 0){    \
@@ -61,7 +59,7 @@ int main(int argc, const char **argv)
 
     struct argparse argparse;
     argparse_init(&argparse, options, usage, 0);
-    argparse_describe(&argparse, "\n Ryzen Power Management adjust tool.", "\nWARNING: Use at your own risk!\nBy Jiaxun Yang <jiaxun.yang@flygoat.com>, Under LGPL.\nVersion: " VER_STR);
+    argparse_describe(&argparse, "\n Ryzen Power Management adjust tool.", "\nWARNING: Use at your own risk!\nBy Jiaxun Yang <jiaxun.yang@flygoat.com>, Under LGPL.\nVersion: v0." STRINGIFY(RYZENADJ_VER));
     argc = argparse_parse(&argparse, argc, argv);
 
     ry = init_ryzenadj();

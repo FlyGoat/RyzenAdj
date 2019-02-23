@@ -9,6 +9,8 @@ extern "C" {
 #endif
 #include  "nb_smu_ops.h"
 
+#define RYZENADJ_VER 3
+
 typedef struct {
     nb_t nb;
     pci_obj_t pci_obj;
