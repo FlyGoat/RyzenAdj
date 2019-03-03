@@ -5,6 +5,8 @@ Based on: [FlyGoat/ryzen_nb_smu](https://github.com/flygoat/ryzen_nb_smu)
 
 Thanks a lot to "JustSkill" for his Amazing GUI interface!
 
+Also, you can choose [le.storm1er/ryzen-controller](https://gitlab.com/le.storm1er/ryzen-controller) as a alternative GUI interface.
+
 ## Usage
 The command line interface is identical on both Windows and Unix-Like OS.
 
@@ -26,11 +28,11 @@ Options
     -i, --info                Show information (W.I.P.)
 
 Settings
-    -a, --stapm-limit=<u32>           Sustained power limit (10e-3 W)
-    -b, --fast-limit=<u32>            Fast PPT power limit (10e-3 W)
-    -c, --slow-limit=<u32>            Slow PPT power limit (10e-3 W)
-    -d, --slow-time=<u32>             Slow PPT constant time (ms)
-    -e, --stapm-time=<u32>            STAMP constant time (ms)
+    -a, --stapm-limit=<u32>           Sustained power limit (mW)
+    -b, --fast-limit=<u32>            Fast PPT power limit (mW)
+    -c, --slow-limit=<u32>            Slow PPT power limit (mW)
+    -d, --slow-time=<u32>             Slow PPT constant time (s)
+    -e, --stapm-time=<u32>            STAMP constant time (s)
     -f, --tctl-temp=<u32>             Tctl temperature (℃)
     -g, --vrm-current=<u32>           Vrm Current Limit (mA)
     -j, --vrmsoc-current=<u32>        Vrm SoC Current Limit (mA)
