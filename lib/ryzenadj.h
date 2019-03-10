@@ -12,10 +12,10 @@ extern "C" {
 #define RYZENADJ_VER 3
 
 typedef struct {
-    nb_t nb;
-    pci_obj_t pci_obj;
-    smu_t mp1_smu;
-    smu_t psmu;
+	nb_t nb;
+	pci_obj_t pci_obj;
+	smu_t mp1_smu;
+	smu_t psmu;
 } *ryzen_access;
 
 ryzen_access init_ryzenadj();

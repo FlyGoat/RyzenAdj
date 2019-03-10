@@ -28,9 +28,9 @@ typedef uint64_t u64;
 #define C2PMSG_ARGx_ADDR(y, x)          (y + 4 * x)
 
 enum SMU_TYPE{
-  TYPE_MP1,
-  TYPE_PSMU,
-  TYPE_COUNT,
+	TYPE_MP1,
+	TYPE_PSMU,
+	TYPE_COUNT,
 };
 
 #define MP1_C2PMSG_MESSAGE_ADDR          0x3B10528
@@ -47,19 +47,19 @@ enum SMU_TYPE{
 #define REP_MSG_CmdRejectedPrereq     0xFD
 #define REP_MSG_CmdRejectedBusy       0xFC
 
-/* 
+/*
 * All the SMU have the same TestMessage as for now
 * Correct me if they don't
 */
 #define SMU_TEST_MSG 0x1
 
 typedef struct {
-    u32 arg0;
-    u32 arg1;
-    u32 arg2;
-    u32 arg3;
-    u32 arg4;
-    u32 arg5;
+		u32 arg0;
+		u32 arg1;
+		u32 arg2;
+		u32 arg3;
+		u32 arg4;
+		u32 arg5;
 } smu_service_args_t;
 
 
@@ -74,10 +74,10 @@ typedef struct pci_access *pci_obj_t;
 #endif
 
 typedef struct {
-  nb_t nb;
-  u32 msg;
-  u32 rep;
-  u32 arg_base;
+	nb_t nb;
+	u32 msg;
+	u32 rep;
+	u32 arg_base;
 } *smu_t;
 
 
