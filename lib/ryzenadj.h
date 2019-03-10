@@ -41,6 +41,7 @@ int set_min_fclk_freq(ryzen_access, uint32_t value);
 int set_max_vcn(ryzen_access, uint32_t value);
 int set_min_vcn(ryzen_access, uint32_t value);
 int set_max_lclk(ryzen_access, uint32_t value);
+int set_min_lclk(ryzen_access, uint32_t value);
 
 
 #ifdef __cplusplus
