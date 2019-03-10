@@ -16,30 +16,38 @@ You can write a shell script or bat to do it automaticly.
 
 ```
 $./ryzenadj -h
-
 Usage: ryzenadj [options] [[--] args]
    or: ryzenadj [options]
 
  Ryzen Power Management adjust tool.
 
-    -h, --help                show this help message and exit
+    -h, --help                        show this help message and exit
 
 Options
-    -i, --info                Show information (W.I.P.)
+    -i, --info                        Show information (W.I.P.)
 
 Settings
     -a, --stapm-limit=<u32>           Sustained power limit (mW)
     -b, --fast-limit=<u32>            Fast PPT power limit (mW)
     -c, --slow-limit=<u32>            Slow PPT power limit (mW)
-    -d, --slow-time=<u32>             Slow PPT constant time (s)
-    -e, --stapm-time=<u32>            STAMP constant time (s)
-    -f, --tctl-temp=<u32>             Tctl temperature (℃)
-    -g, --vrm-current=<u32>           Vrm Current Limit (mA)
-    -j, --vrmsoc-current=<u32>        Vrm SoC Current Limit (mA)
-    -k, --vrmmax-current=<u32>        Vrm Maximum Current Limit (mA)
-    -l, --vrmsocmax-current=<u32>     Vrm SoC Maximum Current Limit (mA)
+    -d, --slow-time=<u32>             Slow PPT constant time (S)
+    -e, --stapm-time=<u32>            STAPM constant time (S)
+    -f, --tctl-temp=<u32>             Tctl temperature (▒?
+    -g, --vrm-current=<u32>           VRM Current Limit (mA)
+    -j, --vrmsoc-current=<u32>        VRM SoC Current Limit (mA)
+    -k, --vrmmax-current=<u32>        VRM Maximum Current Limit (mA)
+    -l, --vrmsocmax-current=<u32>     VRM SoC Maximum Current Limit (mA)
     -m, --psi0-current=<u32>          PSI0 Current Limit (mA)
     -n, --psi0soc-current=<u32>       PSI0 SoC Current Limit (mA)
+    -o, --max-socclk-frequency=<u32>  Maximum SoC Clock Frequency (MHz)
+    -p, --min-socclk-frequency=<u32>  Minimum SoC Clock Frequency (MHz)
+    -q, --max-fclk-frequency=<u32>    Maximum Transmission (CPU-GPU) Frequency (MHz)
+    -r, --min-fclk-frequency=<u32>    Minimum Transmission (CPU-GPU) Frequency (MHz)
+    -s, --max-vcn=<u32>               Maximum Video Core Next (VCE - Video Coding Engine) (Value)
+    -t, --min-vcn=<u32>               Minimum Video Core Next (VCE - Video Coding Engine) (Value)
+    -u, --max-lclk=<u32>              Maximum Data Launch Clock (Value)
+    -v, --min-lclk=<u32>              Minimum Data Launch Clock (Value)
+
 ``` 
 
 ### demo
