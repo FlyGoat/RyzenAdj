@@ -33,7 +33,7 @@ ryzen_access init_ryzenadj(){
 	}
 
 	smu_service_req(ry->mp1_smu, 0x3, &args);
-	if(args.arg0 != 0x5 && args.arg0 != 0x6){
+	if(args.arg0 != 0x5 && args.arg0 != 0x6 && args.arg0 != 0xf){
 		printf("Not a Ryzen NB SMU, BIOS Interface Ver: 0x%x",args.arg0);
 		goto out_err;
 	}
