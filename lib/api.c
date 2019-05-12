@@ -4,7 +4,7 @@
 
 #include "ryzenadj.h"
 
-ryzen_access init_ryzenadj(){
+__declspec(dllexport) ryzen_access __stdcall init_ryzenadj(){
 	smu_service_args_t args = {0, 0, 0, 0, 0, 0};
 	ryzen_access ry;
 
@@ -52,7 +52,7 @@ out_free_pci_obj:
 	return NULL;
 }
 
-void cleanup_ryzenadj(ryzen_access ry){
+__declspec(dllexport) void __stdcall cleanup_ryzenadj(ryzen_access ry){
 	free_smu(ry->psmu);
 	free_smu(ry->mp1_smu);
 	free_nb(ry->nb);
@@ -72,82 +72,90 @@ do{ \
 }while(0);
 
 
-int set_stapm_limit(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_stapm_limit(ryzen_access ry, uint32_t value){
 	_do_adjust(0x1a);
 }
 
-int set_fast_limit(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_fast_limit(ryzen_access ry, uint32_t value){
 	_do_adjust(0x1b);
 }
 
-int set_slow_limit(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_slow_limit(ryzen_access ry, uint32_t value){
 	_do_adjust(0x1c);
 }
 
-int set_slow_time(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_slow_time(ryzen_access ry, uint32_t value){
 	_do_adjust(0x1d);
 }
 
-int set_stapm_time(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_stapm_time(ryzen_access ry, uint32_t value){
 	_do_adjust(0x1e);
 }
 
-int set_tctl_temp(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_tctl_temp(ryzen_access ry, uint32_t value){
 	_do_adjust(0x1f);
 }
 
-int set_vrm_current(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_vrm_current(ryzen_access ry, uint32_t value){
 	_do_adjust(0x20);
 }
 
-int set_vrmsoc_current(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_vrmsoc_current(ryzen_access ry, uint32_t value){
 	_do_adjust(0x21);
 }
 
-int set_vrmmax_current(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_vrmmax_current(ryzen_access ry, uint32_t value){
 	_do_adjust(0x22);
 }
 
-int set_vrmsocmax_current(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_vrmsocmax_current(ryzen_access ry, uint32_t value){
 	_do_adjust(0x23);
 }
 
-int set_psi0_current(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_psi0_current(ryzen_access ry, uint32_t value){
 	_do_adjust(0x24);
 }
 
-int set_psi0soc_current(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_psi0soc_current(ryzen_access ry, uint32_t value){
 	_do_adjust(0x25);
 }
 
-int set_max_socclk_freq(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_max_gfxclk_freq(ryzen_access ry, uint32_t value) {
+	_do_adjust(0x46);
+}
+
+_declspec(dllexport) int __stdcall set_min_gfxclk_freq(ryzen_access ry, uint32_t value) {
+	_do_adjust(0x47);
+}
+
+__declspec(dllexport) int __stdcall set_max_socclk_freq(ryzen_access ry, uint32_t value){
 	_do_adjust(0x48);
 }
 
-int set_min_socclk_freq(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_min_socclk_freq(ryzen_access ry, uint32_t value){
 	_do_adjust(0x49);
 }
 
-int set_max_fclk_freq(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_max_fclk_freq(ryzen_access ry, uint32_t value){
 	_do_adjust(0x4A);
 }
 
-int set_min_fclk_freq(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_min_fclk_freq(ryzen_access ry, uint32_t value){
 	_do_adjust(0x4B);
 }
 
-int set_max_vcn(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_max_vcn(ryzen_access ry, uint32_t value){
 	_do_adjust(0x4C);
 }
 
-int set_min_vcn(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_min_vcn(ryzen_access ry, uint32_t value){
 	_do_adjust(0x4D);
 }
 
-int set_max_lclk(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_max_lclk(ryzen_access ry, uint32_t value){
 	_do_adjust(0x4E);
 }
 
-int set_min_lclk(ryzen_access ry, uint32_t value){
+__declspec(dllexport) int __stdcall set_min_lclk(ryzen_access ry, uint32_t value){
 	_do_adjust(0x4F);
 }
