@@ -81,7 +81,7 @@ The simplest way to build it:
 
 ### Windows
 
-It can be built by Visual Studio automaticly. However, as for now, MingW can't
+It can be built by Visual Studio automaticaly. However, as for now, MingW can't
 be used to compile for some reason.
 
 Required dll is included in ./prebuilt of source tree. Please put the dll
