@@ -1,0 +1,13 @@
+language: cpp
+
+compiler:
+  - gcc
+  - clang
+
+before_script:
+  - sudo apt-get install libpci3 libpci-dev
+  - mkdir build
+  - cd build
+  - cmake ..
+
+script: make

@@ -1,6 +1,8 @@
 # RyzenAdj
 Adjust power management settings for Ryzen Processors.
 
+[![Build Status](https://travis-ci.org/FlyGoat/RyzenAdj.svg?branch=master)](https://travis-ci.org/FlyGoat/RyzenAdj)
+
 Based on: [FlyGoat/ryzen_nb_smu](https://github.com/flygoat/ryzen_nb_smu)
 
 Thanks a lot to "JustSkill" for his Amazing GUI interface!
