@@ -17,7 +17,7 @@ extern "C" {
 #define CALL
 #endif
 
-#define RYZENADJ_VER 3
+#define RYZENADJ_VER 5
 
 typedef struct {
 	nb_t nb;
