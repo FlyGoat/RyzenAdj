@@ -1,13 +1,27 @@
 language: cpp
 
-compiler:
-  - gcc
-  - clang
+matrix:
+  include:
+    - name: "Linux Build"
+      os: linux
+      dist: xenial
+      addons:
+        apt:
+          packages:
+          - cmake
+          - libpci3
+          - libpci-dev
+      before_script:
+      - mkdir build && cd build
+      - cmake ..
+      script:
+      - make
 
-before_script:
-  - sudo apt-get install libpci3 libpci-dev
-  - mkdir build
-  - cd build
-  - cmake ..
-
-script: make
+    - name: "Clang Windows Build"
+      os: windows
+      env:
+      - MATRIX_EVAL="CC=clang-cl && CXX=clang-cl"
+      before_install:
+      - eval "${MATRIX_EVAL}"
+      script:
+      - cmd.exe /C '.\travis-win.bat'

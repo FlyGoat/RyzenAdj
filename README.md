@@ -76,7 +76,8 @@ Debian-based distros this is covered by installing **pcilib-dev** package:
 
 The simplest way to build it:
 
-    cmake CMakeLists.txt
+    mkdir build && cd build
+    cmake ..
     make
 
 ### Windows
@@ -86,10 +87,3 @@ be used to compile for some reason.
 
 Required dll is included in ./prebuilt of source tree. Please put the dll
 library and sys driver in the same folder with ryzenadj.exe.
-
-## TODO
-- Determine the unit of time
-- Add more options
-- Code cleanup (The original program was written in C but now it's C++ in
-order to call VC++ library)
-
