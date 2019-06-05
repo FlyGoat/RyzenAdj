@@ -5,9 +5,7 @@ Adjust power management settings for Ryzen Processors.
 
 Based on: [FlyGoat/ryzen_nb_smu](https://github.com/flygoat/ryzen_nb_smu)
 
-Thanks a lot to "JustSkill" for his Amazing GUI interface!
-
-Also, you can choose [le.storm1er/ryzen-controller](https://gitlab.com/le.storm1er/ryzen-controller) as a alternative GUI interface.
+RyzenAdjUI_WPF by "JustSkill" is no longer maintained, for GUI please see [le.storm1er/ryzen-controller](https://gitlab.com/le.storm1er/ryzen-controller).
 
 ## Usage
 The command line interface is identical on both Windows and Unix-Like OS.
@@ -82,8 +80,11 @@ The simplest way to build it:
 
 ### Windows
 
-It can be built by Visual Studio automaticaly. However, as for now, MingW can't
-be used to compile for some reason.
+It can be built by Visual Studio + MSVC automaticaly, or Clang + Nmake in command line.
+However, as for now, MingW-gcc can't be used to compile for some reason.
 
 Required dll is included in ./prebuilt of source tree. Please put the dll
 library and sys driver in the same folder with ryzenadj.exe.
+
+We don't recommend you to build by yourself on Windows since the environment configuarion
+is very complicated. If you would like to use ryzenadj functions in your program, see libryzenadj.
