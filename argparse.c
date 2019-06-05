@@ -51,6 +51,10 @@ argparse_getvalue(struct argparse *self, const struct argparse_option *opt,
 				  int flags)
 {
 	const char *s = NULL;
+	char buf[256];
+	buf[0] = 0;
+	char *pbuf = buf;
+
 	if (!opt->value)
 		goto skipped;
 	switch (opt->type) {
@@ -93,8 +97,14 @@ argparse_getvalue(struct argparse *self, const struct argparse_option *opt,
 		} else {
 			argparse_error(self, opt, "requires a value", flags);
 		}
-		if (errno)
-			argparse_error(self, opt, strerror(errno), flags);
+		if (errno){
+			#ifdef _WIN32
+			strerror_s(buf, sizeof(buf), errno);
+			#else
+			strerror_r(errno, buf, sizeof(buf));
+			#endif
+			argparse_error(self, opt, pbuf, flags);
+		}
 		if (s[0] != '\0')
 			argparse_error(self, opt, "expects an integer value", flags);
 		break;
@@ -109,8 +119,14 @@ argparse_getvalue(struct argparse *self, const struct argparse_option *opt,
 		} else {
 			argparse_error(self, opt, "requires a value", flags);
 		}
-		if (errno)
-			argparse_error(self, opt, strerror(errno), flags);
+		if (errno){
+			#ifdef _WIN32
+			strerror_s(buf, sizeof(buf), errno);
+			#else
+			strerror_r(errno, buf, sizeof(buf));
+			#endif
+			argparse_error(self, opt, pbuf, flags);
+		}
 		if (s[0] != '\0')
 			argparse_error(self, opt, "expects an unsigned 32-bit integer value", flags);
 		break;
@@ -125,8 +141,14 @@ argparse_getvalue(struct argparse *self, const struct argparse_option *opt,
 		} else {
 			argparse_error(self, opt, "requires a value", flags);
 		}
-		if (errno)
-			argparse_error(self, opt, strerror(errno), flags);
+		if (errno){
+			#ifdef _WIN32
+			strerror_s(buf, sizeof(buf), errno);
+			#else
+			strerror_r(errno, buf, sizeof(buf));
+			#endif
+			argparse_error(self, opt, pbuf, flags);
+		}
 		if (s[0] != '\0')
 			argparse_error(self, opt, "expects a numerical value", flags);
 		break;

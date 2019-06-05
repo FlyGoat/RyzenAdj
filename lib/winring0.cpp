@@ -18,7 +18,7 @@ extern "C" pci_obj_t init_pci_obj(){
     InitializeOls();
     if(GetDllStatus() == 0)
         return &nb_pci_obj;
-    printf("WinRing0 Err: 0x%x",GetDllStatus());
+    printf("WinRing0 Err: 0x%lx",GetDllStatus());
     return NULL;
 }
 
