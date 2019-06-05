@@ -1,9 +1,15 @@
 language: cpp
+
+before_install:
+- eval "${MATRIX_EVAL}"
+
 matrix:
   include:
   - name: Linux Build
     os: linux
     dist: xenial
+    env:
+    - MATRIX_EVAL="CC=clang && CXX=clang++"
     addons:
       apt:
         packages:
@@ -12,15 +18,13 @@ matrix:
         - libpci-dev
     before_script:
     - mkdir build && cd build
-    - cmake ..
+    - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-fuse-ld=lld" -DCMAKE_CXX_FLAGS="-fuse-ld=lld" ..
     script:
     - make
   - name: Clang Windows Build
     os: windows
     env:
     - MATRIX_EVAL="CC=clang-cl && CXX=clang-cl"
-    before_install:
-    - eval "${MATRIX_EVAL}"
     script:
     - cmd.exe /C '.\travis-win.bat'
     - 7z.exe a -tzip ryzenadj-win64-release.zip ./build/ryzenadj.exe ./prebuilt/WinRing0x64.dll
