@@ -47,6 +47,8 @@ Settings
     -t, --min-vcn=<u32>               Minimum Video Core Next (VCE - Video Coding Engine) (Value)
     -u, --max-lclk=<u32>              Maximum Data Launch Clock (Value)
     -v, --min-lclk=<u32>              Minimum Data Launch Clock (Value)
+    -w, --max-gfxclk=<u32>            Maximum GFX Clock (Value)
+    -x, --min-gfxclk=<u32>            Minimum GFX Clock (Value)
 
 ``` 
 
