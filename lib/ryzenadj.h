@@ -19,7 +19,7 @@ extern "C" {
 
 #define RYZENADJ_VER 5
 
-typedef struct {
+typedef struct _ryzen_access {
 	nb_t nb;
 	pci_obj_t pci_obj;
 	smu_t mp1_smu;

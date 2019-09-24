@@ -53,7 +53,7 @@ enum SMU_TYPE{
 */
 #define SMU_TEST_MSG 0x1
 
-typedef struct {
+typedef struct _smu_service_args_t {
 		u32 arg0;
 		u32 arg1;
 		u32 arg2;
@@ -73,7 +73,7 @@ typedef struct pci_dev *nb_t;
 typedef struct pci_access *pci_obj_t;
 #endif
 
-typedef struct {
+typedef struct _smu_t {
 	nb_t nb;
 	u32 msg;
 	u32 rep;
