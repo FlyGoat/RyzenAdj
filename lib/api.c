@@ -53,6 +53,9 @@ out_free_pci_obj:
 }
 
 EXP void CALL cleanup_ryzenadj(ryzen_access ry){
+	if (ry == NULL)
+	    return;
+
 	free_smu(ry->psmu);
 	free_smu(ry->mp1_smu);
 	free_nb(ry->nb);
