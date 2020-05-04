@@ -25,6 +25,8 @@ set(OS_LINK_LIBRARY pci)
 #endif()
 endif()
 
+add_definitions(-D_LIBRYZENADJ_INTERNAL)
+
 ADD_EXECUTABLE(${PROJECT_NAME} ${OS_SOURCE} lib/nb_smu_ops.c lib/api.c argparse.c main.c)
 target_link_libraries(${PROJECT_NAME} ${OS_LINK_LIBRARY})
 #SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE C)
