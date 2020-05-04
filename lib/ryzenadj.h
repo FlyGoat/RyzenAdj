@@ -38,7 +38,7 @@ struct _ryzen_access;
 #endif
 
 #define RYZENADJ_MAJOR_VER 0
-#define RYZENADJ_MINIOR_VER 5
+#define RYZENADJ_MINIOR_VER 6
 
 typedef struct _ryzen_access *ryzen_access;
 
