@@ -2,7 +2,7 @@
 /* Copyright (C) 2018-2019 Jiaxun Yang <jiaxun.yang@flygoat.com> */
 /* Ryzen NB SMU Service Request Opreations */
 
-#include "nb_smu_ops.h"
+#include "ryzenadj.h"
 
 u32 smu_service_req(smu_t smu ,u32 id ,smu_service_args_t *args)
 {
