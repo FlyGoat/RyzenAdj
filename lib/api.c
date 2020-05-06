@@ -4,11 +4,18 @@
 
 #include "ryzenadj.h"
 
-EXP ryzen_access CALL init_ryzenadj(){
+EXP ryzen_access CALL init_ryzenadj()
+{
 	smu_service_args_t args = {0, 0, 0, 0, 0, 0};
 	ryzen_access ry;
+	enum ryzen_family family = cpuid_get_family();
+
+	if (family == FAM_UNKNOWN)
+		return NULL;
 
 	ry = (ryzen_access)malloc((sizeof(*ry)));
+
+	ry->family = family;
 
 	ry->pci_obj = init_pci_obj();
 	if(!ry->pci_obj){
@@ -61,6 +68,11 @@ EXP void CALL cleanup_ryzenadj(ryzen_access ry){
 	free_nb(ry->nb);
 	free_pci_obj(ry->pci_obj);
 	free(ry);
+}
+
+EXP enum ryzen_family get_cpu_family(ryzen_access ry)
+{
+	return ry->family;
 }
 
 #define _do_adjust(OPT) \

@@ -8,8 +8,19 @@
 extern "C" {
 #endif
 
+#define RYZENADJ_MAJOR_VER 0
+#define RYZENADJ_MINIOR_VER 6
+
+enum ryzen_family {
+        FAM_UNKNOWN = -1,
+        FAM_RAVEN = 0,
+        FAM_PICASSO,
+        FAM_RENIOR,
+        FAM_END
+};
+
 #ifdef _LIBRYZENADJ_INTERNAL
-#include  "nb_smu_ops.h"
+#include  "ryzenadj_priv.h"
 
 #ifdef _WIN32
 #define EXP __declspec(dllexport)
@@ -19,14 +30,8 @@ extern "C" {
 #define CALL
 #endif
 
-struct _ryzen_access {
-	nb_t nb;
-	pci_obj_t pci_obj;
-	smu_t mp1_smu;
-	smu_t psmu;
-};
-
 #else
+
 #ifdef _WIN32
 #define EXP __declspec(dllimport)
 #define CALL __stdcall
@@ -35,16 +40,16 @@ struct _ryzen_access {
 #define CALL
 #endif
 struct _ryzen_access;
-#endif
 
-#define RYZENADJ_MAJOR_VER 0
-#define RYZENADJ_MINIOR_VER 6
+#endif
 
 typedef struct _ryzen_access *ryzen_access;
 
 EXP ryzen_access CALL init_ryzenadj();
 
 EXP void CALL cleanup_ryzenadj(ryzen_access ry);
+
+EXP enum ryzen_family get_cpu_family(ryzen_access ry);
 
 EXP int CALL set_stapm_limit(ryzen_access, uint32_t value);
 EXP int CALL set_fast_limit(ryzen_access, uint32_t value);
