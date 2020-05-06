@@ -40,8 +40,9 @@ EXP ryzen_access CALL init_ryzenadj()
 	}
 
 	smu_service_req(ry->mp1_smu, 0x3, &args);
-	if(args.arg0 < 0x5){
-		printf("Not a Ryzen NB SMU, BIOS Interface Ver: 0x%x",args.arg0);
+	ry->bios_if_ver = args.arg0;
+	if(ry->bios_if_ver < 0x5){
+		printf("Not a Ryzen NB SMU, BIOS Interface Ver: 0x%x", ry->bios_if_ver);
 		goto out_err;
 	}
 
@@ -73,6 +74,11 @@ EXP void CALL cleanup_ryzenadj(ryzen_access ry){
 EXP enum ryzen_family get_cpu_family(ryzen_access ry)
 {
 	return ry->family;
+}
+
+EXP int get_bios_if_ver(ryzen_access ry)
+{
+	return ry->bios_if_ver;
 }
 
 #define _do_adjust(OPT) \
