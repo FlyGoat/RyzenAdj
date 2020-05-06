@@ -29,6 +29,32 @@ static const char *const usage[] = {
 	NULL,
 };
 
+static const char *family_name(enum ryzen_family fam)
+{
+	switch (fam)
+	{
+	case FAM_RAVEN:
+		return "Raven";
+		break;
+	case FAM_PICASSO:
+		return "Picasso";
+		break;
+	case FAM_RENIOR:
+		return "Renior";
+		break;
+	default:
+		break;
+	}
+
+	return "Unknown";
+}
+
+static void show_info(ryzen_access ry)
+{
+	printf("CPU Family: %s\n", family_name(get_cpu_family(ry)));
+	printf("SMU BIOS Interface Version: %d\n", get_bios_if_ver(ry));
+}
+
 int main(int argc, const char **argv)
 {
 	ryzen_access ry;
@@ -81,6 +107,9 @@ int main(int argc, const char **argv)
 		printf("Unable to init ryzenadj, check permission\n");
 		return -1;
 	}
+
+	if (info)
+		show_info(ry);
 
 	_do_adjust(stapm_limit);
 	_do_adjust(fast_limit);
