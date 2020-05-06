@@ -1,15 +1,15 @@
-language: cpp
+language: shell
 
 before_install:
 - eval "${MATRIX_EVAL}"
 
 matrix:
   include:
-  - name: Linux Build
+  - name: Linux Clang Build
     os: linux
     dist: xenial
     env:
-    - MATRIX_EVAL="CC=clang && CXX=clang++"
+    - CC=clang CXX=clang++
     addons:
       apt:
         packages:
@@ -18,20 +18,31 @@ matrix:
         - libpci-dev
     before_script:
     - mkdir build && cd build
-    - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-fuse-ld=lld" -DCMAKE_CXX_FLAGS="-fuse-ld=lld" ..
     script:
-    - make
-  - name: Clang Windows Build
+    - cmake -DCMAKE_BUILD_TYPE=Release ..
+    - make -j4
+  - name: Windows Clang Build (Release)
     os: windows
     env:
-    - MATRIX_EVAL="CC=clang-cl && CXX=clang-cl"
+    - CC="/c/Program Files/LLVM/bin/clang" CXX="/c/Program Files/LLVM/bin/clang++"
+    install:
+    # MSVC is already installed on Travis, keep it here just in case we need to use it later
+    #- choco install visualstudio2017-workload-vctools -y --package-parameters "--no-includeRecommended --add Microsoft.VisualStudio.Component.VC.x86.amd64 --add Microsoft.VisualStudio.Component.Windows10SDK"
+    - choco install make
+    - choco upgrade llvm -y
+    - |-
+      "${CC}" --version
+    before_script:
+    - mkdir build && cd build
     script:
-    - cmd.exe /C '.\travis-win.bat'
+    - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ..
+    - make -j4
+    - cd ..
+    after_success:
     - 7z.exe a -tzip ryzenadj-win64-release.zip ./build/ryzenadj.exe ./prebuilt/WinRing0x64.dll
       ./prebuilt/WinRing0x64.sys ./prebuilt/demo.bat
     - 7z.exe a -tzip libryzenadj-win64-release.zip ./build/libryzenadj.dll ./build/libryzenadj.lib
-      ./build/libryzenadj.exp ./prebuilt/WinRing0x64.dll ./prebuilt/WinRing0x64.sys
-      ./lib/ryzenadj.h
+      ./prebuilt/WinRing0x64.dll ./prebuilt/WinRing0x64.sys ./lib/ryzenadj.h
     deploy:
       provider: releases
       api_key:
