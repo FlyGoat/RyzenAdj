@@ -36,7 +36,7 @@ enum ryzen_family cpuid_get_family()
     *(uint32_t *) &vendor[4] = regs[3];
     *(uint32_t *) &vendor[8] = regs[2];
 
-    if (strncmp((char *) &vendor, CPUID_VENDOR_AMD , sizeof(CPUID_VENDOR_AMD))) {
+    if (strncmp((char *) &vendor, CPUID_VENDOR_AMD , sizeof(CPUID_VENDOR_AMD) - 1)) {
         printf("Not AMD processor, must be kidding\n");
         return FAM_UNKNOWN;
     }
