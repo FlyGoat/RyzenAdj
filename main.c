@@ -65,6 +65,8 @@ int main(int argc, const char **argv)
 	uint32_t max_socclk_freq = 0, min_socclk_freq = 0, max_fclk_freq = 0, min_fclk_freq = 0, max_vcn = 0, min_vcn = 0, max_lclk = 0, min_lclk = 0;
 	uint32_t max_gfxclk_freq = 0, min_gfxclk_freq = 0, prochot_deassertion_ramp = 0;
 
+
+	//create structure for parseing
 	struct argparse_option options[] = {
 		OPT_HELP(),
 		OPT_GROUP("Options"),
@@ -86,13 +88,13 @@ int main(int argc, const char **argv)
 		OPT_U32('p', "min-socclk-frequency", &min_socclk_freq, "Minimum SoC Clock Frequency (MHz)"),
 		OPT_U32('q', "max-fclk-frequency", &max_fclk_freq, "Maximum Transmission (CPU-GPU) Frequency (MHz)"),
 		OPT_U32('r', "min-fclk-frequency", &min_fclk_freq, "Minimum Transmission (CPU-GPU) Frequency (MHz)"),
-		OPT_U32('s', "max-vcn", &max_vcn, "Maximum Video Core Next (VCE - Video Coding Engine) (Value)"),
-		OPT_U32('t', "min-vcn", &min_vcn, "Minimum Video Core Next (VCE - Video Coding Engine) (Value)"),
-		OPT_U32('u', "max-lclk", &max_lclk, "Maximum Data Launch Clock (Value)"),
-		OPT_U32('v', "min-lclk", &min_lclk, "Minimum Data Launch Clock (Value)"),
-		OPT_U32('w', "max-gfxclk", &max_gfxclk_freq, "Maximum GFX Clock (Value)"),
-		OPT_U32('x', "min-gfxclk", &min_gfxclk_freq, "Minimum GFX Clock (Value)"),
-		OPT_U32('y', "prochot-deassertion-ramp", &prochot_deassertion_ramp, "Prochot deassertion ramp (ms)"),
+		OPT_U32('s', "max-vcn", &max_vcn, "Maximum Video Core Next (VCE - Video Coding Engine) (MHz)"),
+		OPT_U32('t', "min-vcn", &min_vcn, "Minimum Video Core Next (VCE - Video Coding Engine) (MHz)"),
+		OPT_U32('u', "max-lclk", &max_lclk, "Maximum Data Launch Clock (MHz)"),
+		OPT_U32('v', "min-lclk", &min_lclk, "Minimum Data Launch Clock (MHz)"),
+		OPT_U32('w', "max-gfxclk", &max_gfxclk_freq, "Maximum GFX Clock (MHz)"),
+		OPT_U32('x', "min-gfxclk", &min_gfxclk_freq, "Minimum GFX Clock (MHz)"),
+		OPT_U32('y', "prochot-deassertion-ramp", &prochot_deassertion_ramp, "Time To Ramp Clocks After Prochot is Deasserted(mS)"),
 		OPT_GROUP("P-State Functions"),
 		OPT_END(),
 	};
@@ -103,15 +105,20 @@ int main(int argc, const char **argv)
 	argparse_describe(&argparse, "\n Ryzen Power Management adjust tool.", "\nWARNING: Use at your own risk!\nBy Jiaxun Yang <jiaxun.yang@flygoat.com>, Under LGPL.\nVersion: v" STRINGIFY(RYZENADJ_MAJOR_VER) "." STRINGIFY(RYZENADJ_MINIOR_VER));
 	argc = argparse_parse(&argparse, argc, argv);
 
+
+	//init RyzenAdj and validate that it was able to
 	ry = init_ryzenadj();
 	if(!ry){
 		printf("Unable to init ryzenadj, check permission\n");
 		return -1;
 	}
 
+
+	//shows the info on the 
 	if (info)
 		show_info(ry);
 
+	//adjust all the arguments sent to RyzenAdj.exe
 	_do_adjust(stapm_limit);
 	_do_adjust(fast_limit);
 	_do_adjust(slow_limit);
