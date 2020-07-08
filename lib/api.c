@@ -356,3 +356,16 @@ EXP int CALL set_min_lclk(ryzen_access ry, uint32_t value){
 		break;
 	}
 }
+
+EXP int CALL set_prochot_deassertion_ramp(ryzen_access ry, uint32_t value) {
+	switch (ry->family)
+	{
+	case FAM_RAVEN:
+	case FAM_PICASSO:
+		_do_adjust(0x26);
+		break;
+	case FAM_RENIOR:
+		_do_adjust(0x20);
+		break;
+	}
+}
