@@ -63,7 +63,7 @@ int main(int argc, const char **argv)
 	uint32_t info = 0, stapm_limit = 0, fast_limit = 0, slow_limit = 0, slow_time = 0, stapm_time = 0, tctl_temp = 0;
 	uint32_t vrm_current = 0, vrmsoc_current = 0, vrmmax_current = 0, vrmsocmax_current = 0, psi0_current = 0, psi0soc_current = 0;
 	uint32_t max_socclk_freq = 0, min_socclk_freq = 0, max_fclk_freq = 0, min_fclk_freq = 0, max_vcn = 0, min_vcn = 0, max_lclk = 0, min_lclk = 0;
-	uint32_t max_gfxclk_freq = 0, min_gfxclk_freq = 0;
+	uint32_t max_gfxclk_freq = 0, min_gfxclk_freq = 0, prochot_deassertion_ramp = 0;
 
 	struct argparse_option options[] = {
 		OPT_HELP(),
@@ -92,6 +92,7 @@ int main(int argc, const char **argv)
 		OPT_U32('v', "min-lclk", &min_lclk, "Minimum Data Launch Clock (Value)"),
 		OPT_U32('w', "max-gfxclk", &max_gfxclk_freq, "Maximum GFX Clock (Value)"),
 		OPT_U32('x', "min-gfxclk", &min_gfxclk_freq, "Minimum GFX Clock (Value)"),
+		OPT_U32('y', "prochot-deassertion-ramp", &prochot_deassertion_ramp, "Prochot deassertion ramp (ms)"),
 		OPT_GROUP("P-State Functions"),
 		OPT_END(),
 	};
@@ -133,6 +134,7 @@ int main(int argc, const char **argv)
 	_do_adjust(min_lclk);
 	_do_adjust(max_gfxclk_freq);
 	_do_adjust(min_gfxclk_freq);
+	_do_adjust(prochot_deassertion_ramp);
 	cleanup_ryzenadj(ry);
 
 	return err;
