@@ -1,0 +1,45 @@
+name: Windows Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    # Checks-out
+    - uses: actions/checkout@v2
+
+    - uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
+        nmake
+
+    - name: Upload ryzenadj
+      uses: actions/upload-artifact@v2
+      with:
+        name: ryzenadj-win64
+        path: |
+            ./build/ryzenadj.exe
+            ./prebuilt/WinRing0x64.dll
+            ./prebuilt/WinRing0x64.sys
+            ./prebuilt/demo.bat
+
+    - name: Upload libryzenadj
+      uses: actions/upload-artifact@v2
+      with:
+        name: libryzenadj-win64
+        path: |
+            ./build/libryzenadj.dll
+            ./build/libryzenadj.lib
+            ./lib/ryzenadj.h
+            ./prebuilt/WinRing0x64.dll
+            ./prebuilt/WinRing0x64.sys
