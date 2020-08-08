@@ -49,8 +49,7 @@ Settings
     -v, --min-lclk=<u32>                  Minimum Data Launch Clock (Value)
     -w, --max-gfxclk=<u32>                Maximum GFX Clock (Value)
     -x, --min-gfxclk=<u32>                Minimum GFX Clock (Value)
-    -y, --prochot-deassertion-ramp=<u32>  Time To Ramp Clocks After Prochot is Deasserted (ms)
-
+    -y, --prochot-deassertion-ramp=<u32>  Time to ramp clocks after PROCHOT is deasserted (ms)
 ``` 
 
 ### demo
