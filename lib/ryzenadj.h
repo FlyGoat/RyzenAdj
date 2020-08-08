@@ -8,8 +8,8 @@
 extern "C" {
 #endif
 
-#define RYZENADJ_MAJOR_VER 0
-#define RYZENADJ_MINIOR_VER 7
+#define RYZENADJ_MAJOR_VER 6
+#define RYZENADJ_MINIOR_VER 3
 
 enum ryzen_family {
         FAM_UNKNOWN = -1,
