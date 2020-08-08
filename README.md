@@ -21,10 +21,10 @@ Usage: ryzenadj [options] [[--] args]
 
  Ryzen Power Management adjust tool.
 
-    -h, --help                        show this help message and exit
+    -h, --help                            show this help message and exit
 
 Options
-    -i, --info                        Show information (W.I.P.)
+    -i, --info                            Show information (W.I.P.)
 
 Settings
     -a, --stapm-limit=<u32>               Sustained power limit (mW)
