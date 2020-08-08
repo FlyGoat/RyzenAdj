@@ -158,7 +158,7 @@ EXP int CALL set_tctl_temp(ryzen_access ry, uint32_t value){
 	{
 	case FAM_RAVEN:
 	case FAM_PICASSO:
-		_do_adjust(0x1A);
+		_do_adjust(0x1f);
 		break;
 	case FAM_RENIOR:
 		_do_adjust(0x19);
