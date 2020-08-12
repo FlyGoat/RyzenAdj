@@ -39,8 +39,8 @@ static const char *family_name(enum ryzen_family fam)
 	case FAM_PICASSO:
 		return "Picasso";
 		break;
-	case FAM_RENIOR:
-		return "Renior";
+	case FAM_RENOIR:
+		return "Renoir";
 		break;
 	default:
 		break;

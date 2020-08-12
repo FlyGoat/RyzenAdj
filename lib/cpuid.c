@@ -61,8 +61,8 @@ enum ryzen_family cpuid_get_family()
         return FAM_PICASSO;
         break;
     case 96:
-        printf("Detected Renior\n");
-        return FAM_RENIOR;
+        printf("Detected Renoir\n");
+        return FAM_RENOIR;
         break;
     default:
         printf("Unknown Ryzen processor, won't work\n");
