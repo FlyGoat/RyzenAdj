@@ -13,7 +13,7 @@
 do{ \
 	while(ARG != 0){    \
 		if(!set_##ARG(ry, ARG)){   \
-			printf("Sucessfully set " STRINGIFY(ARG) " to %x\n", ARG);    \
+			printf("Sucessfully set " STRINGIFY(ARG) " to %d\n", ARG);    \
 			break;  \
 		} else {    \
 			printf("Failed to set" STRINGIFY(ARG) " \n");   \
