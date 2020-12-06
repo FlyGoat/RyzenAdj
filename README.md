@@ -74,6 +74,11 @@ Debian-based distros this is covered by installing **pcilib-dev** package:
 
     sudo apt install libpci-dev
 
+On Fedora:
+```
+sudo dnf install pciutils-devel
+```
+
 The simplest way to build it:
 
     mkdir build && cd build
