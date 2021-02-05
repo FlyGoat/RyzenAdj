@@ -17,6 +17,7 @@ enum ryzen_family {
         FAM_RAVEN = 0,
         FAM_PICASSO,
         FAM_RENOIR,
+        FAM_CEZANNE,
         FAM_END
 };
 

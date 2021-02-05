@@ -46,12 +46,12 @@ enum ryzen_family cpuid_get_family()
     family = ((regs[0] >> 8) & 0xf) + ((regs[0] >> 20) & 0xff);
     model = ((regs[0] >> 4) & 0xf) | ((regs[0] >> 12) & 0xf0);
 
-    if (family != 0x17) {
+    if (family != 0x17 || family != 0x19) {
         printf("Not Zen processor, won't work\n");
         return FAM_UNKNOWN; 
     }
 
-    switch(model) {
+    switch (model) {
     case 17:
         printf("Detected Raven\n");
         return FAM_RAVEN;
@@ -64,6 +64,14 @@ enum ryzen_family cpuid_get_family()
         printf("Detected Renoir\n");
         return FAM_RENOIR;
         break;
+    case 80:
+        //test to make sure that we do not have a 17h 0x50 chip and infact have a 19h 0x50 chip
+        if (family == 0x19)
+        {
+       
+            printf("Detected Cecanne\n");
+            return FAM_CEZANNE;
+        }
     default:
         printf("Unknown Ryzen processor, won't work\n");
         break;
