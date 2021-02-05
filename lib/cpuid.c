@@ -46,7 +46,7 @@ enum ryzen_family cpuid_get_family()
     family = ((regs[0] >> 8) & 0xf) + ((regs[0] >> 20) & 0xff);
     model = ((regs[0] >> 4) & 0xf) | ((regs[0] >> 12) & 0xf0);
 
-    if (family != 0x17 || family != 0x19) {
+    if (family != 0x17 && family != 0x19) {
         printf("Not Zen processor, won't work\n");
         return FAM_UNKNOWN; 
     }
