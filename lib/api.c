@@ -391,11 +391,24 @@ EXP int CALL set_prochot_deassertion_ramp(ryzen_access ry, uint32_t value) {
 }
 
 EXP int CALL set_apu_skin_temp_limit(ryzen_access ry, uint32_t value) {
+	value *= 256;
 	switch (ry->family)
 	{
 	case FAM_RENOIR:
 	case FAM_CEZANNE:
 		_do_adjust(0x38);
+		break;
+	}
+	return ADJ_ERR_FAM_UNSUPPORTED;
+}
+
+EXP int CALL set_dgpu_skin_temp_limit(ryzen_access ry, uint32_t value) {
+	value *= 256;
+	switch (ry->family)
+	{
+	case FAM_RENOIR:
+	case FAM_CEZANNE:
+		_do_adjust(0x39);
 		break;
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;

@@ -32,7 +32,7 @@ Settings
     -c, --slow-limit=<u32>                Slow PPT power limit (mW)
     -d, --slow-time=<u32>                 Slow PPT constant time (S)
     -e, --stapm-time=<u32>                STAPM constant time (S)
-    -f, --tctl-temp=<u32>                 Tctl temperature (▒?
+    -f, --tctl-temp=<u32>                 Tctl Temperature Limit (degree C)
     -g, --vrm-current=<u32>               VRM Current Limit (mA)
     -j, --vrmsoc-current=<u32>            VRM SoC Current Limit (mA)
     -k, --vrmmax-current=<u32>            VRM Maximum Current Limit (mA)
@@ -50,10 +50,13 @@ Settings
     -w, --max-gfxclk=<u32>                Maximum GFX Clock (Value)
     -x, --min-gfxclk=<u32>                Minimum GFX Clock (Value)
     -y, --prochot-deassertion-ramp=<u32>  Time to ramp clocks after PROCHOT is deasserted (ms)
+    --apu-skin-temp=<u32>                 APU Skin Temperature Limit (degree C)
+    --dgpu-skin-temp=<u32>                dGPU Skin Temperature Limit (degree C)
+    --apu-slow-limit=<u32>                APU PPT Slow Power limit for A+A dGPU platform (mW)
 ``` 
 
 ### demo
-If I'm going to set all the Power Limit to 45W, and Tctl to 90 ℃,
+If I'm going to set all the Power Limit to 45W, and Tctl to 90 °C,
 then the command line should be:
 ```
 ./ryzenadj --stapm-limit=45000 --fast-limit=45000 --slow-limit=45000 --tctl-temp=90
