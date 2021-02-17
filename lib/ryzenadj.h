@@ -9,8 +9,8 @@ extern "C" {
 #endif
 
 #define RYZENADJ_REVISION_VER 0
-#define RYZENADJ_MAJOR_VER 6
-#define RYZENADJ_MINIOR_VER 3
+#define RYZENADJ_MAJOR_VER 7
+#define RYZENADJ_MINIOR_VER 0
 
 enum ryzen_family {
         FAM_UNKNOWN = -1,
@@ -83,6 +83,7 @@ EXP int CALL set_max_lclk(ryzen_access, uint32_t value);
 EXP int CALL set_min_lclk(ryzen_access, uint32_t value);
 EXP int CALL set_prochot_deassertion_ramp(ryzen_access ry, uint32_t value);
 EXP int CALL set_apu_skin_temp_limit(ryzen_access, uint32_t value);
+EXP int CALL set_dgpu_skin_temp_limit(ryzen_access, uint32_t value);
 EXP int CALL set_apu_slow_limit(ryzen_access, uint32_t value);
 
 

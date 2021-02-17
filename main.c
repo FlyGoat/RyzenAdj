@@ -71,7 +71,7 @@ int main(int argc, const char **argv)
 	uint32_t info = 0, stapm_limit = 0, fast_limit = 0, slow_limit = 0, slow_time = 0, stapm_time = 0, tctl_temp = 0;
 	uint32_t vrm_current = 0, vrmsoc_current = 0, vrmmax_current = 0, vrmsocmax_current = 0, psi0_current = 0, psi0soc_current = 0;
 	uint32_t max_socclk_freq = 0, min_socclk_freq = 0, max_fclk_freq = 0, min_fclk_freq = 0, max_vcn = 0, min_vcn = 0, max_lclk = 0, min_lclk = 0;
-	uint32_t max_gfxclk_freq = 0, min_gfxclk_freq = 0, prochot_deassertion_ramp = 0 , apu_skin_temp_limit = 0, apu_slow_limit = 0;
+	uint32_t max_gfxclk_freq = 0, min_gfxclk_freq = 0, prochot_deassertion_ramp = 0, apu_skin_temp_limit = 0, dgpu_skin_temp_limit = 0, apu_slow_limit = 0;
 
 
 	//create structure for parseing
@@ -85,7 +85,7 @@ int main(int argc, const char **argv)
 		OPT_U32('c', "slow-limit", &slow_limit, "Slow PPT power limit (mW)"),
 		OPT_U32('d', "slow-time", &slow_time, "Slow PPT constant time (s)"),
 		OPT_U32('e', "stapm-time", &stapm_time, "STAPM constant time (s)"),
-		OPT_U32('f', "tctl-temp", &tctl_temp, "Tctl temperature (degree C)"),
+		OPT_U32('f', "tctl-temp", &tctl_temp, "Tctl Temperature Limit (degree C)"),
 		OPT_U32('g', "vrm-current", &vrm_current, "VRM Current Limit (mA)"),
 		OPT_U32('j', "vrmsoc-current", &vrmsoc_current, "VRM SoC Current Limit (mA)"),
 		OPT_U32('k', "vrmmax-current", &vrmmax_current, "VRM Maximum Current Limit (mA)"),
@@ -103,7 +103,8 @@ int main(int argc, const char **argv)
 		OPT_U32('w', "max-gfxclk", &max_gfxclk_freq, "Maximum GFX Clock (MHz)"),
 		OPT_U32('x', "min-gfxclk", &min_gfxclk_freq, "Minimum GFX Clock (MHz)"),
 		OPT_U32('y', "prochot-deassertion-ramp", &prochot_deassertion_ramp, "Time To Ramp Clocks After Prochot is Deasserted (ms)"),
-		OPT_U32('\0', "apu-skin-temp", &apu_skin_temp_limit, "Skin Temperature Limit (degree C)"),
+		OPT_U32('\0', "apu-skin-temp", &apu_skin_temp_limit, "APU Skin Temperature Limit (degree C)"),
+		OPT_U32('\0', "dgpu-skin-temp", &dgpu_skin_temp_limit, "dGPU Skin Temperature Limit (degree C)"),
 		OPT_U32('\0', "apu-slow-limit", &apu_slow_limit, "APU PPT Slow Power limit for A+A dGPU platform (mW)"),
 		OPT_GROUP("P-State Functions"),
 		OPT_END(),
@@ -153,6 +154,7 @@ int main(int argc, const char **argv)
 	_do_adjust(min_gfxclk_freq);
 	_do_adjust(prochot_deassertion_ramp);
 	_do_adjust(apu_skin_temp_limit);
+	_do_adjust(dgpu_skin_temp_limit);
 	_do_adjust(apu_slow_limit);
 	cleanup_ryzenadj(ry);
 
