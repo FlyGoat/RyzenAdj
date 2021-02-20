@@ -49,7 +49,7 @@ Settings
     -v, --min-lclk=<u32>                  Minimum Data Launch Clock (Value)
     -w, --max-gfxclk=<u32>                Maximum GFX Clock (Value)
     -x, --min-gfxclk=<u32>                Minimum GFX Clock (Value)
-    -y, --prochot-deassertion-ramp=<u32>  Time to ramp clocks after PROCHOT is deasserted (ms)
+    -y, --prochot-deassertion-ramp=<u32>  Ramp Time After Prochot is Deasserted (Value): limit power based on value, higher values does apply tighter limits after prochot is over
     --apu-skin-temp=<u32>                 APU Skin Temperature Limit (degree C)
     --dgpu-skin-temp=<u32>                dGPU Skin Temperature Limit (degree C)
     --apu-slow-limit=<u32>                APU PPT Slow Power limit for A+A dGPU platform (mW)
