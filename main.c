@@ -11,10 +11,11 @@
 
 #define _do_adjust(ARG) \
 do {                                                                              \
-	if (ARG != 0) {                                                               \
+	/* ignore max unsigned integer values */                                      \
+	if (ARG != -1) {                                                              \
 		int adjerr = set_##ARG(ry, ARG);                                          \
 		if (!adjerr){                                                             \
-			printf("Sucessfully set " STRINGIFY(ARG) " to %d\n", ARG);            \
+			printf("Sucessfully set " STRINGIFY(ARG) " to %u\n", ARG);            \
 		} else if (adjerr == ADJ_ERR_FAM_UNSUPPORTED) {                           \
 			printf("set_" STRINGIFY(ARG) " is not supported on this family\n");   \
 			err = -1;                                                             \
@@ -68,11 +69,12 @@ int main(int argc, const char **argv)
 	ryzen_access ry;
 	int err = 0;
 
-	uint32_t info = 0, stapm_limit = 0, fast_limit = 0, slow_limit = 0, slow_time = 0, stapm_time = 0, tctl_temp = 0;
-	uint32_t vrm_current = 0, vrmsoc_current = 0, vrmmax_current = 0, vrmsocmax_current = 0, psi0_current = 0, psi0soc_current = 0;
-	uint32_t max_socclk_freq = 0, min_socclk_freq = 0, max_fclk_freq = 0, min_fclk_freq = 0, max_vcn = 0, min_vcn = 0, max_lclk = 0, min_lclk = 0;
-	uint32_t max_gfxclk_freq = 0, min_gfxclk_freq = 0, prochot_deassertion_ramp = 0, apu_skin_temp_limit = 0, dgpu_skin_temp_limit = 0, apu_slow_limit = 0;
-
+	int info = 0;
+	//init unsigned types with max value because we treat max value as unset
+	uint32_t stapm_limit = -1, fast_limit = -1, slow_limit = -1, slow_time = -1, stapm_time = -1, tctl_temp = -1;
+	uint32_t vrm_current = -1, vrmsoc_current = -1, vrmmax_current = -1, vrmsocmax_current = -1, psi0_current = -1, psi0soc_current = -1;
+	uint32_t max_socclk_freq = -1, min_socclk_freq = -1, max_fclk_freq = -1, min_fclk_freq = -1, max_vcn = -1, min_vcn = -1, max_lclk = -1, min_lclk = -1;
+	uint32_t max_gfxclk_freq = -1, min_gfxclk_freq = -1, prochot_deassertion_ramp = -1, apu_skin_temp_limit = -1, dgpu_skin_temp_limit = -1, apu_slow_limit = -1;
 
 	//create structure for parseing
 	struct argparse_option options[] = {
