@@ -82,6 +82,8 @@ EXP int CALL set_min_vcn(ryzen_access, uint32_t value);
 EXP int CALL set_max_lclk(ryzen_access, uint32_t value);
 EXP int CALL set_min_lclk(ryzen_access, uint32_t value);
 EXP int CALL set_prochot_deassertion_ramp(ryzen_access ry, uint32_t value);
+EXP int CALL set_apu_skin_temp_limit(ryzen_access, uint32_t value);
+EXP int CALL set_apu_slow_limit(ryzen_access, uint32_t value);
 
 
 #ifdef __cplusplus
