@@ -10,18 +10,26 @@
 #define STRINGIFY(X) STRINGIFY2(X)
 
 #define _do_adjust(ARG) \
-do{ \
-	while(ARG != 0){    \
-		if(!set_##ARG(ry, ARG)){   \
-			printf("Sucessfully set " STRINGIFY(ARG) " to %d\n", ARG);    \
-			break;  \
-		} else {    \
-			printf("Failed to set" STRINGIFY(ARG) " \n");   \
-			err = -1; \
-			break;  \
-		}   \
-	} \
-}while(0);
+do {                                                                              \
+	if (ARG != 0) {                                                               \
+		int adjerr = set_##ARG(ry, ARG);                                          \
+		if (!adjerr){                                                             \
+			printf("Sucessfully set " STRINGIFY(ARG) " to %d\n", ARG);            \
+		} else if (adjerr == ADJ_ERR_FAM_UNSUPPORTED) {                           \
+			printf("set_" STRINGIFY(ARG) " is not supported on this family\n");   \
+			err = -1;                                                             \
+		} else if (adjerr == ADJ_ERR_SMU_UNSUPPORTED) {                           \
+			printf("set_" STRINGIFY(ARG) " is not supported on this SMU\n");      \
+			err = -1;                                                             \
+		} else if (adjerr == ADJ_ERR_SMU_REJECTED) {                              \
+			printf("set_" STRINGIFY(ARG) " is rejected by SMU\n");                \
+			err = -1;                                                             \
+		} else {                                                                  \
+			printf("Failed to set" STRINGIFY(ARG) " \n");                         \
+			err = -1;                                                             \
+		}                                                                         \
+	}                                                                             \
+} while(0);
 
 static const char *const usage[] = {
 	"ryzenadj [options] [[--] args]",
