@@ -85,7 +85,7 @@ int main(int argc, const char **argv)
 		OPT_U32('c', "slow-limit", &slow_limit, "Slow PPT power limit (mW)"),
 		OPT_U32('d', "slow-time", &slow_time, "Slow PPT constant time (s)"),
 		OPT_U32('e', "stapm-time", &stapm_time, "STAPM constant time (s)"),
-		OPT_U32('f', "tctl-temp", &tctl_temp, "Tctl temperature (℃)"),
+		OPT_U32('f', "tctl-temp", &tctl_temp, "Tctl temperature (degree C)"),
 		OPT_U32('g', "vrm-current", &vrm_current, "VRM Current Limit (mA)"),
 		OPT_U32('j', "vrmsoc-current", &vrmsoc_current, "VRM SoC Current Limit (mA)"),
 		OPT_U32('k', "vrmmax-current", &vrmmax_current, "VRM Maximum Current Limit (mA)"),
