@@ -260,7 +260,7 @@ EXP int CALL set_psi0soc_current(ryzen_access ry, uint32_t value){
 		break;
 	case FAM_RENOIR:
 	case FAM_CEZANNE:
-		_do_adjust(0x20);
+		_do_adjust(0x1f);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
 }
