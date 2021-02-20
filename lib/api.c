@@ -105,6 +105,7 @@ EXP int CALL set_stapm_limit(ryzen_access ry, uint32_t value){
 		_do_adjust(0x1a);
 		break;
 	case FAM_RENOIR:
+	case FAM_CEZANNE:
 		_do_adjust(0x14);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -118,6 +119,7 @@ EXP int CALL set_fast_limit(ryzen_access ry, uint32_t value){
 		_do_adjust(0x1b);
 		break;
 	case FAM_RENOIR:
+	case FAM_CEZANNE:
 		_do_adjust(0x15);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -131,6 +133,7 @@ EXP int CALL set_slow_limit(ryzen_access ry, uint32_t value){
 		_do_adjust(0x1c);
 		break;
 	case FAM_RENOIR:
+	case FAM_CEZANNE:
 		_do_adjust(0x16);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -144,6 +147,7 @@ EXP int CALL set_slow_time(ryzen_access ry, uint32_t value){
 		_do_adjust(0x1d);
 		break;
 	case FAM_RENOIR:
+	case FAM_CEZANNE:
 		_do_adjust(0x17);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -157,6 +161,7 @@ EXP int CALL set_stapm_time(ryzen_access ry, uint32_t value){
 		_do_adjust(0x1e);
 		break;
 	case FAM_RENOIR:
+	case FAM_CEZANNE:
 		_do_adjust(0x18);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -170,6 +175,7 @@ EXP int CALL set_tctl_temp(ryzen_access ry, uint32_t value){
 		_do_adjust(0x1f);
 		break;
 	case FAM_RENOIR:
+	case FAM_CEZANNE:
 		_do_adjust(0x19);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -183,6 +189,7 @@ EXP int CALL set_vrm_current(ryzen_access ry, uint32_t value){
 		_do_adjust(0x20);
 		break;
 	case FAM_RENOIR:
+	case FAM_CEZANNE:
 		_do_adjust(0x1a);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -196,6 +203,7 @@ EXP int CALL set_vrmsoc_current(ryzen_access ry, uint32_t value){
 		_do_adjust(0x21);
 		break;
 	case FAM_RENOIR:
+	case FAM_CEZANNE:
 		_do_adjust(0x1b);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -209,6 +217,7 @@ EXP int CALL set_vrmmax_current(ryzen_access ry, uint32_t value){
 		_do_adjust(0x22);
 		break;
 	case FAM_RENOIR:
+	case FAM_CEZANNE:
 		_do_adjust(0x1c);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -222,6 +231,7 @@ EXP int CALL set_vrmsocmax_current(ryzen_access ry, uint32_t value){
 		_do_adjust(0x23);
 		break;
 	case FAM_RENOIR:
+	case FAM_CEZANNE:
 		_do_adjust(0x1d);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -235,6 +245,7 @@ EXP int CALL set_psi0_current(ryzen_access ry, uint32_t value){
 		_do_adjust(0x24);
 		break;
 	case FAM_RENOIR:
+	case FAM_CEZANNE:
 		_do_adjust(0x1e);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -248,6 +259,7 @@ EXP int CALL set_psi0soc_current(ryzen_access ry, uint32_t value){
 		_do_adjust(0x25);
 		break;
 	case FAM_RENOIR:
+	case FAM_CEZANNE:
 		_do_adjust(0x20);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -259,8 +271,6 @@ EXP int CALL set_max_gfxclk_freq(ryzen_access ry, uint32_t value) {
 	case FAM_RAVEN:
 	case FAM_PICASSO:
 		_do_adjust(0x46);
-		break;
-	case FAM_RENOIR:
 		break;
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -373,6 +383,7 @@ EXP int CALL set_prochot_deassertion_ramp(ryzen_access ry, uint32_t value) {
 		_do_adjust(0x26);
 		break;
 	case FAM_RENOIR:
+	case FAM_CEZANNE:
 		_do_adjust(0x20);
 		break;
 	}
