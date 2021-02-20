@@ -46,26 +46,37 @@ enum ryzen_family cpuid_get_family()
     family = ((regs[0] >> 8) & 0xf) + ((regs[0] >> 20) & 0xff);
     model = ((regs[0] >> 4) & 0xf) | ((regs[0] >> 12) & 0xf0);
 
-    if (family != 0x17) {
-        printf("Not Zen processor, won't work\n");
-        return FAM_UNKNOWN; 
-    }
+    switch (family) {
+    case 0x17: /* Zen, Zen+, Zen2 */
+        switch (model) {
+        case 17:
+            return FAM_RAVEN;
+            break;
+        case 24:
+            return FAM_PICASSO;
+            break;
+        case 96:
+            return FAM_RENOIR;
+            break;
+        default:
+            printf("Fam%xh: unknown model %d\n", family, model);
+            break;
+        };
+        break;
 
-    switch(model) {
-    case 17:
-        printf("Detected Raven\n");
-        return FAM_RAVEN;
+    case 0x19: /* Zen3 */
+        switch (model) {
+        case 80:
+            return FAM_CEZANNE;
+            break;
+        default:
+            printf("Fam%xh: unknown model %d\n", family, model);
+            break;
+        };
         break;
-    case 24:
-        printf("Detected Picasso\n");
-        return FAM_PICASSO;
-        break;
-    case 96:
-        printf("Detected Renoir\n");
-        return FAM_RENOIR;
-        break;
+
     default:
-        printf("Unknown Ryzen processor, won't work\n");
+        printf("Unknown family: %xh\n", family);
         break;
     }
 
