@@ -81,15 +81,19 @@ EXP int get_bios_if_ver(ryzen_access ry)
 }
 
 #define _do_adjust(OPT) \
-do{ \
-		smu_service_args_t args = {0, 0, 0, 0, 0, 0};    \
-		args.arg0 = value; \
-		if(smu_service_req(ry->mp1_smu, OPT, &args) == 0x1){   \
-			return 0;   \
-		} else {    \
-			return -1;  \
-		} \
-}while(0);
+do {                                                 \
+	smu_service_args_t args = {0, 0, 0, 0, 0, 0};    \
+	int resp;										 \
+	args.arg0 = value;                               \
+	resp = smu_service_req(ry->mp1_smu, OPT, &args); \
+	if (resp == REP_MSG_OK) {                        \
+		return 0;                                    \
+	} else if (resp == REP_MSG_UnknownCmd) {         \
+		return ADJ_ERR_SMU_UNSUPPORTED;              \
+	} else {                                         \
+		return ADJ_ERR_SMU_REJECTED;                 \
+	}                                                \
+} while (0);
 
 
 
@@ -256,7 +260,8 @@ EXP int CALL set_min_gfxclk_freq(ryzen_access ry, uint32_t value) {
 	case FAM_PICASSO:
 		_do_adjust(0x47);
 		break;
-	case FAM_RENOIR:
+	case FAM_RENIOR:
+		return ADJ_ERR_FAM_UNSUPPORTED;
 		break;
 	}
 }
@@ -268,7 +273,8 @@ EXP int CALL set_max_socclk_freq(ryzen_access ry, uint32_t value){
 	case FAM_PICASSO:
 		_do_adjust(0x48);
 		break;
-	case FAM_RENOIR:
+	case FAM_RENIOR:
+		return ADJ_ERR_FAM_UNSUPPORTED;
 		break;
 	}
 }
@@ -280,7 +286,8 @@ EXP int CALL set_min_socclk_freq(ryzen_access ry, uint32_t value){
 	case FAM_PICASSO:
 		_do_adjust(0x49); 
 		break;
-	case FAM_RENOIR:
+	case FAM_RENIOR:
+		return ADJ_ERR_FAM_UNSUPPORTED;
 		break;
 	}
 }
@@ -292,7 +299,8 @@ EXP int CALL set_max_fclk_freq(ryzen_access ry, uint32_t value){
 	case FAM_PICASSO:
 		_do_adjust(0x4A);
 		break;
-	case FAM_RENOIR:
+	case FAM_RENIOR:
+		return ADJ_ERR_FAM_UNSUPPORTED;
 		break;
 	}
 }
@@ -304,7 +312,8 @@ EXP int CALL set_min_fclk_freq(ryzen_access ry, uint32_t value){
 	case FAM_PICASSO:
 		_do_adjust(0x4B);
 		break;
-	case FAM_RENOIR:
+	case FAM_RENIOR:
+		return ADJ_ERR_FAM_UNSUPPORTED;
 		break;
 	}
 }
@@ -316,7 +325,8 @@ EXP int CALL set_max_vcn(ryzen_access ry, uint32_t value){
 	case FAM_PICASSO:
 		_do_adjust(0x4C);
 		break;
-	case FAM_RENOIR:
+	case FAM_RENIOR:
+		return ADJ_ERR_FAM_UNSUPPORTED;
 		break;
 	}
 }
@@ -328,7 +338,8 @@ EXP int CALL set_min_vcn(ryzen_access ry, uint32_t value){
 	case FAM_PICASSO:
 		_do_adjust(0x4D);
 		break;
-	case FAM_RENOIR:
+	case FAM_RENIOR:
+		return ADJ_ERR_FAM_UNSUPPORTED;
 		break;
 	}
 }
@@ -340,7 +351,8 @@ EXP int CALL set_max_lclk(ryzen_access ry, uint32_t value){
 	case FAM_PICASSO:
 		_do_adjust(0x4E);
 		break;
-	case FAM_RENOIR:
+	case FAM_RENIOR:
+		return ADJ_ERR_FAM_UNSUPPORTED;
 		break;
 	}
 }
@@ -352,7 +364,8 @@ EXP int CALL set_min_lclk(ryzen_access ry, uint32_t value){
 	case FAM_PICASSO:
 		_do_adjust(0x4F);
 		break;
-	case FAM_RENOIR:
+	case FAM_RENIOR:
+		return ADJ_ERR_FAM_UNSUPPORTED;
 		break;
 	}
 }

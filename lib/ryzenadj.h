@@ -44,6 +44,11 @@ struct _ryzen_access;
 
 #endif
 
+#define ADJ_ERR_FAM_UNSUPPORTED      -1
+#define ADJ_ERR_SMU_TIMEOUT          -2
+#define ADJ_ERR_SMU_UNSUPPORTED      -3
+#define ADJ_ERR_SMU_REJECTED         -4
+
 typedef struct _ryzen_access *ryzen_access;
 
 EXP ryzen_access CALL init_ryzenadj();
