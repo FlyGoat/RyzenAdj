@@ -162,7 +162,8 @@ EXP int CALL set_stapm_time(ryzen_access ry, uint32_t value){
 		break;
 	case FAM_RENOIR:
 	case FAM_CEZANNE:
-		_do_adjust(0x18);
+		//based on PICASSO order of messages it should be 0x18 for RENOIR or CEZANNE, but doesn't work for them
+		break;
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
 }
