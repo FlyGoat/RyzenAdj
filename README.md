@@ -55,12 +55,17 @@ Settings
     --apu-slow-limit=<u32>                APU PPT Slow Power limit for A+A dGPU platform (mW)
 ``` 
 
-### demo
+### Demo
 If I'm going to set all the Power Limit to 45W, and Tctl to 90 °C,
 then the command line should be:
 ```
 ./ryzenadj --stapm-limit=45000 --fast-limit=45000 --slow-limit=45000 --tctl-temp=90
 ```
+
+### Documentation
+
+- [Renoir Tuning Guide](https://github.com/FlyGoat/RyzenAdj/wiki/Renoir-Tuning-Guide)
+- [FAQ](https://github.com/FlyGoat/RyzenAdj/wiki/FAQ)
 
 ## Build
 
