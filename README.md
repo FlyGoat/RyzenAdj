@@ -27,17 +27,17 @@ Options
     -i, --info                            Show information (W.I.P.)
 
 Settings
-    -a, --stapm-limit=<u32>               Sustained power limit (mW)
-    -b, --fast-limit=<u32>                Fast PPT power limit (mW)
-    -c, --slow-limit=<u32>                Slow PPT power limit (mW)
-    -d, --slow-time=<u32>                 Slow PPT constant time (S)
-    -e, --stapm-time=<u32>                STAPM constant time (S)
+    -a, --stapm-limit=<u32>               Sustained Power Limit         - STAPM LIMIT (mW)
+    -b, --fast-limit=<u32>                Actual Power Limit            - PPT LIMIT FAST (mW)
+    -c, --slow-limit=<u32>                Average Power Limit           - PPT LIMIT SLOW (mW)
+    -d, --slow-time=<u32>                 Slow PPT Constant Time (s)
+    -e, --stapm-time=<u32>                STAPM constant time (s)
     -f, --tctl-temp=<u32>                 Tctl Temperature Limit (degree C)
-    -g, --vrm-current=<u32>               VRM Current Limit (mA)
-    -j, --vrmsoc-current=<u32>            VRM SoC Current Limit (mA)
-    -k, --vrmmax-current=<u32>            VRM Maximum Current Limit (mA)
-    -l, --vrmsocmax-current=<u32>         VRM SoC Maximum Current Limit (mA)
-    -m, --psi0-current=<u32>              PSI0 Current Limit (mA)
+    -g, --vrm-current=<u32>               VRM Current Limit             - TDC LIMIT VDD (mA)
+    -j, --vrmsoc-current=<u32>            VRM SoC Current Limit         - TDC LIMIT SoC (mA)
+    -k, --vrmmax-current=<u32>            VRM Maximum Current Limit     - EDC LIMIT VDD (mA)
+    -l, --vrmsocmax-current=<u32>         VRM SoC Maximum Current Limit - EDC LIMIT SoC (mA)
+    -m, --psi0-current=<u32>              PSI0 VDD Current Limit (mA)
     -n, --psi0soc-current=<u32>           PSI0 SoC Current Limit (mA)
     -o, --max-socclk-frequency=<u32>      Maximum SoC Clock Frequency (MHz)
     -p, --min-socclk-frequency=<u32>      Minimum SoC Clock Frequency (MHz)
@@ -50,9 +50,9 @@ Settings
     -w, --max-gfxclk=<u32>                Maximum GFX Clock (Value)
     -x, --min-gfxclk=<u32>                Minimum GFX Clock (Value)
     -y, --prochot-deassertion-ramp=<u32>  Ramp Time After Prochot is Deasserted (Value): limit power based on value, higher values does apply tighter limits after prochot is over
-    --apu-skin-temp=<u32>                 APU Skin Temperature Limit (degree C)
-    --dgpu-skin-temp=<u32>                dGPU Skin Temperature Limit (degree C)
-    --apu-slow-limit=<u32>                APU PPT Slow Power limit for A+A dGPU platform (mW)
+    --apu-skin-temp=<u32>                 APU Skin Temperature Limit    - STT LIMIT APU (degree C)
+    --dgpu-skin-temp=<u32>                dGPU Skin Temperature Limit   - STT LIMIT dGPU (degree C)
+    --apu-slow-limit=<u32>                APU PPT Slow Power limit for A+A dGPU platform - PPT LIMIT APU (mW)
 ``` 
 
 ### Demo
