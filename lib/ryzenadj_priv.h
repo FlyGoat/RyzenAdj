@@ -20,8 +20,10 @@ struct _ryzen_access {
 	smu_t psmu;
 	enum ryzen_family family;
 	int bios_if_ver;
+	int package_type;
 };
 
 enum ryzen_family cpuid_get_family();
+int cpuid_get_package_type();
 
 #endif

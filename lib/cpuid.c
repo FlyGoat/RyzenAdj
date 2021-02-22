@@ -26,7 +26,7 @@ static void getcpuid(unsigned int CPUInfo[4], unsigned int InfoType)
 enum ryzen_family cpuid_get_family()
 {
     uint32_t regs[4];
-    int family, model, packagetype;
+    int family, model;
     char vendor[4 * 4];
 
     getcpuid(regs, 0);
@@ -45,9 +45,6 @@ enum ryzen_family cpuid_get_family()
 
     family = ((regs[0] >> 8) & 0xf) + ((regs[0] >> 20) & 0xff);
     model = ((regs[0] >> 4) & 0xf) | ((regs[0] >> 12) & 0xf0);
-    //0 = FP6, 2 = AM4, 7 = SP3
-    packagetype = regs[1] >> 28;
-    printf("Package Type:  %d\n", packagetype);
 
     switch (family) {
     case 0x17: /* Zen, Zen+, Zen2 */
@@ -84,4 +81,12 @@ enum ryzen_family cpuid_get_family()
     }
 
     return FAM_UNKNOWN;
+}
+
+int cpuid_get_package_type()
+{
+    uint32_t regs[4];
+    getcpuid(regs, 0x80000001);
+    //0 = FP6, 2 = AM4, 7 = SP3
+    return regs[1] >> 28;
 }

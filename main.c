@@ -61,7 +61,9 @@ static const char *family_name(enum ryzen_family fam)
 static void show_info(ryzen_access ry)
 {
 	printf("CPU Family: %s\n", family_name(get_cpu_family(ry)));
+	printf("CPU Package Type: %d\n", get_cpu_package_type(ry));
 	printf("SMU BIOS Interface Version: %d\n", get_bios_if_ver(ry));
+	printf("Version: v" STRINGIFY(RYZENADJ_REVISION_VER) "." STRINGIFY(RYZENADJ_MAJOR_VER) "." STRINGIFY(RYZENADJ_MINIOR_VER) " \n");
 }
 
 int main(int argc, const char **argv)

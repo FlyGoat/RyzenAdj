@@ -58,6 +58,7 @@ EXP void CALL cleanup_ryzenadj(ryzen_access ry);
 
 EXP enum ryzen_family get_cpu_family(ryzen_access ry);
 EXP int get_bios_if_ver(ryzen_access ry);
+EXP int get_cpu_package_type(ryzen_access ry);
 
 EXP int CALL set_stapm_limit(ryzen_access, uint32_t value);
 EXP int CALL set_fast_limit(ryzen_access, uint32_t value);

@@ -12,9 +12,12 @@ EXP ryzen_access CALL init_ryzenadj()
 	if (family == FAM_UNKNOWN)
 		return NULL;
 
+	int package_type = cpuid_get_package_type();
+
 	ry = (ryzen_access)malloc((sizeof(*ry)));
 
 	ry->family = family;
+	ry->package_type = package_type;
 
 	ry->pci_obj = init_pci_obj();
 	if(!ry->pci_obj){
@@ -78,6 +81,11 @@ EXP enum ryzen_family get_cpu_family(ryzen_access ry)
 EXP int get_bios_if_ver(ryzen_access ry)
 {
 	return ry->bios_if_ver;
+}
+
+EXP int get_cpu_package_type(ryzen_access ry)
+{
+	return ry->package_type;
 }
 
 #define _do_adjust(OPT) \
