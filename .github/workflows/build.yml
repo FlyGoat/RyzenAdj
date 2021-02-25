@@ -47,6 +47,7 @@ jobs:
         name: ryzenadj-win64
         path: |
             ./build/ryzenadj.exe
+            ./prebuilt/inpoutx64.dll
             ./prebuilt/WinRing0x64.dll
             ./prebuilt/WinRing0x64.sys
             ./prebuilt/demo.bat
@@ -59,6 +60,7 @@ jobs:
             ./build/libryzenadj.dll
             ./build/libryzenadj.lib
             ./lib/ryzenadj.h
+            ./prebuilt/inpoutx64.dll
             ./prebuilt/WinRing0x64.dll
             ./prebuilt/WinRing0x64.sys
 
