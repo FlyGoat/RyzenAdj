@@ -4,6 +4,8 @@
 
 #include "nb_smu_ops.h"
 
+bool mem_obj_obj = true;
+
 pci_obj_t init_pci_obj(){
 	pci_obj_t obj;
 	obj = pci_alloc();
@@ -37,4 +39,21 @@ void smn_reg_write(nb_t nb, u32 addr, u32 data)
 {
 	pci_write_long(nb, NB_PCI_REG_ADDR_ADDR, addr);
 	pci_write_long(nb, NB_PCI_REG_DATA_ADDR, data);
+}
+
+mem_obj_t init_mem_obj()
+{
+	return &mem_obj_obj;
+}
+
+void free_mem_obj(mem_obj_t obj)
+{
+	return;
+}
+
+int copy_from_phyaddr(u32 physAddr, void *buffer, size_t size)
+{
+	//TODO
+	printf("copy_from_phyaddr is not implemented for linux");
+	return -1;
 }
