@@ -51,13 +51,14 @@ enum ryzen_family cpuid_get_family()
         switch (model) {
         case 17:
             return FAM_RAVEN;
-            break;
         case 24:
             return FAM_PICASSO;
-            break;
+        case 32:
+            return FAM_DALI;
         case 96:
             return FAM_RENOIR;
-            break;
+        case 104:
+            return FAM_LUCIENNE;
         default:
             printf("Fam%xh: unknown model %d\n", family, model);
             break;
@@ -68,7 +69,6 @@ enum ryzen_family cpuid_get_family()
         switch (model) {
         case 80:
             return FAM_CEZANNE;
-            break;
         default:
             printf("Fam%xh: unknown model %d\n", family, model);
             break;
