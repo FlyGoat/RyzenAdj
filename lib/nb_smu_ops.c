@@ -45,7 +45,7 @@ smu_t get_smu(nb_t nb, int smu_type) {
 	uint32_t rep; /* REP of test message */
 	smu_service_args_t arg = {0, 0, 0, 0, 0, 0}; /* Test message shuld have no arguments */
 
-	smu = (smu_t)malloc((sizeof(smu_t)));
+	smu = (smu_t)malloc((sizeof(*smu)));
 	smu->nb = nb;
 	/* Fill SMU information */
 	switch(smu_type){
