@@ -42,15 +42,12 @@ static const char *family_name(enum ryzen_family fam)
 {
 	switch (fam)
 	{
-	case FAM_RAVEN:
-		return "Raven";
-		break;
-	case FAM_PICASSO:
-		return "Picasso";
-		break;
-	case FAM_RENOIR:
-		return "Renoir";
-		break;
+	case FAM_RAVEN: return "Raven";
+	case FAM_PICASSO: return "Picasso";
+	case FAM_RENOIR: return "Renoir";
+	case FAM_CEZANNE: return "Cezanne";
+	case FAM_DALI: return "Dali";
+	case FAM_LUCIENNE: return "Lucienne";
 	default:
 		break;
 	}
