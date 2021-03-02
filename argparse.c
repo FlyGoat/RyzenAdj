@@ -379,7 +379,7 @@ argparse_usage(struct argparse *self)
 	options = self->options;
 	for (; options->type != ARGPARSE_OPT_END; options++) {
 		size_t pos = 0;
-		int pad    = 0;
+		size_t pad = 0;
 		if (options->type == ARGPARSE_OPT_GROUP) {
 			fputc('\n', stdout);
 			fprintf(stdout, "%s", options->help);
@@ -411,7 +411,7 @@ argparse_usage(struct argparse *self)
 			fputc('\n', stdout);
 			pad = usage_opts_width;
 		}
-		fprintf(stdout, "%*s%s\n", pad + 2, "", options->help);
+		fprintf(stdout, "%*s%s\n", (int)pad + 2, "", options->help);
 	}
 
 	// print epilog
