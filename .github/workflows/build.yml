@@ -1,4 +1,4 @@
-name: Windows Build
+name: Build
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  Windows:
     runs-on: windows-latest
 
     steps:
@@ -43,3 +43,15 @@ jobs:
             ./lib/ryzenadj.h
             ./prebuilt/WinRing0x64.dll
             ./prebuilt/WinRing0x64.sys
+
+  Linux:
+    runs-on: Ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Dependencies
+      run: sudo apt install libpci-dev
+
+    - name: run-cmake
+      uses: lukka/run-cmake@v3.3
