@@ -60,7 +60,7 @@ enum ryzen_family cpuid_get_family()
         case 104:
             return FAM_LUCIENNE;
         default:
-            printf("Fam%xh: unknown model %d\n", family, model);
+            printf("Fam%xh: unsupported model %d\n", family, model);
             break;
         };
         break;
@@ -70,15 +70,16 @@ enum ryzen_family cpuid_get_family()
         case 80:
             return FAM_CEZANNE;
         default:
-            printf("Fam%xh: unknown model %d\n", family, model);
+            printf("Fam%xh: unsupported model %d\n", family, model);
             break;
         };
         break;
 
     default:
-        printf("Unknown family: %xh\n", family);
+        printf("Unsupported family: %xh\n", family);
         break;
     }
 
+    printf("Only Ryzen Mobile Series are supported\n");
     return FAM_UNKNOWN;
 }
