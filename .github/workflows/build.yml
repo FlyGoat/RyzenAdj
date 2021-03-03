@@ -16,7 +16,25 @@ jobs:
 
     - uses: ilammy/msvc-dev-cmd@v1
 
-    - name: Build
+    #don't use run-cmake for windows because only one build should add warnings to pull request
+    - name: Build Debug
+      run: |
+        mkdir debug
+        cd debug
+        cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
+        nmake
+
+    - name: Upload ryzenadj debug
+      uses: actions/upload-artifact@v2
+      with:
+        name: ryzenadj-win64-debug
+        path: |
+            ./debug/ryzenadj.exe
+            ./prebuilt/WinRing0x64.dll
+            ./prebuilt/WinRing0x64.sys
+            ./prebuilt/demo.bat
+
+    - name: Build Release
       run: |
         mkdir build
         cd build
