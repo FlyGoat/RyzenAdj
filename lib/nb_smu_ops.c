@@ -60,7 +60,7 @@ smu_t get_smu(nb_t nb, int smu_type) {
 			smu->arg_base = PSMU_C2PMSG_ARG_BASE;
 			break;
 		default:
-			DBG("Failed to get SMU, unknown SMU_TYPE: %s\n", smu_type);
+			DBG("Failed to get SMU, unknown SMU_TYPE: %i\n", smu_type);
 			goto err;
 			break;
 	}
@@ -69,7 +69,7 @@ smu_t get_smu(nb_t nb, int smu_type) {
 	if(rep == REP_MSG_OK){
 		return smu;
 	} else {
-		DBG("Faild to get SMU: %s, test message REP: %x\n", smu_type, rep);
+		DBG("Faild to get SMU: %i, test message REP: %x\n", smu_type, rep);
 		goto err;
 	}
 err:
