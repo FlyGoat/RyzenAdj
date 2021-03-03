@@ -17,7 +17,11 @@ typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint64_t u64;
 
+#ifdef NDEBUG
 #define DBG(...)
+#else
+#define DBG(...) fprintf(stderr, __VA_ARGS__)
+#endif
 
 #define AMD_VENDOR_ID 0x1022
 #define NB_DEVICE_ID 0x15d0
