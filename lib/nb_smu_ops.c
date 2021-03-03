@@ -43,7 +43,7 @@ u32 smu_service_req(smu_t smu ,u32 id ,smu_service_args_t *args)
 smu_t get_smu(nb_t nb, int smu_type) {
 	smu_t smu;
 	uint32_t rep; /* REP of test message */
-	smu_service_args_t arg = {0, 0, 0, 0, 0, 0}; /* Test message shuld have no arguments */
+	smu_service_args_t arg = {47, 0, 0, 0, 0, 0}; /* use a unique value to test if write argument does work */
 
 	smu = (smu_t)malloc((sizeof(*smu)));
 	smu->nb = nb;
@@ -64,9 +64,10 @@ smu_t get_smu(nb_t nb, int smu_type) {
 			goto err;
 			break;
 	}
-	/* Try to send a test message*/
+	/* Try to send a test message */
 	rep = smu_service_req(smu, SMU_TEST_MSG, &arg);
-	if(rep == REP_MSG_OK){
+	/* SMUs after early Raven will increment arg0*/
+	if(rep == REP_MSG_OK && (arg.arg0 == 48 || arg.arg0 == 47)){
 		return smu;
 	} else {
 		DBG("Faild to get SMU: %i, test message REP: %x\n", smu_type, rep);

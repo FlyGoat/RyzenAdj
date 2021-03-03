@@ -30,11 +30,13 @@ EXP ryzen_access CALL init_ryzenadj()
 
 	ry->mp1_smu = get_smu(ry->nb, TYPE_MP1);
 	if(!ry->mp1_smu){
+		printf("Unable to get MP1 SMU Obj\n");
 		goto out_free_nb;
 	}
 
 	ry->psmu = get_smu(ry->nb, TYPE_PSMU);
 	if(!ry->psmu){
+		printf("Unable to get RSMU Obj\n");
 		goto out_free_mp1_smu;
 	}
 

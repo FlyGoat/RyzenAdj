@@ -8,6 +8,11 @@ pci_obj_t init_pci_obj(){
 	pci_obj_t obj;
 	obj = pci_alloc();
 	pci_init(obj);
+	if(!obj->writeable)
+	{
+		printf("PCI Bus is not writeable, check secure boot\n");
+		return NULL;
+	}
 	return obj;
 }
 
