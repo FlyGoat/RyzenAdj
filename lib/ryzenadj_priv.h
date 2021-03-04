@@ -19,7 +19,6 @@ struct _ryzen_access {
 	smu_t mp1_smu;
 	smu_t psmu;
 	enum ryzen_family family;
-	int bios_if_ver;
 };
 
 enum ryzen_family cpuid_get_family();
