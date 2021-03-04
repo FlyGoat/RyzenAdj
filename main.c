@@ -119,7 +119,7 @@ int main(int argc, const char **argv)
 	//init RyzenAdj and validate that it was able to
 	ry = init_ryzenadj();
 	if(!ry){
-		printf("Unable to init ryzenadj, check permission\n");
+		printf("Unable to init ryzenadj\n");
 		return -1;
 	}
 
