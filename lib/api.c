@@ -18,7 +18,7 @@ EXP ryzen_access CALL init_ryzenadj()
 
 	ry->pci_obj = init_pci_obj();
 	if(!ry->pci_obj){
-		printf("Unable to get PCI Obj\n");
+		printf("Unable to get PCI Obj, check permission\n");
 		return NULL;
 	}
 
