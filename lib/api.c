@@ -6,7 +6,6 @@
 
 EXP ryzen_access CALL init_ryzenadj()
 {
-	smu_service_args_t args = {0, 0, 0, 0, 0, 0};
 	ryzen_access ry;
 	enum ryzen_family family = cpuid_get_family();
 	if (family == FAM_UNKNOWN)
@@ -15,6 +14,8 @@ EXP ryzen_access CALL init_ryzenadj()
 	ry = (ryzen_access)malloc((sizeof(*ry)));
 
 	ry->family = family;
+	//init version only on demand to avoid unnecessary SMU writes
+	ry->bios_if_ver = 0;
 
 	ry->pci_obj = init_pci_obj();
 	if(!ry->pci_obj){
@@ -38,17 +39,8 @@ EXP ryzen_access CALL init_ryzenadj()
 		goto out_free_mp1_smu;
 	}
 
-	smu_service_req(ry->mp1_smu, 0x3, &args);
-	ry->bios_if_ver = args.arg0;
-	if(ry->bios_if_ver < 0x5){
-		printf("Not a Ryzen NB SMU, BIOS Interface Ver: 0x%x", ry->bios_if_ver);
-		goto out_err;
-	}
-
 	return ry;
 
-out_err:
-	free_smu(ry->psmu);
 out_free_mp1_smu:
 	free_smu(ry->mp1_smu);
 out_free_nb:
@@ -77,6 +69,12 @@ EXP enum ryzen_family get_cpu_family(ryzen_access ry)
 
 EXP int get_bios_if_ver(ryzen_access ry)
 {
+	if(ry->bios_if_ver)
+		return ry->bios_if_ver;
+
+	smu_service_args_t args = {0, 0, 0, 0, 0, 0};
+	smu_service_req(ry->mp1_smu, 0x3, &args);
+	ry->bios_if_ver = args.arg0;
 	return ry->bios_if_ver;
 }
 
