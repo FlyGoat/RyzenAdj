@@ -16,9 +16,32 @@ uint32_t nb_pci_address = 0x0;
 
 extern "C" pci_obj_t init_pci_obj(){
     InitializeOls();
-    if(GetDllStatus() == 0)
+    int dllStatus = GetDllStatus();
+    if(dllStatus == 0)
         return &nb_pci_obj;
-    printf("WinRing0 Err: 0x%lx",GetDllStatus());
+    switch(dllStatus)
+    {
+        case OLS_DLL_NO_ERROR: return &nb_pci_obj;
+        case OLS_DLL_UNSUPPORTED_PLATFORM:
+            printf("WinRing0 Err: Unsupported Plattform");
+            break;
+        case OLS_DLL_DRIVER_NOT_LOADED:
+            printf("WinRing0 Err: Driver not loaded");
+            break;
+        case OLS_DLL_DRIVER_NOT_FOUND:
+            printf("WinRing0 Err: Driver not found");
+            break;
+        case OLS_DLL_DRIVER_UNLOADED:
+            printf("WinRing0 Err: Driver unloaded");
+            break;
+        case OLS_DLL_DRIVER_NOT_LOADED_ON_NETWORK:
+            printf("WinRing0 Err: Driver not loaded on network");
+            break;
+        case OLS_DLL_UNKNOWN_ERROR:
+            printf("WinRing0 Err: unknown error");
+            break;
+    }
+    
     return NULL;
 }
 
