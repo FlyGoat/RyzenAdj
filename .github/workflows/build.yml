@@ -28,11 +28,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: ryzenadj-win64-debug
-        path: |
-            ./debug/ryzenadj.exe
-            ./prebuilt/WinRing0x64.dll
-            ./prebuilt/WinRing0x64.sys
-            ./prebuilt/demo.bat
+        path: ./debug/ryzenadj.exe
 
     - name: Build Release
       run: |
@@ -41,15 +37,32 @@ jobs:
         cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
         nmake
 
+    - name: Prepair Release Folder
+      run: |
+        mkdir release
+        copy build/ryzenadj.exe release/
+        copy build/libryzenadj.dll release/
+        copy prebuilt/WinRing0x64.dll release/
+        copy prebuilt/WinRing0x64.sys release/
+        copy scripts/* release/
+
+    - name: Test Scripts
+      shell: pwsh
+      run: |
+        cd release
+        $expectedOutput = "Not AMD processor, must be kidding"
+        $cmdDemoOutput = '' | cmd.exe /c .\demo.bat
+        if ($cmdDemoOutput -notcontains $expectedOutput){
+            Write-Error "$cmdDemoOutput"
+            exit 1
+        }
+        exit 0
+
     - name: Upload ryzenadj
       uses: actions/upload-artifact@v2
       with:
         name: ryzenadj-win64
-        path: |
-            ./build/ryzenadj.exe
-            ./prebuilt/WinRing0x64.dll
-            ./prebuilt/WinRing0x64.sys
-            ./prebuilt/demo.bat
+        path: ./release
 
     - name: Upload libryzenadj
       uses: actions/upload-artifact@v2
