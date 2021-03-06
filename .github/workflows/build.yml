@@ -56,6 +56,11 @@ jobs:
             Write-Error "$cmdDemoOutput"
             exit 1
         }
+        $psServiceOutput = Powershell .\readjustService.ps1 -noGUI
+        if ($psServiceOutput -ne $expectedOutput){
+            Write-Error "$psServiceOutput"
+            exit 1
+        }
         exit 0
 
     - name: Upload ryzenadj
