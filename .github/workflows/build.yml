@@ -14,7 +14,8 @@ jobs:
     # Checks-out
     - uses: actions/checkout@v2
 
-    - uses: ilammy/msvc-dev-cmd@v1
+    - name: Prepair msvc
+      uses: ilammy/msvc-dev-cmd@v1
 
     #don't use run-cmake for windows because only one build should add warnings to pull request
     - name: Build Debug

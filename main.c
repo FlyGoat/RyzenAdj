@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 /* Copyright (C) 2018-2019 Jiaxun Yang <jiaxun.yang@flygoat.com> */
-/* Ryzen NB SMU Service Request Tool */
+/* Ryzen NB SMU Service Request Tool  */
 
 #include <string.h>
 #include "lib/ryzenadj.h"
