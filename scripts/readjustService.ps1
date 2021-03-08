@@ -1,3 +1,14 @@
+<#
+.SYNOPSIS
+    Automates ryzenAdj calls based on custom conditions
+.DESCRIPTION
+    This script is designed to provide maximum flexibility to the user. For that reason it does not use parameters.
+    Instead of parameters, you need to populate the functions in the configuration section with your custom adjustments and additional custom code.
+.NOTES
+    SPDX-License-Identifier: LGPL
+    Falco Schaffrath <falco.schaffrath@gmail.com>
+#>
+
 Param([Parameter(Mandatory=$false)][switch]$noGUI)
 
 #### Configuration Start
