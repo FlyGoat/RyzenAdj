@@ -26,6 +26,7 @@ function doAdjust_ACmode {
     #adjust "tctl_temp" 97
     #adjust "apu_skin_temp_limit" 50
     #adjust "vrmmax_current" 100000
+    #adjust "<any_other_field>" 1234
     $Script:repeatWaitTimeSeconds = 3    #reapplies setting every 3s
 }
 
@@ -73,6 +74,15 @@ $apiHeader = @'
 [DllImport("libryzenadj.dll")] public static extern int set_apu_slow_limit(IntPtr ry, uint value);
 
 [DllImport("kernel32.dll")] public static extern uint GetModuleFileName(IntPtr hModule, [Out]StringBuilder lpFilename, [In]int nSize);
+[DllImport("kernel32.dll")] public static extern Boolean GetSystemPowerStatus([Out]SystemPowerStatus sps);
+public struct SystemPowerStatus {
+  public Byte ACLineStatus;
+  public Byte BatteryFlag;
+  public Byte BatteryLifePercent;
+  public Byte Reserved1;
+  public Int32 BatteryLifeTime;
+  public Int32 BatteryFullLifeTime;
+}
 
 public static String getExpectedWinRing0DriverFilepath(){
     StringBuilder fileName = new StringBuilder(255);
@@ -97,7 +107,7 @@ if(-not ([System.Management.Automation.PSTypeName]'ryzen.adj').Type){
 Add-Type -AssemblyName System.Windows.Forms
 function showErrorMsg ([String] $msg){
     if($showErrorPopupsDuringInit){
-        $res = [System.Windows.Forms.MessageBox]::Show($msg, $PSCommandPath,
+        [void][System.Windows.Forms.MessageBox]::Show($msg, $PSCommandPath,
         [System.Windows.Forms.MessageBoxButtons]::OK,
         [System.Windows.Forms.MessageBoxIcon]::Error)
     }
@@ -138,21 +148,14 @@ function adjust ([String] $fieldName, [uInt32] $value) {
 
 function testAdjustments {
     Write-Host "Test Adjustments"
-    $batteryStatus=(Get-WmiObject -Class BatteryStatus -Namespace root\wmi -ErrorAction Ignore)
-    if($batteryStatus){
-        $isDesktop = $false;
-        if($batteryStatus.PowerOnLine){
-            doAdjust_BatteryMode
-            doAdjust_ACmode
-        } else {
-            doAdjust_ACmode
-            doAdjust_BatteryMode
-        }
-    } else {
-        $isDesktop = $true;
-        Write-Host "Device has no battery, doAdjust_BatteryMode will be ignored"
+    if($Script:systemPowerStatus.ACLineStatus){
+        doAdjust_BatteryMode
         doAdjust_ACmode
+    } else {
+        doAdjust_ACmode
+        doAdjust_BatteryMode
     }
+
     if($Error -and $showErrorPopupsDuringInit){
         $answer = [System.Windows.Forms.MessageBox]::Show("Your Adjustment configuration did not work.$NL$NL$Error", $PSCommandPath,
             [System.Windows.Forms.MessageBoxButtons]::AbortRetryIgnore,
@@ -165,12 +168,16 @@ function testAdjustments {
 
 if(-not $Script:repeatWaitTimeSeconds) { $Script:repeatWaitTimeSeconds = 5 }
 
+$systemPowerStatus = New-Object ryzen.adj+SystemPowerStatus
+[void][ryzen.adj]::GetSystemPowerStatus([ref]$systemPowerStatus)
+
 testAdjustments
 
 Write-Host "Apply settings every $Script:repeatWaitTimeSeconds seconds..."
 while($true) {
+    [void][ryzen.adj]::GetSystemPowerStatus([ref]$systemPowerStatus)
     $oldWait = $Script:repeatWaitTimeSeconds
-    if($isDesktop -or (Get-WmiObject -Class BatteryStatus -Namespace root\wmi).PowerOnLine){
+    if($systemPowerStatus.ACLineStatus){
         doAdjust_ACmode
     } else {
         doAdjust_BatteryMode
