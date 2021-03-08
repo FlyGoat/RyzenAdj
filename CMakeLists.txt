@@ -12,7 +12,7 @@ INCLUDE_DIRECTORIES(${INC_DIR})
 AUX_SOURCE_DIRECTORY(./ SRC_DIR)
 
 if(WIN32)
-set(OS_SOURCE lib/winring0.cpp)
+set(OS_SOURCE lib/osdep_win32.cpp)
 set(OS_LINK_LIBRARY WinRing0x64)
 set(OS_LINK_DIR ./win32)
 else()
