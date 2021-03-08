@@ -13,6 +13,8 @@ Param([Parameter(Mandatory=$false)][switch]$noGUI)
 
 #### Configuration Start
 
+# WARNING: Use at your own risk!
+
 $pathToRyzenAdjDlls = Split-Path -Parent $PSCommandPath #script path is DLL path, needs to be absolut path if you define something else
 
 $showErrorPopupsDuringInit = $true
