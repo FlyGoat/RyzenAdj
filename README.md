@@ -67,6 +67,37 @@ then the command line should be:
 - [Renoir Tuning Guide](https://github.com/FlyGoat/RyzenAdj/wiki/Renoir-Tuning-Guide)
 - [FAQ](https://github.com/FlyGoat/RyzenAdj/wiki/FAQ)
 
+## Installation
+
+You don't need to install RyzenAdj because it does not need configuration, everything is set via arguments
+However, some settings could get overwritten by power management features of your device, and you need to regularly set your values again.
+
+We did provide some examples for automation. And these require configuration during installation.
+
+### Linux Installation
+
+Because it is very easy to build the latest version of RyzenAdj on Linux, we don't provide precompiled packages for distributions.
+Just follow the build instructions and you are ready to use it.
+
+### Windows Installation
+
+Before you start installing anything, it is highly recommended getting familiar with RyzenAdj to find out what can be done on your device.
+Use the CLI `ryzenadj.exe` to test the support of your device and to benchmark the effects of each setting.
+If your values don't stay persistent you may want to consider installing our example script for automation.
+
+1. Prepare your favorite RyzenAdj arguments
+1. Copy the content of your RyzenAdj folder to the final destination
+1. Put your configuration into `readjustService.ps1` and test it as administrator until everything works as expected
+1. Install `readjustService.ps1` as Task for Windows Task Scheduler by running `installServiceTask.bat`
+
+Deinstallation of the Task can be done via `uninstallServiceTask.bat`
+
+Over Windows Task Scheduler you can check if it is running. It is called `RyzenAdj` below `AMD` folder.
+Or just run
+```
+SCHTASKS /query /TN "AMD\RyzenAdj"
+```
+
 ## Build
 
 ### Build Requirements
