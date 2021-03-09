@@ -1,5 +1,5 @@
 # RyzenAdj
-Adjust power management settings for Ryzen Processors.
+Adjust power management settings for Ryzen Mobile Processors.
 
 [![Build Status](https://travis-ci.org/FlyGoat/RyzenAdj.svg?branch=master)](https://travis-ci.org/FlyGoat/RyzenAdj)
 
@@ -63,7 +63,7 @@ then the command line should be:
 ```
 
 ### Documentation
-
+- [Supported Models](https://github.com/FlyGoat/RyzenAdj/wiki/Supported-Models)
 - [Renoir Tuning Guide](https://github.com/FlyGoat/RyzenAdj/wiki/Renoir-Tuning-Guide)
 - [FAQ](https://github.com/FlyGoat/RyzenAdj/wiki/FAQ)
 
