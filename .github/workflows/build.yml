@@ -42,9 +42,7 @@ jobs:
         mkdir release
         copy build/ryzenadj.exe release/
         copy build/libryzenadj.dll release/
-        copy prebuilt/WinRing0x64.dll release/
-        copy prebuilt/WinRing0x64.sys release/
-        copy scripts/* release/
+        copy win32/* release/
 
     - name: Test Scripts
       shell: pwsh
@@ -67,7 +65,10 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: ryzenadj-win64
-        path: ./release
+        path: |
+            release/
+            !release/*.lib
+            !release/*.exp
 
     - name: Upload libryzenadj
       uses: actions/upload-artifact@v2
@@ -77,8 +78,8 @@ jobs:
             ./build/libryzenadj.dll
             ./build/libryzenadj.lib
             ./lib/ryzenadj.h
-            ./prebuilt/WinRing0x64.dll
-            ./prebuilt/WinRing0x64.sys
+            ./win32/WinRing0x64.dll
+            ./win32/WinRing0x64.sys
 
   Linux:
     runs-on: Ubuntu-20.04

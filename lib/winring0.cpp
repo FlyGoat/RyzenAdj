@@ -9,7 +9,7 @@ extern "C" {
 #include "OlsApi.h"
 #include "OlsDef.h"
 
-#pragma comment(lib, "../prebuilt/WinRing0x64.lib")
+#pragma comment(lib, "../win32/WinRing0x64.lib")
 
 bool nb_pci_obj = true;
 uint32_t nb_pci_address = 0x0;
