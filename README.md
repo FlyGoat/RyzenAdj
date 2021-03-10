@@ -129,7 +129,7 @@ The simplest way to build it:
 It can be built by Visual Studio + MSVC automaticaly, or Clang + Nmake in command line.
 However, as for now, MingW-gcc can't be used to compile for some reason.
 
-Required dll is included in ./prebuilt of source tree. Please put the dll
+Required dll is included in ./win32 of source tree. Please put the dll
 library and sys driver in the same folder with ryzenadj.exe.
 
 We don't recommend you to build by yourself on Windows since the environment configuarion

@@ -5,16 +5,16 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 PROJECT(ryzenadj)
 
 set(CMAKE_CXX_STANDARD 11)
-SET(LINK_DIR ./prebuilt)
+
 
 INCLUDE_DIRECTORIES(${INC_DIR})
-LINK_DIRECTORIES(${LINK_DIR})
 
 AUX_SOURCE_DIRECTORY(./ SRC_DIR)
 
 if(WIN32)
 set(OS_SOURCE lib/winring0.cpp)
 set(OS_LINK_LIBRARY WinRing0x64)
+set(OS_LINK_DIR ./win32)
 else()
 set(OS_SOURCE lib/libpci.c)
 #if (CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -24,6 +24,8 @@ set(OS_SOURCE lib/libpci.c)
 set(OS_LINK_LIBRARY pci)
 #endif()
 endif()
+
+LINK_DIRECTORIES(${OS_LINK_DIR})
 
 set(COMMON_SOURCES lib/nb_smu_ops.c lib/api.c lib/cpuid.c)
 add_definitions(-D_LIBRYZENADJ_INTERNAL)
