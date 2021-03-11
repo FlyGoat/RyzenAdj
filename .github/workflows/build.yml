@@ -28,7 +28,9 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: ryzenadj-win64-debug
-        path: ./debug/ryzenadj.exe
+        path: |
+          debug/ryzenadj.exe
+          debug/libryzenadj.dll
 
     - name: Build Release
       run: |
