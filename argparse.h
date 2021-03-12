@@ -23,6 +23,7 @@ typedef int argparse_callback (struct argparse *self,
 
 enum argparse_flag {
 	ARGPARSE_STOP_AT_NON_OPTION = 1,
+	ARGPARSE_NON_OPTION_IS_INVALID = 2,
 };
 
 enum argparse_option_type {
