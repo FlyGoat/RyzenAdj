@@ -265,6 +265,10 @@ argparse_parse(struct argparse *self, int argc, const char **argv)
 	self->out  = argv;
 
 	argparse_options_check(self->options);
+	if(!self->argc) {
+		argparse_usage(self);
+		exit(1);
+	}
 
 	for (; self->argc; self->argc--, self->argv++) {
 		const char *arg = self->argv[0];
