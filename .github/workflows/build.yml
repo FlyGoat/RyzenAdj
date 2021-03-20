@@ -84,13 +84,15 @@ jobs:
             ./win32/WinRing0x64.sys
 
   Linux:
-    runs-on: Ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
 
     - name: Install Dependencies
-      run: sudo apt install libpci-dev
+      run: |
+        sudo apt-get update
+        sudo apt-get install libpci-dev
 
     - name: run-cmake
       uses: lukka/run-cmake@v3.3
