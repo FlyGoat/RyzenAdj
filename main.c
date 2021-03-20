@@ -72,6 +72,7 @@ int main(int argc, const char **argv)
 	uint32_t vrm_current = -1, vrmsoc_current = -1, vrmmax_current = -1, vrmsocmax_current = -1, psi0_current = -1, psi0soc_current = -1;
 	uint32_t max_socclk_freq = -1, min_socclk_freq = -1, max_fclk_freq = -1, min_fclk_freq = -1, max_vcn = -1, min_vcn = -1, max_lclk = -1, min_lclk = -1;
 	uint32_t max_gfxclk_freq = -1, min_gfxclk_freq = -1, prochot_deassertion_ramp = -1, apu_skin_temp_limit = -1, dgpu_skin_temp_limit = -1, apu_slow_limit = -1;
+	uint32_t skin_temp_power_limit = -1;
 
 	//create structure for parseing
 	struct argparse_option options[] = {
@@ -105,6 +106,7 @@ int main(int argc, const char **argv)
 		OPT_U32('\0', "apu-skin-temp", &apu_skin_temp_limit, "APU Skin Temperature Limit    - STT LIMIT APU (degree C)"),
 		OPT_U32('\0', "dgpu-skin-temp", &dgpu_skin_temp_limit, "dGPU Skin Temperature Limit   - STT LIMIT dGPU (degree C)"),
 		OPT_U32('\0', "apu-slow-limit", &apu_slow_limit, "APU PPT Slow Power limit for A+A dGPU platform - PPT LIMIT APU (mW)"),
+		OPT_U32('\0', "skin-temp-limit", &skin_temp_power_limit, "Skin Temperature Power Limit (mW)"),
 		OPT_GROUP("P-State Functions"),
 		OPT_END(),
 	};
@@ -155,6 +157,7 @@ int main(int argc, const char **argv)
 	_do_adjust(apu_skin_temp_limit);
 	_do_adjust(dgpu_skin_temp_limit);
 	_do_adjust(apu_slow_limit);
+	_do_adjust(skin_temp_power_limit);
 	cleanup_ryzenadj(ry);
 
 	return err;
