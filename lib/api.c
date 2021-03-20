@@ -461,3 +461,15 @@ EXP int CALL set_apu_slow_limit(ryzen_access ry, uint32_t value) {
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
 }
+
+EXP int CALL set_skin_temp_power_limit(ryzen_access ry, uint32_t value) {
+	switch (ry->family)
+	{
+	case FAM_RENOIR:
+	case FAM_LUCIENNE:
+	case FAM_CEZANNE:
+		_do_adjust(0x53);
+		break;
+	}
+	return ADJ_ERR_FAM_UNSUPPORTED;
+}

@@ -87,6 +87,7 @@ EXP int CALL set_prochot_deassertion_ramp(ryzen_access ry, uint32_t value);
 EXP int CALL set_apu_skin_temp_limit(ryzen_access, uint32_t value);
 EXP int CALL set_dgpu_skin_temp_limit(ryzen_access, uint32_t value);
 EXP int CALL set_apu_slow_limit(ryzen_access, uint32_t value);
+EXP int CALL set_skin_temp_power_limit(ryzen_access ry, uint32_t value);
 
 
 #ifdef __cplusplus

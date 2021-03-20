@@ -53,6 +53,7 @@ Settings
     --apu-skin-temp=<u32>                 APU Skin Temperature Limit    - STT LIMIT APU (degree C)
     --dgpu-skin-temp=<u32>                dGPU Skin Temperature Limit   - STT LIMIT dGPU (degree C)
     --apu-slow-limit=<u32>                APU PPT Slow Power limit for A+A dGPU platform - PPT LIMIT APU (mW)
+    --skin-temp-limit=<u32>               Skin Temperature Power Limit (mW)
 ``` 
 
 ### Demo
