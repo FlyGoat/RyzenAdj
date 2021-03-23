@@ -255,11 +255,19 @@ EXP int CALL refresh_pm_table(ryzen_access ry)
 
 EXP int CALL get_new_table(ryzen_access ry, void *dst, size_t size)
 {
-	uint32_t addr = get_table_addr(ry);
-	if(!addr)
+	int res = 0;
+	if(ry->table_addr) {
+		//we do already have a table, request a new one
+		res = refresh_pm_table(ry);
+	} else {
+		//no refresh needed if we don't have a table, just init table
+		get_table_addr(ry);
+	}
+
+	if(!ry->table_addr)
 		return PMTABLE_ERR_SMU_UNSUPPORTED;
-	int res = refresh_pm_table(ry);
-	copy_from_phyaddr(addr, dst, size);
+
+	copy_from_phyaddr(ry->table_addr, dst, size);
 	return res;
 }
 
