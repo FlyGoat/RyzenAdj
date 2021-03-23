@@ -18,24 +18,34 @@ Param([Parameter(Mandatory=$false)][switch]$noGUI)
 $pathToRyzenAdjDlls = Split-Path -Parent $PSCommandPath #script path is DLL path, needs to be absolut path if you define something else
 
 $showErrorPopupsDuringInit = $true
-
-$debugMode = $false                      #prints adjust success messages too instead of errorss only
+# If you already have a monitoring tool running, you don't need a 2nd one requesting the ptable refresh
+$skipTableRefresh = $false 
+# prints adjust success messages too instead of errorss only
+$debugMode = $false
+# if monitorField is set, this script does only adjust values if something did revert your monitored value.
+# This needs to be an value which actually gets overwritten by your device firmware/software if no changes get detected, your settings will not reapplied
+$monitorField = "fast_limit"
 
 function doAdjust_ACmode {
-    adjust "fast_limit" 45000
-    adjust "slow_limit" 25000
-    #adjust "slow_time" 30
-    #adjust "tctl_temp" 97
-    #adjust "apu_skin_temp_limit" 50
-    #adjust "vrmmax_current" 100000
-    #adjust "<any_other_field>" 1234
     $Script:repeatWaitTimeSeconds = 3    #reapplies setting every 3s
+    adjust "fast_limit" 35000
+    adjust "slow_limit" 22000
+    adjust "slow_time" 30
+    adjust "tctl_temp" 97
+    adjust "apu_skin_temp_limit" 50
+    adjust "vrmmax_current" 100000
+    #adjust "<any_other_field>" 1234
+    #more code, for example set fan controll back to auto
+    Start-Process -NoNewWindow -Wait -filePath "C:\Program Files (x86)\NoteBook FanControl\ec-probe.exe" -ArgumentList("write", "47", "128")
+
 }
 
 function doAdjust_BatteryMode {
-    adjust "fast_limit" 25000
+    $Script:repeatWaitTimeSeconds = 10   #do less reapplies to save power
+    adjust "fast_limit" 15000
     adjust "slow_limit" 10000
-    $Script:repeatWaitTimeSeconds = 30   #do less reapplies to save power
+    #custom code, for example disable fan to save power
+    Start-Process -NoNewWindow -Wait -filePath "C:\Program Files (x86)\NoteBook FanControl\ec-probe.exe" -ArgumentList("write", "47", "0")
 }
 
 #### Configuration End
@@ -74,6 +84,10 @@ $apiHeader = @'
 [DllImport("libryzenadj.dll")] public static extern int set_apu_skin_temp_limit(IntPtr ry, [In]uint value);
 [DllImport("libryzenadj.dll")] public static extern int set_dgpu_skin_temp_limit(IntPtr ry, [In]uint value);
 [DllImport("libryzenadj.dll")] public static extern int set_apu_slow_limit(IntPtr ry, [In]uint value);
+
+[DllImport("libryzenadj.dll")] public static extern int refresh_pm_table(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern int get_new_table(IntPtr ry, float[] dst, [In]int size);
+[DllImport("libryzenadj.dll")] public static extern float get_fast_limit(IntPtr ry);
 
 [DllImport("kernel32.dll")] public static extern uint GetModuleFileName(IntPtr hModule, [Out]StringBuilder lpFilename, [In]int nSize);
 [DllImport("kernel32.dll")] public static extern Boolean GetSystemPowerStatus(out SystemPowerStatus sps);
@@ -118,7 +132,7 @@ function showErrorMsg ([String] $msg){
 $dllImportErrors = [ryzen.adj]::getDllImportErrors();
 if($dllImportErrors -or $Error){
     Write-Error $dllImportErrors
-    showErrorMsg "Problem with using libryzenadj.dll$NL$NL$Error"
+    showErrorMsg "Problem with using libryzenadj.dll$NL$NL$($Error -join $NL)"
     exit 1
 }
 
@@ -129,14 +143,21 @@ $ry = [ryzen.adj]::init_ryzenadj()
 if($ry -eq 0){
     $msg = "RyzenAdj could not get initialized.$($NL)Reason can be found inside Powershell$($NL)"
     if($psISE) { $msg += "It is not possible to see the error reason inside ISE, you need to test it in PowerShell Console" }
-    showErrorMsg "$msg$NL$NL$Error"
+    showErrorMsg "$msg$NL$NL$($Error -join $NL)"
     exit 1
 }
 
 function adjust ([String] $fieldName, [uInt32] $value) {
+    if($fieldName -eq $Script:monitorField) {
+        $newTargetValue = [math]::floor($value / 1000)
+        if($Script:targetMonitorValue -ne $newTargetValue){
+            $Script:targetMonitorValue = $newTargetValue
+            Write-Host "set new monitoring target $fieldName to $newTargetValue"
+        }
+    }
+
     $res = Invoke-Expression "[ryzen.adj]::set_$fieldName($ry, $value)"
-    switch ($res)
-    {
+    switch ($res) {
         0 {
             if($debugMode) { Write-Host "set $fieldName to $value" }
             return
@@ -148,18 +169,32 @@ function adjust ([String] $fieldName, [uInt32] $value) {
     }
 }
 
+function testMonitorField {
+    if($monitorField){
+        [void][ryzen.adj]::refresh_pm_table($ry)
+        $monitorValue = [math]::floor((getMonitorValue))
+        if($Script:targetMonitorValue -ne $monitorValue){
+            Write-Error ("Value Monitoring does not work, should be '$Script:targetMonitorValue' but was '$monitorValue'.$NL$NL" +
+                "If you ignore it, the script will apply values unnessasary often.$NL")
+        }
+    }
+}
+
 function testAdjustments {
     Write-Host "Test Adjustments"
     if($Script:systemPowerStatus.ACLineStatus){
         doAdjust_BatteryMode
+        testMonitorField
         doAdjust_ACmode
     } else {
         doAdjust_ACmode
+        testMonitorField
         doAdjust_BatteryMode
     }
+    testMonitorField
 
     if($Error -and $showErrorPopupsDuringInit){
-        $answer = [System.Windows.Forms.MessageBox]::Show("Your Adjustment configuration did not work.$NL$NL$Error", $PSCommandPath,
+        $answer = [System.Windows.Forms.MessageBox]::Show("Your Adjustment configuration did not work.$NL$NL$($Error -join $NL)", $PSCommandPath,
             [System.Windows.Forms.MessageBoxButtons]::AbortRetryIgnore,
             [System.Windows.Forms.MessageBoxIcon]::Warning)
         $Error.Clear()
@@ -168,22 +203,41 @@ function testAdjustments {
     }
 }
 
+function getMonitorValue {
+    if($monitorField){
+        return Invoke-Expression "[ryzen.adj]::get_$monitorField($ry)"
+    }
+    return 0
+}
+
 if(-not $Script:repeatWaitTimeSeconds) { $Script:repeatWaitTimeSeconds = 5 }
+$Script:targetMonitorValue = 0;
 
 $systemPowerStatus = New-Object ryzen.adj+SystemPowerStatus
 [void][ryzen.adj]::GetSystemPowerStatus([ref]$systemPowerStatus)
 
 testAdjustments
 
+<# Example how to get first 100 lines of ptable
+$ptable = [float[]]::new(100)
+[void][ryzen.adj]::get_new_table($ry, $pTable, 400)
+$ptable
+#>
+
 Write-Host "Apply settings every $Script:repeatWaitTimeSeconds seconds..."
 while($true) {
-    [void][ryzen.adj]::GetSystemPowerStatus([ref]$systemPowerStatus)
-    $oldWait = $Script:repeatWaitTimeSeconds
-    if($systemPowerStatus.ACLineStatus){
-        doAdjust_ACmode
-    } else {
-        doAdjust_BatteryMode
+    if(!$skipTableRefresh) {
+        [void][ryzen.adj]::refresh_pm_table($ry)
     }
-    if($oldWait -ne $Script:repeatWaitTimeSeconds ) { Write-Host "Apply settings every $Script:repeatWaitTimeSeconds seconds..." }
+    if($Script:targetMonitorValue -ne [math]::floor((getMonitorValue))){
+        [void][ryzen.adj]::GetSystemPowerStatus([ref]$systemPowerStatus)
+        $oldWait = $Script:repeatWaitTimeSeconds
+        if($systemPowerStatus.ACLineStatus){
+            doAdjust_ACmode
+        } else {
+            doAdjust_BatteryMode
+        }
+        if($oldWait -ne $Script:repeatWaitTimeSeconds ) { Write-Host "Apply settings every $Script:repeatWaitTimeSeconds seconds..." }
+    }
     sleep $Script:repeatWaitTimeSeconds
 }
