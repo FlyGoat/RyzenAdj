@@ -24,7 +24,8 @@ Usage: ryzenadj [options] [[--] args]
     -h, --help                            show this help message and exit
 
 Options
-    -i, --info                            Show information (W.I.P.)
+    -i, --info                            Show information and most importand power metrics after adjustment
+    --dump-table                          Show whole power metric table before and after adjustment
 
 Settings
     -a, --stapm-limit=<u32>               Sustained Power Limit         - STAPM LIMIT (mW)
