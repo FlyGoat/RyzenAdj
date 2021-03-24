@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
 
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -69,12 +70,15 @@ typedef struct _smu_service_args_t {
 
 /* OS depdent part*/
 #if defined _WIN32
+#include <Windows.h>
 typedef uint32_t *nb_t;
 typedef bool *pci_obj_t;
+typedef HINSTANCE *mem_obj_t;
 #else
 #include <pci/pci.h>
 typedef struct pci_dev *nb_t;
 typedef struct pci_access *pci_obj_t;
+typedef bool *mem_obj_t;
 #endif
 
 typedef struct _smu_t {
@@ -102,5 +106,10 @@ smu_t get_smu(nb_t nb, int smu_type);
 void free_smu(smu_t smu);
 u32 smu_service_req(smu_t smu ,u32 id ,smu_service_args_t *args);
 
+mem_obj_t init_mem_obj();
+
+void free_mem_obj(mem_obj_t obj);
+
+int copy_from_phyaddr(u32 physAddr, void *buffer, size_t size);
 
 #endif
