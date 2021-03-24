@@ -80,6 +80,7 @@ jobs:
             ./build/libryzenadj.dll
             ./build/libryzenadj.lib
             ./lib/ryzenadj.h
+            ./win32/inpoutx64.dll
             ./win32/WinRing0x64.dll
             ./win32/WinRing0x64.sys
 
