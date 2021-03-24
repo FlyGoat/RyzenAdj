@@ -190,6 +190,18 @@ int request_table_addr(ryzen_access ry)
 		printf("request_table_addr did not return anything\n");
 		return ADJ_ERR_SMU_UNSUPPORTED;
 	}
+
+	uint32_t data;
+	copy_from_phyaddr(ry->table_addr, &data, 4);
+	if(!data){
+		//Raven and Picasso don't get table refresh on the very first transfer call after boot, but respond with OK
+		//if we detact 0 data, do an initial 2nd call after a small delay (copy_from_phyaddr is enough delay)
+		//transfer, transfer, wait, wait longer; don't work
+		//transfer, wait, wait longer; don't work
+		//transfer, wait, transfer; does work
+		refresh_pm_table(ry);
+	}
+
 	return 0;
 }
 
@@ -721,40 +733,270 @@ EXP float CALL get_fast_limit(ryzen_access ry){_read_float_value(0x8);}
 EXP float CALL get_fast_value(ryzen_access ry){_read_float_value(0xC);}
 EXP float CALL get_slow_limit(ryzen_access ry){_read_float_value(0x10);}
 EXP float CALL get_slow_value(ryzen_access ry){_read_float_value(0x14);}
-EXP float CALL get_apu_slow_limit(ryzen_access ry){_read_float_value(0x18);}
-EXP float CALL get_apu_slow_value(ryzen_access ry){_read_float_value(0x1C);}
-EXP float CALL get_vrm_current(ryzen_access ry){_read_float_value(0x20);}
-EXP float CALL get_vrm_current_value(ryzen_access ry){_read_float_value(0x24);}
-EXP float CALL get_vrmsoc_current(ryzen_access ry){_read_float_value(0x28);}
-EXP float CALL get_vrmsoc_current_value(ryzen_access ry){_read_float_value(0x2C);}
-EXP float CALL get_vrmmax_current(ryzen_access ry){_read_float_value(0x30);}
-EXP float CALL get_vrmmax_current_value(ryzen_access ry){_read_float_value(0x34);}
-EXP float CALL get_vrmsocmax_current(ryzen_access ry){_read_float_value(0x38);}
-EXP float CALL get_vrmsocmax_current_value(ryzen_access ry){_read_float_value(0x3C);}
-EXP float CALL get_tctl_temp(ryzen_access ry){_read_float_value(0x40);}
-EXP float CALL get_tctl_temp_value(ryzen_access ry){_read_float_value(0x44);}
-//unsed: "THM LIMIT GFX" 0x48
-//unsed: "THM VALUE GFX" 0x4C
-//unsed: "THM LIMIT SOC" 0x50
-//unsed: "THM VALUE SOC" 0x54
-EXP float CALL get_apu_skin_temp_limit(ryzen_access ry){_read_float_value(0x58);}
-EXP float CALL get_apu_skin_temp_value(ryzen_access ry){_read_float_value(0x5C);}
-EXP float CALL get_dgpu_skin_temp_limit(ryzen_access ry){_read_float_value(0x60);}
-EXP float CALL get_dgpu_skin_temp_value(ryzen_access ry){_read_float_value(0x64);}
-//unsed: "FIT LIMIT" 0x68
-//unsed: "FIT VALUE" 0x6C
-//unsed: "VID LIMIT" 0x70
-//unsed: "VID VALUE" 0x74
-EXP float CALL get_psi0_current(ryzen_access ry){_read_float_value(0x78);}
-//unsed: "PSI0 RESIDENCY VDD" 0x7C
-EXP float CALL get_psi0soc_current(ryzen_access ry){_read_float_value(0x80);}
-//unsed: "PSI0 RESIDENCY SOC" 0x84
 
 //custom section, offsets are depending on table version
+EXP float CALL get_apu_slow_limit(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x18);
+	}
+	return NAN;
+}
+EXP float CALL get_apu_slow_value(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x1C);
+	}
+	return NAN;
+}
+EXP float CALL get_vrm_current(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x1E0004:
+	case 0x1E0005:
+		_read_float_value(0x18);
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x20);
+	}
+	return NAN;
+}
+EXP float CALL get_vrm_current_value(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x1E0004:
+	case 0x1E0005:
+		_read_float_value(0x1C);
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x24);
+	}
+	return NAN;
+}
+EXP float CALL get_vrmsoc_current(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x1E0004:
+	case 0x1E0005:
+		_read_float_value(0x20);
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x28);
+	}
+	return NAN;
+}
+EXP float CALL get_vrmsoc_current_value(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x1E0004:
+	case 0x1E0005:
+		_read_float_value(0x24);
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x2C);
+	}
+	return NAN;
+}
+EXP float CALL get_vrmmax_current(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x1E0004:
+	case 0x1E0005:
+		_read_float_value(0x28);
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x30);
+	}
+	return NAN;
+}
+EXP float CALL get_vrmmax_current_value(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x1E0004:
+	case 0x1E0005:
+		_read_float_value(0x2C);
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x34);
+	}
+	return NAN;
+}
+EXP float CALL get_vrmsocmax_current(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x1E0004:
+	case 0x1E0005:
+		_read_float_value(0x34);
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x38);
+	}
+	return NAN;
+}
+EXP float CALL get_vrmsocmax_current_value(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x1E0004:
+	case 0x1E0005:
+		_read_float_value(0x38);
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x3C);
+	}
+	return NAN;
+}
+EXP float CALL get_tctl_temp(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x1E0004:
+	case 0x1E0005:
+		_read_float_value(0x50);
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x40);
+	}
+	return NAN;
+}
+EXP float CALL get_tctl_temp_value(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x1E0004:
+	case 0x1E0005:
+		_read_float_value(0x54);
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x44);
+	}
+	return NAN;
+}
+EXP float CALL get_apu_skin_temp_limit(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x58);
+	}
+	return NAN;
+}
+EXP float CALL get_apu_skin_temp_value(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x5C);
+	}
+	return NAN;
+}
+EXP float CALL get_dgpu_skin_temp_limit(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x60);
+	}
+	return NAN;
+}
+EXP float CALL get_dgpu_skin_temp_value(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x64);
+	}
+	return NAN;
+}
+
+EXP float CALL get_psi0_current(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x1E0004:
+	case 0x1E0005:
+		_read_float_value(0x40);
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x78);
+	}
+	return NAN;
+}
+
+EXP float CALL get_psi0soc_current(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x1E0004:
+	case 0x1E0005:
+		_read_float_value(0x48);
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x80);
+	}
+	return NAN;
+}
+
 EXP float CALL get_stapm_time(ryzen_access ry)
 {
 	switch (ry->table_ver)
 	{
+	case 0x1E0004:
+	case 0x1E0005:
+		_read_float_value(0x5E0);
 	case 0x00370001:
 	case 0x00370002:
 	case 0x00370003:
@@ -769,6 +1011,9 @@ EXP float CALL get_stapm_time(ryzen_access ry)
 EXP float CALL get_slow_time(ryzen_access ry){
 	switch (ry->table_ver)
 	{
+	case 0x1E0004:
+	case 0x1E0005:
+		_read_float_value(0x5E4);
 	case 0x00370001:
 	case 0x00370002:
 	case 0x00370003:
