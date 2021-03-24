@@ -40,10 +40,31 @@ u32 smu_service_req(smu_t smu ,u32 id ,smu_service_args_t *args)
 	return response;
 }
 
+int smu_service_test(smu_t smu)
+{
+	u32 response = 0x0;
+
+	/* Clear the response */
+	smn_reg_write(smu->nb, smu->rep, 0x0);
+	/* Test message with unique argument */
+	smn_reg_write(smu->nb, smu->arg_base, 0x47);
+	if(smn_reg_read(smu->nb, smu->arg_base) != 0x47){
+		printf("PCI Bus is not writeable, check secure boot\n");
+		return 0;
+	}
+	
+	/* Send message ID */
+	smn_reg_write(smu->nb, smu->msg, SMU_TEST_MSG);
+	/* Wait until reponse changed */
+	while(response == 0x0) {
+		response = smn_reg_read(smu->nb, smu->rep);
+	}
+
+	return response == REP_MSG_OK;
+}
+
 smu_t get_smu(nb_t nb, int smu_type) {
 	smu_t smu;
-	uint32_t rep; /* REP of test message */
-	smu_service_args_t arg = {0, 0, 0, 0, 0, 0}; /* Test message shuld have no arguments */
 
 	smu = (smu_t)malloc((sizeof(*smu)));
 	smu->nb = nb;
@@ -64,12 +85,11 @@ smu_t get_smu(nb_t nb, int smu_type) {
 			goto err;
 			break;
 	}
-	/* Try to send a test message*/
-	rep = smu_service_req(smu, SMU_TEST_MSG, &arg);
-	if(rep == REP_MSG_OK){
+
+	if(smu_service_test(smu)){
 		return smu;
 	} else {
-		DBG("Faild to get SMU: %i, test message REP: %x\n", smu_type, rep);
+		DBG("Faild to get SMU, SMU_TYPE: %i\n", smu_type);
 		goto err;
 	}
 err:
