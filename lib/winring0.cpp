@@ -23,22 +23,22 @@ extern "C" pci_obj_t init_pci_obj(){
     {
         case OLS_DLL_NO_ERROR: return &nb_pci_obj;
         case OLS_DLL_UNSUPPORTED_PLATFORM:
-            printf("WinRing0 Err: Unsupported Plattform");
+            printf("WinRing0 Err: Unsupported Plattform\n");
             break;
         case OLS_DLL_DRIVER_NOT_LOADED:
-            printf("WinRing0 Err: Driver not loaded");
+            printf("WinRing0 Err: Driver not loaded\n");
             break;
         case OLS_DLL_DRIVER_NOT_FOUND:
-            printf("WinRing0 Err: Driver not found");
+            printf("WinRing0 Err: Driver not found\n");
             break;
         case OLS_DLL_DRIVER_UNLOADED:
-            printf("WinRing0 Err: Driver unloaded");
+            printf("WinRing0 Err: Driver unloaded\n");
             break;
         case OLS_DLL_DRIVER_NOT_LOADED_ON_NETWORK:
-            printf("WinRing0 Err: Driver not loaded on network");
+            printf("WinRing0 Err: Driver not loaded on network\n");
             break;
         case OLS_DLL_UNKNOWN_ERROR:
-            printf("WinRing0 Err: unknown error");
+            printf("WinRing0 Err: unknown error\n");
             break;
     }
     
