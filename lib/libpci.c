@@ -2,6 +2,9 @@
 /* Copyright (C) 2018-2019 Jiaxun Yang <jiaxun.yang@flygoat.com> */
 /* Access PCI Config Space - libpci */
 
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include "nb_smu_ops.h"
 
 bool mem_obj_obj = true;
@@ -53,7 +56,23 @@ void free_mem_obj(mem_obj_t obj)
 
 int copy_from_phyaddr(u32 physAddr, void *buffer, size_t size)
 {
-	//TODO
-	printf("copy_from_phyaddr is not implemented for linux");
-	return -1;
+	void *phy_map;
+	int memfd;
+
+	memfd = open("/dev/mem", O_RDONLY);
+	if (memfd == -1)
+		return -1;
+
+	phy_map = mmap(NULL, size, PROT_READ, MAP_SHARED, memfd, physAddr);
+	if (phy_map == MAP_FAILED) {
+		close(memfd);
+		return -1;
+	}
+
+	memcpy(buffer, phy_map, size);
+
+	munmap(phy_map, size);
+	close(memfd);
+
+	return 0;
 }
