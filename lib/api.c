@@ -5,6 +5,14 @@
 #include "ryzenadj.h"
 #include "math.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#define Sleep(x) usleep((x)*1000)
+#endif
+
+
 EXP ryzen_access CALL init_ryzenadj()
 {
 	ryzen_access ry;
@@ -245,7 +253,15 @@ EXP int CALL refresh_pm_table(ryzen_access ry)
 	resp = smu_service_req(ry->psmu, transfer_table_msg, &args);
 	if(resp == REP_MSG_CmdRejectedPrereq){
 		//2nd try is needed if SMU got interrupted or after boot on Renoir
+		//need to wait because 2nd call will fail to if we don't wait: similar to Raven and Picasso issue
+		//but because we don't have to check any physical memory values, don't waste CPU cycles and use sleep instead
+		Sleep(10); 
 		resp = smu_service_req(ry->psmu, transfer_table_msg, &args);
+		if(resp == REP_MSG_CmdRejectedPrereq){
+			printf("Transfer table was rejected twice\n");
+			Sleep(100); 
+			resp = smu_service_req(ry->psmu, transfer_table_msg, &args);
+		}
 	}
 
 	if (resp == REP_MSG_OK) {
@@ -254,7 +270,7 @@ EXP int CALL refresh_pm_table(ryzen_access ry)
 		printf("Transfer table is unsupported\n");
 		return PMTABLE_ERR_SMU_UNSUPPORTED;
 	} else if (resp == REP_MSG_CmdRejectedPrereq){
-		printf("Transfer table was rejected twice\n");
+		printf("Transfer table was rejected tree times\n");
 		return PMTABLE_ERR_SMU_REJECTED;
 	} else if (resp == REP_MSG_CmdRejectedBusy) {
 		printf("Transfer table was rejected - busy\n");
