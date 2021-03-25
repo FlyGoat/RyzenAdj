@@ -5,6 +5,14 @@
 #include "ryzenadj.h"
 #include "math.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#define Sleep(x) usleep((x)*1000)
+#endif
+
+
 EXP ryzen_access CALL init_ryzenadj()
 {
 	ryzen_access ry;
@@ -199,7 +207,7 @@ int request_table_addr(ryzen_access ry)
 		//transfer, transfer, wait, wait longer; don't work
 		//transfer, wait, wait longer; don't work
 		//transfer, wait, transfer; does work
-		refresh_pm_table(ry);
+		refresh_table(ry);
 	}
 
 	return 0;
@@ -227,6 +235,18 @@ int request_transfer_table(ryzen_access ry)
 	}
 
 	resp = smu_service_req(ry->psmu, transfer_table_msg, &args);
+	if (resp == REP_MSG_CmdRejectedPrereq) {
+		//2nd try is needed for 2 usecase: if SMU got interrupted or first call after boot on Zen2
+		//we need to wait because if we don't wait 2nd call will fail, too: similar to Raven and Picasso issue but with real reject instead of 0 data response
+		//but because we don't have to check any physical memory values, don't waste CPU cycles and use sleep instead
+		Sleep(10);
+		resp = smu_service_req(ry->psmu, transfer_table_msg, &args);
+		if(resp == REP_MSG_CmdRejectedPrereq){
+			printf("request_transfer_table was rejected twice\n");
+			Sleep(100);
+			resp = smu_service_req(ry->psmu, transfer_table_msg, &args);
+		}
+	}
 	if(resp != REP_MSG_OK){
 		_return_translated_smu_error(resp);
 	}
