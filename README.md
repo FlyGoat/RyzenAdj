@@ -122,7 +122,7 @@ sudo dnf install pciutils-devel
 The simplest way to build it:
 
     mkdir build && cd build
-    cmake ..
+    cmake -DCMAKE_BUILD_TYPE=Release ..
     make
 
 ### Windows
