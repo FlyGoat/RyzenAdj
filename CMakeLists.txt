@@ -6,6 +6,7 @@ PROJECT(ryzenadj)
 
 set(CMAKE_CXX_STANDARD 11)
 
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 INCLUDE_DIRECTORIES(${INC_DIR})
 
