@@ -67,6 +67,9 @@ EXP void CALL cleanup_ryzenadj(ryzen_access ry){
 	if (ry == NULL)
 	    return;
 
+	if (ry->table_values){
+		free(ry->table_values);
+	}
 	free_mem_obj(ry->mem_obj);
 	free_smu(ry->psmu);
 	free_smu(ry->mp1_smu);
@@ -199,6 +202,9 @@ EXP uint32_t get_table_addr(ryzen_access ry)
 		return 0;
 	}
 
+	//hold copy of table value in memory for our single value getters, not used by get_new_table
+	ry->table_values = malloc(get_table_size(ry));
+
 	//init memory object because it is prerequiremt to woring with physical memory address
 	ry->mem_obj = init_mem_obj();
 	if(!ry->mem_obj)
@@ -265,6 +271,7 @@ EXP int CALL refresh_pm_table(ryzen_access ry)
 	}
 
 	if (resp == REP_MSG_OK) {
+		copy_from_phyaddr(get_table_addr(ry), ry->table_values, get_table_size(ry));
 		return 0;
 	} else if (resp == REP_MSG_UnknownCmd) {
 		printf("Transfer table is unsupported\n");
@@ -316,13 +323,9 @@ do {                                                 \
 
 #define _read_float_value(OFFSET)                   \
 do {                                                \
-	uint32_t addr;                                  \
-	float value;                                    \
-	addr = get_table_addr(ry);                      \
-	if(!addr)                                       \
+	if(!get_table_addr(ry))                         \
 		return NAN;                                 \
-	copy_from_phyaddr(addr + OFFSET, &value, 4);    \
-	return value;                                   \
+	return ry->table_values[OFFSET / 4];            \
 } while (0);
 
 
