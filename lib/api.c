@@ -59,6 +59,9 @@ EXP void CALL cleanup_ryzenadj(ryzen_access ry){
 	if (ry == NULL)
 	    return;
 
+	if (ry->table_values){
+		free(ry->table_values);
+	}
 	free_mem_obj(ry->mem_obj);
 	free_smu(ry->psmu);
 	free_smu(ry->mp1_smu);
@@ -327,13 +330,9 @@ do {                                                 \
 
 #define _read_float_value(OFFSET)                   \
 do {                                                \
-	uint32_t addr;                                  \
-	float value;                                    \
-	addr = get_table_addr(ry);                      \
-	if(!addr)                                       \
+	if(!ry->table_values)                           \
 		return NAN;                                 \
-	copy_from_phyaddr(addr + OFFSET, &value, 4);    \
-	return value;                                   \
+	return ry->table_values[OFFSET / 4];            \
 } while (0);
 
 EXP int CALL set_stapm_limit(ryzen_access ry, uint32_t value){
