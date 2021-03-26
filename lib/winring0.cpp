@@ -114,12 +114,16 @@ extern "C" int copy_from_phyaddr(u32 physAddr, void *buffer, size_t size)
     u32 *pdwLinAddr;
     HANDLE physicalMemoryHandle;
 
-    if(!gfpIsInpOutDriverOpen())
+    if(!gfpIsInpOutDriverOpen()){
+        printf("Could not open inpoutx64 driver\n");
         return -1;
+    }
 
     pdwLinAddr = (u32*)gfpMapPhysToLin((uintptr_t)physAddr, size, &physicalMemoryHandle);
-    if (pdwLinAddr == NULL)
+    if (pdwLinAddr == NULL){
+        printf("failed to map memory\n");
         return -1;
+    }
 
     memcpy(buffer, pdwLinAddr, size);
     gfpUnmapPhysicalMemory(physicalMemoryHandle, *pdwLinAddr);
