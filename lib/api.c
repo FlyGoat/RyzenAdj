@@ -389,6 +389,15 @@ do {                                                \
 	return ry->table_values[OFFSET / 4];            \
 } while (0);
 
+#define _read_float_value_broken(OFFSET)            \
+do {                                                \
+	uint32_t addr;                                  \
+	float value;                                    \
+	if(!ry->table_values)                           \
+		return NAN;                                 \
+	copy_from_phyaddr(addr + OFFSET, &value, 4);    \
+	return value;                                   \
+} while (0);
 
 
 EXP int CALL set_stapm_limit(ryzen_access ry, uint32_t value){
