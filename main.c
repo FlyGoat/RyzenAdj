@@ -65,11 +65,11 @@ static void show_info_header(ryzen_access ry)
 
 static void show_info_table(ryzen_access ry)
 {
-	printf("PM Table Version: %x\n", get_table_ver(ry));
-	
-	if(!get_table_addr(ry))
+	if(refresh_pm_table(ry))
 		return;
-	
+
+	printf("PM Table Version: %x\n", get_table_ver(ry));
+
 	//print table in github markdown
 	printf("|       Name       |   Value   |      Paramter      |\n");
 	printf("|------------------|-----------|--------------------|\n");

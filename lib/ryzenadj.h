@@ -56,7 +56,7 @@ struct _ryzen_access;
 #define PMTABLE_ERR_SMU_TIMEOUT          -2
 #define PMTABLE_ERR_SMU_UNSUPPORTED      -3
 #define PMTABLE_ERR_SMU_REJECTED         -4
-#define PMTABLE_ERR_SMU_BUSY             -5
+#define PMTABLE_ERR_MEMORY               -5
 
 typedef struct _ryzen_access *ryzen_access;
 
@@ -66,10 +66,11 @@ EXP void CALL cleanup_ryzenadj(ryzen_access ry);
 
 EXP enum ryzen_family get_cpu_family(ryzen_access ry);
 EXP int get_bios_if_ver(ryzen_access ry);
+
+EXP int CALL init_pm_table(ryzen_access ry);
 EXP uint32_t get_table_ver(ryzen_access ry);
 EXP size_t get_table_size(ryzen_access ry);
 EXP uint32_t get_table_addr(ryzen_access ry);
-
 EXP int CALL refresh_pm_table(ryzen_access ry);
 EXP int CALL get_new_table(ryzen_access ry, void *dst, size_t size);
 

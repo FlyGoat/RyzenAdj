@@ -61,10 +61,12 @@ int copy_from_phyaddr(u32 physAddr, void *buffer, size_t size)
 
 	memfd = open("/dev/mem", O_RDONLY);
 	if (memfd == -1)
+		printf("failed to get /dev/mem\n");
 		return -1;
 
 	phy_map = mmap(NULL, size, PROT_READ, MAP_SHARED, memfd, physAddr);
 	if (phy_map == MAP_FAILED) {
+		printf("failed to map memory\n");
 		close(memfd);
 		return -1;
 	}

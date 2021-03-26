@@ -28,6 +28,7 @@ EXP ryzen_access CALL init_ryzenadj()
 	ry->table_ver = 0;
 	ry->table_addr = 0;
 	ry->table_size = 0;
+	ry->table_values = NULL;
 
 	ry->pci_obj = init_pci_obj();
 	if(!ry->pci_obj){
@@ -94,11 +95,8 @@ EXP int get_bios_if_ver(ryzen_access ry)
 	return ry->bios_if_ver;
 }
 
-EXP uint32_t get_table_ver(ryzen_access ry)
+int request_table_ver(ryzen_access ry)
 {
-	if(ry->table_ver)
-		return ry->table_ver;
-
 	unsigned int get_table_ver_msg;
 	switch (ry->family)
 	{
@@ -112,7 +110,7 @@ EXP uint32_t get_table_ver(ryzen_access ry)
 		break;
 	default:
 		printf("Get table version is not supported on this family\n");
-		return 0;
+		return PMTABLE_ERR_FAM_UNSUPPORTED;
 	}
 
 	smu_service_args_t args = {0, 0, 0, 0, 0, 0};
@@ -123,21 +121,29 @@ EXP uint32_t get_table_ver(ryzen_access ry)
 		{
 			printf("Get table version did not return anything\n");
 		}
-		return ry->table_ver;
+		return 0;
 	} else if (resp == REP_MSG_UnknownCmd) {
 		printf("Get table version is unsupported\n");
-		return 0;
+		return PMTABLE_ERR_SMU_UNSUPPORTED;
 	} else {
 		printf("Get table version was rejected\n");
-		return 0;
+		return PMTABLE_ERR_SMU_REJECTED;
 	}
+}
+
+EXP uint32_t get_table_ver(ryzen_access ry)
+{
+	if(!ry->table_ver)
+		request_table_ver(ry);
+
+	return ry->table_ver;
 }
 
 EXP size_t get_table_size(ryzen_access ry)
 {
 	if(ry->table_size)
 		return ry->table_size;
-	
+
 	switch (get_table_ver(ry))
 	{
 		case 0x1E0004: ry->table_size = 0x6AC; break;
@@ -164,13 +170,8 @@ EXP size_t get_table_size(ryzen_access ry)
 	return ry->table_size;
 }
 
-
-
-EXP uint32_t get_table_addr(ryzen_access ry)
+int request_table_addr(ryzen_access ry)
 {
-	if(ry->table_addr)
-		return ry->table_addr;
-
 	unsigned int get_table_addr_msg;
 	smu_service_args_t args = {0, 0, 0, 0, 0, 0};
 	switch (ry->family)
@@ -186,7 +187,7 @@ EXP uint32_t get_table_addr(ryzen_access ry)
 		break;
 	default:
 		printf("Get table addr is not supported on this family\n");
-		return 0;
+		return PMTABLE_ERR_FAM_UNSUPPORTED;
 	}
 
 	int resp = smu_service_req(ry->psmu, get_table_addr_msg, &args);
@@ -195,58 +196,72 @@ EXP uint32_t get_table_addr(ryzen_access ry)
 		if(!ry->table_addr)
 		{
 			printf("Get table addr did not return anything\n");
+			return PMTABLE_ERR_SMU_UNSUPPORTED;
 		}
 	} else if (resp == REP_MSG_UnknownCmd) {
 		printf("Get table addr is unsupported\n");
-		return 0;
+		return PMTABLE_ERR_SMU_UNSUPPORTED;
 	} else {
 		printf("Get table addr was rejected\n");
-		return 0;
+		return PMTABLE_ERR_SMU_REJECTED;
 	}
 
-	//hold copy of table value in memory for our single value getters, not used by get_new_table
-	ry->table_values = malloc(get_table_size(ry));
+	return 0;
+}
+
+EXP uint32_t get_table_addr(ryzen_access ry)
+{
+	if(!ry->table_addr)
+		request_table_addr(ry);
+
+	return ry->table_addr;
+}
+
+EXP int CALL init_pm_table(ryzen_access ry)
+{
+	DBG("init_pm_table\n");
+	int errorcode = 0;
+
+	errorcode = request_table_ver(ry);
+	if(errorcode){
+		return errorcode;
+	}
+
+	errorcode = request_table_addr(ry);
+	if(errorcode){
+		return errorcode;
+	}
 
 	//init memory object because it is prerequiremt to woring with physical memory address
 	ry->mem_obj = init_mem_obj();
 	if(!ry->mem_obj)
 	{
 		printf("Unable to get MEM Obj\n");
-		return 0;
+		return PMTABLE_ERR_MEMORY;
 	}
-	
-	//copy table after finding the address to have a fresh table for get value calls
-	//avoids checking for existing table in each get value call
-	if(refresh_pm_table(ry) != 0)
+
+	//hold copy of table value in memory for our single value getters
+	ry->table_values = malloc(get_table_size(ry));
+
+	errorcode = refresh_pm_table(ry);
+	if(errorcode)
 	{
-		printf("Unable to get power table\n");
-		return 0;
+		return errorcode;
 	}
-	
-	uint32_t data;
-	copy_from_phyaddr(ry->table_addr, &data, 4);
-	if(!data){
+
+	if(!ry->table_values[0]){
 		//Raven and Picasso don't get table refresh on the very first transfer call after boot, but respond with OK
 		//if we detact 0 data, do an initial 2nd call after a small delay (copy_from_phyaddr is enough delay)
 		//transfer, transfer, wait, wait longer; don't work
 		//transfer, wait, wait longer; don't work
 		//transfer, wait, transfer; does work
-		refresh_pm_table(ry);
+		return refresh_pm_table(ry);
 	}
 
-	return ry->table_addr;
+	return 0;
 }
 
-EXP int CALL refresh_pm_table(ryzen_access ry)
-{
-	int errorcode = transfer_table(ry);
-	if(!errorcode){
-		copy_from_phyaddr(get_table_addr(ry), ry->table_values, get_table_size(ry));
-	}
-	return errorcode;
-}
-
-int CALL transfer_table(ryzen_access ry)
+int CALL request_transfer_table(ryzen_access ry)
 {
 	int resp;
 	unsigned int transfer_table_msg;
@@ -291,32 +306,64 @@ int CALL transfer_table(ryzen_access ry)
 		return PMTABLE_ERR_SMU_REJECTED;
 	} else if (resp == REP_MSG_CmdRejectedBusy) {
 		printf("Transfer table was rejected - busy\n");
-		return PMTABLE_ERR_SMU_BUSY;
+		return PMTABLE_ERR_SMU_REJECTED;
 	} else {
 		printf("Transfer table failed\n");
 		return PMTABLE_ERR_SMU_REJECTED;
 	}
 }
 
+EXP int CALL refresh_pm_table(ryzen_access ry)
+{
+	int errorcode;
+	if(ry->table_values) {
+		errorcode = request_transfer_table(ry);
+		if(errorcode){
+			return errorcode;
+		}
+
+		if(copy_from_phyaddr(get_table_addr(ry), ry->table_values, get_table_size(ry))){
+			return PMTABLE_ERR_MEMORY;
+		}
+	} else {
+		DBG("refresh_pm_table was called before init\n");
+		errorcode = init_pm_table(ry);
+		if(errorcode){
+			printf("Init power table failed: %d\n", errorcode);
+			return errorcode;
+		}
+	}
+	return 0;
+}
+
 EXP int CALL get_new_table(ryzen_access ry, void *dst, size_t size)
 {
 	int errorcode = 0;
-	if(ry->table_addr || size > get_table_size()) {
-		//we do already have a table, request a new one
-		//but even if this is the first api call, we can not use the init result because we need a larger table
-		errorcode = transfer_table(ry);
-	} else {
-		//no refresh needed, we need to init the table
-		get_table_addr(ry);
-		//TODO copy
+	if(!ry->table_values) {
+		//no table allocation, we need to init the table
+		errorcode = init_pm_table(ry);
+		if(errorcode){
+			printf("Init power table failed: %d\n", errorcode);
+			return errorcode;
+		}
+		if(size <= ry->table_size){
+			//reuse table from init to avoid 2nd memory mapping
+			memcpy(dst, ry->table_values, size < ry->table_size ? size : ry->table_size);
+			return 0;
+		}
 	}
 
-	if(!ry->table_addr)
-		return PMTABLE_ERR_SMU_UNSUPPORTED;
+	errorcode = request_transfer_table(ry);
+	if(errorcode){
+		return errorcode;
+	}
 
-	copy_from_phyaddr(ry->table_addr, dst, size);
-	//refresh internal table with at least some new values
+	if(copy_from_phyaddr(ry->table_addr, dst, size)){
+		return PMTABLE_ERR_MEMORY;
+	}
+	//refresh internal table with new values
 	memcpy(ry->table_values, dst, size > ry->table_size ? ry->table_size : size);
+
 	return errorcode;
 }
 
@@ -337,7 +384,7 @@ do {                                                 \
 
 #define _read_float_value(OFFSET)                   \
 do {                                                \
-	if(!get_table_addr(ry))                         \
+	if(!ry->table_values)                           \
 		return NAN;                                 \
 	return ry->table_values[OFFSET / 4];            \
 } while (0);
