@@ -164,6 +164,8 @@ EXP size_t get_table_size(ryzen_access ry)
 	return ry->table_size;
 }
 
+
+
 EXP uint32_t get_table_addr(ryzen_access ry)
 {
 	if(ry->table_addr)
@@ -237,6 +239,15 @@ EXP uint32_t get_table_addr(ryzen_access ry)
 
 EXP int CALL refresh_pm_table(ryzen_access ry)
 {
+	int errorcode = transfer_table(ry);
+	if(!errorcode){
+		copy_from_phyaddr(get_table_addr(ry), ry->table_values, get_table_size(ry));
+	}
+	return errorcode;
+}
+
+int CALL transfer_table(ryzen_access ry)
+{
 	int resp;
 	unsigned int transfer_table_msg;
 	smu_service_args_t args = {0, 0, 0, 0, 0, 0};
@@ -271,7 +282,6 @@ EXP int CALL refresh_pm_table(ryzen_access ry)
 	}
 
 	if (resp == REP_MSG_OK) {
-		copy_from_phyaddr(get_table_addr(ry), ry->table_values, get_table_size(ry));
 		return 0;
 	} else if (resp == REP_MSG_UnknownCmd) {
 		printf("Transfer table is unsupported\n");
@@ -291,18 +301,22 @@ EXP int CALL refresh_pm_table(ryzen_access ry)
 EXP int CALL get_new_table(ryzen_access ry, void *dst, size_t size)
 {
 	int errorcode = 0;
-	if(ry->table_addr) {
+	if(ry->table_addr || size > get_table_size()) {
 		//we do already have a table, request a new one
-		errorcode = refresh_pm_table(ry);
+		//but even if this is the first api call, we can not use the init result because we need a larger table
+		errorcode = transfer_table(ry);
 	} else {
-		//no refresh needed if we don't have a table, just init table
+		//no refresh needed, we need to init the table
 		get_table_addr(ry);
+		//TODO copy
 	}
 
 	if(!ry->table_addr)
 		return PMTABLE_ERR_SMU_UNSUPPORTED;
 
 	copy_from_phyaddr(ry->table_addr, dst, size);
+	//refresh internal table with at least some new values
+	memcpy(ry->table_values, dst, size > ry->table_size ? ry->table_size : size);
 	return errorcode;
 }
 
