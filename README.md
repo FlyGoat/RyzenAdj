@@ -5,7 +5,7 @@ Adjust power management settings for Ryzen Mobile Processors.
 
 Based on: [FlyGoat/ryzen_nb_smu](https://github.com/flygoat/ryzen_nb_smu)
 
-RyzenAdjUI_WPF by "JustSkill" is no longer maintained, for GUI please see [le.storm1er/ryzen-controller](https://gitlab.com/le.storm1er/ryzen-controller).
+RyzenAdjUI_WPF by "JustSkill" is no longer maintained, for GUI please see [ryzen-controller-team/ryzen-controller](https://gitlab.com/ryzen-controller-team/ryzen-controller/).
 
 ## Usage
 The command line interface is identical on both Windows and Unix-Like OS.
