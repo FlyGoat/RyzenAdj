@@ -55,6 +55,8 @@ Settings
     --dgpu-skin-temp=<u32>                dGPU Skin Temperature Limit   - STT LIMIT dGPU (degree C)
     --apu-slow-limit=<u32>                APU PPT Slow Power limit for A+A dGPU platform - PPT LIMIT APU (mW)
     --skin-temp-limit=<u32>               Skin Temperature Power Limit (mW)
+    --power-saving                        Hidden options to improve power efficiency (is set when AC unplugged): behavior depends on CPU generation, Device and Manufacture
+    --max-performance                     Hidden options to improve performance (is set when AC plugged in): behaivor depends on CPU generation, Device and Manufacture
 ``` 
 
 ### Demo
