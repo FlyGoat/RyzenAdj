@@ -734,6 +734,42 @@ EXP int CALL set_skin_temp_power_limit(ryzen_access ry, uint32_t value) {
 	return ADJ_ERR_FAM_UNSUPPORTED;
 }
 
+EXP int CALL set_power_saving(ryzen_access ry) {
+	uint32_t value = 0;
+	switch (ry->family)
+	{
+	case FAM_RAVEN:
+	case FAM_PICASSO:
+	case FAM_DALI:
+		_do_adjust(0x19);
+		break;
+	case FAM_RENOIR:
+	case FAM_LUCIENNE:
+	case FAM_CEZANNE:
+		_do_adjust(0x12);
+		break;
+	}
+	return ADJ_ERR_FAM_UNSUPPORTED;
+}
+
+EXP int CALL set_max_performance(ryzen_access ry) {
+	uint32_t value = 0;
+	switch (ry->family)
+	{
+	case FAM_RAVEN:
+	case FAM_PICASSO:
+	case FAM_DALI:
+		_do_adjust(0x18);
+		break;
+	case FAM_RENOIR:
+	case FAM_LUCIENNE:
+	case FAM_CEZANNE:
+		_do_adjust(0x11);
+		break;
+	}
+	return ADJ_ERR_FAM_UNSUPPORTED;
+}
+
 //PM Table section, offset of first lines are stable across multiple PM Table versions
 EXP float CALL get_stapm_limit(ryzen_access ry){_read_float_value(0x0);}
 EXP float CALL get_stapm_value(ryzen_access ry){_read_float_value(0x4);}

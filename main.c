@@ -33,6 +33,29 @@ do {                                                                            
 	}                                                                             \
 } while(0);
 
+#define _do_enable(ARG) \
+do {                                                                              \
+	if (ARG) {                                                                    \
+		int adjerr = set_##ARG(ry);                                               \
+		if (!adjerr){                                                             \
+			any_adjust_applied = 1;                                               \
+			printf("Sucessfully enable " STRINGIFY(ARG) );                        \
+		} else if (adjerr == ADJ_ERR_FAM_UNSUPPORTED) {                           \
+			printf("set_" STRINGIFY(ARG) " is not supported on this family\n");   \
+			err = -1;                                                             \
+		} else if (adjerr == ADJ_ERR_SMU_UNSUPPORTED) {                           \
+			printf("set_" STRINGIFY(ARG) " is not supported on this SMU\n");      \
+			err = -1;                                                             \
+		} else if (adjerr == ADJ_ERR_SMU_REJECTED) {                              \
+			printf("set_" STRINGIFY(ARG) " is rejected by SMU\n");                \
+			err = -1;                                                             \
+		} else {                                                                  \
+			printf("Failed to set" STRINGIFY(ARG) " \n");                         \
+			err = -1;                                                             \
+		}                                                                         \
+	}                                                                             \
+} while(0);
+
 static const char *const usage[] = {
 	"ryzenadj [options] [[--] args]",
 	"ryzenadj [options]",
@@ -162,6 +185,7 @@ int main(int argc, const char **argv)
 	int err = 0;
 
 	int info = 0, dump_table = 0, any_adjust_applied = 0;
+	int power_saving = 0, max_performance = 0;
 	//init unsigned types with max value because we treat max value as unset
 	uint32_t stapm_limit = -1, fast_limit = -1, slow_limit = -1, slow_time = -1, stapm_time = -1, tctl_temp = -1;
 	uint32_t vrm_current = -1, vrmsoc_current = -1, vrmmax_current = -1, vrmsocmax_current = -1, psi0_current = -1, psi0soc_current = -1;
@@ -203,6 +227,8 @@ int main(int argc, const char **argv)
 		OPT_U32('\0', "dgpu-skin-temp", &dgpu_skin_temp_limit, "dGPU Skin Temperature Limit   - STT LIMIT dGPU (degree C)"),
 		OPT_U32('\0', "apu-slow-limit", &apu_slow_limit, "APU PPT Slow Power limit for A+A dGPU platform - PPT LIMIT APU (mW)"),
 		OPT_U32('\0', "skin-temp-limit", &skin_temp_power_limit, "Skin Temperature Power Limit (mW)"),
+		OPT_BOOLEAN('\0', "power-saving", &power_saving, "Hidden options to improve power efficiency (is set when AC unplugged): behavior depends on CPU generation, Device and Manufacture"),
+		OPT_BOOLEAN('\0', "max-performance", &max_performance, "Hidden options to improve performance (is set when AC plugged in): behaivor depends on CPU generation, Device and Manufacture"),
 		OPT_GROUP("P-State Functions"),
 		OPT_END(),
 	};
@@ -263,6 +289,8 @@ int main(int argc, const char **argv)
 	_do_adjust(dgpu_skin_temp_limit);
 	_do_adjust(apu_slow_limit);
 	_do_adjust(skin_temp_power_limit);
+	_do_enable(power_saving);
+	_do_enable(max_performance);
 
 	//call show table dump before anybody did call table refresh, because we want to copy the old values first
 	if (dump_table)
