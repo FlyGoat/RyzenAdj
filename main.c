@@ -221,6 +221,11 @@ int main(int argc, const char **argv)
 		return -1;
 	}
 
+	//shows info header before init_table
+	if (info) {
+		show_info_header(ry);
+	}
+
 	if (info || dump_table) {
 		//init before adjustment to get the default values
 		int errorcode = init_table(ry);
@@ -229,10 +234,6 @@ int main(int argc, const char **argv)
 			return errorcode;
 		}
 	}
-
-	//shows the info on top
-	if (info)
-		show_info_header(ry);
 
 	//adjust all the arguments sent to RyzenAdj.exe
 	_do_adjust(stapm_limit);
