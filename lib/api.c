@@ -198,18 +198,6 @@ int request_table_addr(ryzen_access ry)
 		printf("request_table_addr did not return anything\n");
 		return ADJ_ERR_SMU_UNSUPPORTED;
 	}
-
-	uint32_t data;
-	copy_from_phyaddr(ry->table_addr, &data, 4);
-	if(!data){
-		//Raven and Picasso don't get table refresh on the very first transfer call after boot, but respond with OK
-		//if we detact 0 data, do an initial 2nd call after a small delay (copy_from_phyaddr is enough delay)
-		//transfer, transfer, wait, wait longer; don't work
-		//transfer, wait, wait longer; don't work
-		//transfer, wait, transfer; does work
-		refresh_table(ry);
-	}
-
 	return 0;
 }
 
