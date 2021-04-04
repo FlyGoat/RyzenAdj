@@ -44,6 +44,9 @@ function doAdjust_BatteryMode {
     $Script:repeatWaitTimeSeconds = 10   #do less reapplies to save power
     adjust "fast_limit" 26000
     adjust "slow_limit" 10000
+    #adjust "<any_other_field>" 1234
+
+    enable "max_performance" #removes 10s boost delay
 
     #custom code, for example disable fan to save power
     #Start-Process -NoNewWindow -Wait -filePath "C:\Program Files (x86)\NoteBook FanControl\ec-probe.exe" -ArgumentList("write", "47", "0")
@@ -85,6 +88,8 @@ $apiHeader = @'
 [DllImport("libryzenadj.dll")] public static extern int set_apu_skin_temp_limit(IntPtr ry, [In]uint value);
 [DllImport("libryzenadj.dll")] public static extern int set_dgpu_skin_temp_limit(IntPtr ry, [In]uint value);
 [DllImport("libryzenadj.dll")] public static extern int set_apu_slow_limit(IntPtr ry, [In]uint value);
+[DllImport("libryzenadj.dll")] public static extern int set_power_saving(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern int set_max_performance(IntPtr ry);
 
 [DllImport("libryzenadj.dll")] public static extern int refresh_table(IntPtr ry);
 
@@ -162,6 +167,20 @@ function adjust ([String] $fieldName, [uInt32] $value) {
     switch ($res) {
         0 {
             if($debugMode) { Write-Host "set $fieldName to $value" }
+            return
+        }
+        -1 { Write-Error "set_$fieldName is not supported on this family"}
+        -3 { Write-Error "set_$fieldName is not supported on this SMU"}
+        -4 { Write-Error "set_$fieldName is rejected by SMU"}
+        default { Write-Error "set_$fieldName did fail with $res"}
+    }
+}
+
+function enable ([String] $fieldName) {
+    $res = Invoke-Expression "[ryzen.adj]::set_$fieldName($ry)"
+    switch ($res) {
+        0 {
+            if($debugMode) { Write-Host "enable $fieldName"}
             return
         }
         -1 { Write-Error "set_$fieldName is not supported on this family"}
