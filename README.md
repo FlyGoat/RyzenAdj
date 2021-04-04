@@ -16,8 +16,7 @@ You can write a shell script or bat to do it automaticly.
 
 ```
 $./ryzenadj -h
-Usage: ryzenadj [options] [[--] args]
-   or: ryzenadj [options]
+Usage: ryzenadj [options]
 
  Ryzen Power Management adjust tool.
 
