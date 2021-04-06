@@ -10,6 +10,8 @@
 #include "nb_smu_ops.h"
 
 bool mem_obj_obj = true;
+int pm_table_fd = 0;
+int dev_mem_fd = 0;
 
 pci_obj_t init_pci_obj(){
 	pci_obj_t obj;
@@ -48,36 +50,74 @@ void smn_reg_write(nb_t nb, u32 addr, u32 data)
 
 mem_obj_t init_mem_obj()
 {
+	int dev_mem_errno, pm_table_errno;
+
+	//It is to complicated to check PAT, CONFIG_NONPROMISC_DEVMEM, CONFIG_STRICT_DEVMEM or other dependencies, just try to open /dev/mem and try to use it later
+	dev_mem_fd = open("/dev/mem", O_RDONLY);
+	if (dev_mem_fd == -1){
+		dev_mem_errno = errno;
+	}
+
+	pm_table_fd = open("/sys/kernel/ryzen_smu_drv/pm_table", O_RDONLY);
+	if (pm_table_fd == -1){
+		pm_table_errno = errno;
+	}
+
+	if(dev_mem_fd == -1 && dev_mem_fd -1){
+		printf("failed to get /dev/mem: %s\n", strerror(dev_mem_errno));
+		printf("failed to get /sys/kernel/ryzen_smu_drv/pm_table: %s\n", strerror(pm_table_errno));
+		printf("If you don't want to change your memory access policy, you need a kernel module for this task.\n");
+		printf("We do support usage of this kernel module https://gitlab.com/leogx9r/ryzen_smu\n");
+		return NULL;
+	}
+
 	return &mem_obj_obj;
 }
 
 void free_mem_obj(mem_obj_t obj)
 {
+	if(dev_mem_fd > 0) {
+		close(dev_mem_fd);
+	}
+	if(pm_table_fd > 0) {
+		close(pm_table_fd);
+	}
 	return;
 }
 
 int copy_from_phyaddr(u32 physAddr, void *buffer, size_t size)
 {
 	void *phy_map;
-	int memfd;
+	int read_size, last_errno;
 
-	memfd = open("/dev/mem", O_RDONLY);
-	if (memfd == -1){
-		printf("failed to get /dev/mem: %s\n", strerror(errno));
-		return -1;
+	//use ryzen_smu kernel modul for pm table if existing
+	if(pm_table_fd > 0){
+		lseek(pm_table_fd, 0, SEEK_SET);
+		read_size = read(pm_table_fd, buffer, size);
+		if(read_size == -1) {
+			printf("failed to get pm_table from ryzen_smu kernel module: %s\n", strerror(errno));
+		} else {
+			return 0;
+		}
 	}
 
-	phy_map = mmap(NULL, size, PROT_READ, MAP_SHARED, memfd, physAddr);
-	if (phy_map == MAP_FAILED) {
-		printf("failed to map memory: %s\n", strerror(errno));
-		close(memfd);
-		return -1;
+	//use /dev/mem if ryzen_smu kernel module is not installed or if it did fail
+	if(dev_mem_fd > 0) {
+		phy_map = mmap(NULL, size, PROT_READ, MAP_SHARED, dev_mem_fd, physAddr);
+		if (phy_map == MAP_FAILED) {
+			last_errno = errno;
+			printf("failed to map /dev/mem: %s\n", strerror(last_errno));
+			if(last_errno == EPERM) {
+				//we are already superuser if memory access is requested because we did successfully do the other smu calls
+				printf("If you don't want to change your memory access policy, you need a kernel module for this task.\n");
+				printf("We do support usage of this kernel module https://gitlab.com/leogx9r/ryzen_smu\n");
+			}
+		} else {
+			memcpy(buffer, phy_map, size);
+			munmap(phy_map, size);
+			return 0;
+		}
 	}
 
-	memcpy(buffer, phy_map, size);
-
-	munmap(phy_map, size);
-	close(memfd);
-
-	return 0;
+	return -1;
 }
