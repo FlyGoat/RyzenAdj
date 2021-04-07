@@ -13,11 +13,11 @@ INCLUDE_DIRECTORIES(${INC_DIR})
 AUX_SOURCE_DIRECTORY(./ SRC_DIR)
 
 if(WIN32)
-set(OS_SOURCE lib/winring0.cpp)
+set(OS_SOURCE lib/osdep_win32.cpp)
 set(OS_LINK_LIBRARY WinRing0x64)
 set(OS_LINK_DIR ./win32)
 else()
-set(OS_SOURCE lib/libpci.c)
+set(OS_SOURCE lib/osdep_linux.c)
 #if (CMAKE_BUILD_TYPE STREQUAL "Release")
 #Static link libpci in release build
 #set(OS_LINK_LIBRARY libpci.a)
