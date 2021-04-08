@@ -157,8 +157,8 @@ int request_table_ver_and_size(ryzen_access ry)
 		case 0x400004: ry->table_size = 0x950; break;
 		case 0x400005: ry->table_size = 0x950; break;
 		default:
-			//use smallest size for unknown version to support dump of unknown tables
-			ry->table_size = 0x514;
+			//use a larger size then the largest known table to be able to test real table size of unknown tables
+			ry->table_size = 0xA00;
 	}
 
 	if (resp != REP_MSG_OK) {
