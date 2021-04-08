@@ -119,9 +119,11 @@ int request_table_ver_and_size(ryzen_access ry)
 	{
 	case FAM_RAVEN:
 	case FAM_PICASSO:
+	case FAM_DALI:
 		get_table_ver_msg = 0xC;
 		break;
 	case FAM_RENOIR:
+	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
 		get_table_ver_msg = 0x6;
 		break;
@@ -177,10 +179,12 @@ int request_table_addr(ryzen_access ry)
 	{
 	case FAM_RAVEN:
 	case FAM_PICASSO:
+	case FAM_DALI:
 		args.arg0 = 3;
 		get_table_addr_msg = 0xB;
 		break;
 	case FAM_RENOIR:
+	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
 		get_table_addr_msg = 0x66;
 		break;
@@ -210,10 +214,12 @@ int request_transfer_table(ryzen_access ry)
 	{
 	case FAM_RAVEN:
 	case FAM_PICASSO:
+	case FAM_DALI:
 		args.arg0 = 3;
 		transfer_table_msg = 0x3D;
 		break;
 	case FAM_RENOIR:
+	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
 		transfer_table_msg = 0x65;
 		break;
