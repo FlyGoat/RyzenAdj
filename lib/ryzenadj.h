@@ -67,6 +67,7 @@ EXP uint32_t CALL get_table_ver(ryzen_access ry);
 EXP size_t CALL get_table_size(ryzen_access ry);
 EXP float* CALL get_table_values(ryzen_access ry);
 EXP int CALL refresh_table(ryzen_access ry);
+EXP void CALL set_skip_table_transfer(ryzen_access ry, bool skip_table_transfer);
 
 EXP int CALL set_stapm_limit(ryzen_access, uint32_t value);
 EXP int CALL set_fast_limit(ryzen_access, uint32_t value);

@@ -25,6 +25,7 @@ struct _ryzen_access {
 	uint32_t table_ver;
 	size_t table_size;
 	float *table_values;
+	bool skip_table_transfer;
 };
 
 enum ryzen_family cpuid_get_family();

@@ -273,6 +273,7 @@ EXP int CALL init_table(ryzen_access ry)
 
 	//hold copy of table value in memory for our single value getters
 	ry->table_values = malloc(ry->table_size);
+	ry->skip_table_transfer = false;
 
 	errorcode = refresh_table(ry);
 	if(errorcode)
@@ -327,8 +328,8 @@ EXP int CALL refresh_table(ryzen_access ry)
 	int errorcode = 0;
 	_lazy_init_table(errorcode);
 
-	//only execute request table if we don't use SMU driver
-	if(!is_using_smu_driver()){
+	//only execute request table if we don't use SMU driver and if we don't want to skip transfer
+	if(!is_using_smu_driver() && !ry->skip_table_transfer){
 		errorcode = request_transfer_table(ry);
 	}
 
@@ -342,6 +343,11 @@ EXP int CALL refresh_table(ryzen_access ry)
 	}
 
 	return 0;
+}
+
+EXP void CALL set_skip_table_transfer(ryzen_access ry, bool skip_table_transfer)
+{
+	ry->skip_table_transfer = skip_table_transfer;
 }
 
 #define _do_adjust(OPT) \
