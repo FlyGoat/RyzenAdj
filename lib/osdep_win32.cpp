@@ -23,6 +23,8 @@ lpIsInpOutDriverOpen gfpIsInpOutDriverOpen;
 lpGetPhysLong gfpGetPhysLong;
 lpMapPhysToLin gfpMapPhysToLin;
 lpUnmapPhysicalMemory gfpUnmapPhysicalMemory;
+u32 *pdwLinAddr;
+HANDLE physicalMemoryHandle;
 
 
 
@@ -81,7 +83,7 @@ extern "C" void smn_reg_write(nb_t nb, u32 addr, u32 data)
     WritePciConfigDword(*nb, NB_PCI_REG_DATA_ADDR, data);
 }
 
-extern "C" mem_obj_t init_mem_obj(){
+extern "C" mem_obj_t init_mem_obj(u32 physAddr){
     hInpOutDll = LoadLibrary ( "inpoutx64.DLL" );
 
     if(hInpOutDll == NULL)
@@ -101,31 +103,23 @@ extern "C" mem_obj_t init_mem_obj(){
         return NULL;
     }
 
+    pdwLinAddr = (u32*)gfpMapPhysToLin((uintptr_t)physAddr, 0x1000, &physicalMemoryHandle);
+    if (pdwLinAddr == NULL){
+        printf("failed to map memory\n");
+        return NULL;
+    }
+
     return &hInpOutDll;
 }
 
 extern "C" void free_mem_obj(mem_obj_t hInpOutDll)
 {
+    gfpUnmapPhysicalMemory(physicalMemoryHandle, *pdwLinAddr);
     FreeLibrary((HINSTANCE)hInpOutDll);
 }
 
-extern "C" int copy_from_phyaddr(u32 physAddr, void *buffer, size_t size)
+extern "C" int copy_from_phyaddr(void *buffer, size_t size)
 {
-    u32 *pdwLinAddr;
-    HANDLE physicalMemoryHandle;
-
-    if(!gfpIsInpOutDriverOpen()){
-        printf("Could not open inpoutx64 driver\n");
-        return -1;
-    }
-
-    pdwLinAddr = (u32*)gfpMapPhysToLin((uintptr_t)physAddr, size, &physicalMemoryHandle);
-    if (pdwLinAddr == NULL){
-        printf("failed to map memory\n");
-        return -1;
-    }
-
     memcpy(buffer, pdwLinAddr, size);
-    gfpUnmapPhysicalMemory(physicalMemoryHandle, *pdwLinAddr);
     return 0;
 }
