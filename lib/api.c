@@ -282,11 +282,12 @@ EXP int CALL init_table(ryzen_access ry)
 
 	if(!ry->table_values[0]){
 		//Raven and Picasso don't get table refresh on the very first transfer call after boot, but respond with OK
-		//if we detact 0 data, do an initial 2nd call after a small delay (copy_pm_table is enough delay)
+		//if we detact 0 data, do an initial 2nd call after a small delay
 		//transfer, transfer, wait, wait longer; don't work
 		//transfer, wait, wait longer; don't work
 		//transfer, wait, transfer; does work
 		DBG("empty table detected, try again\n");
+		Sleep(10);
 		return refresh_table(ry);
 	}
 
