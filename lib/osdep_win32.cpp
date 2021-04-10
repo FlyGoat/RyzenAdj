@@ -123,3 +123,8 @@ extern "C" int copy_from_phyaddr(void *buffer, size_t size)
     memcpy(buffer, pdwLinAddr, size);
     return 0;
 }
+
+extern "C" bool is_using_smu_driver()
+{
+    return false;
+}
