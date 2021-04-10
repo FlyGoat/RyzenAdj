@@ -327,10 +327,14 @@ EXP float* CALL get_table_values(ryzen_access ry)
 
 EXP int CALL refresh_table(ryzen_access ry)
 {
-	int errorcode;
+	int errorcode = 0;
 	_lazy_init_table(errorcode);
 
-	errorcode = request_transfer_table(ry);
+	//only execute request table if we don't use SMU driver
+	if(!is_using_smu_driver()){
+		errorcode = request_transfer_table(ry);
+	}
+
 	if(errorcode){
 		return errorcode;
 	}

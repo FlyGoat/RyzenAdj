@@ -112,4 +112,5 @@ void free_mem_obj(mem_obj_t obj);
 
 int copy_from_phyaddr(void *buffer, size_t size);
 
+bool is_using_smu_driver();
 #endif
