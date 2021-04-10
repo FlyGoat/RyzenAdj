@@ -118,10 +118,15 @@ extern "C" void free_mem_obj(mem_obj_t hInpOutDll)
     FreeLibrary((HINSTANCE)hInpOutDll);
 }
 
-extern "C" int copy_from_phyaddr(void *buffer, size_t size)
+extern "C" int copy_pm_table(void *buffer, size_t size)
 {
     memcpy(buffer, pdwLinAddr, size);
     return 0;
+}
+
+extern "C" int compare_pm_table(void *buffer, size_t size)
+{
+    return memcmp(buffer, pdwLinAddr, size);
 }
 
 extern "C" bool is_using_smu_driver()

@@ -272,7 +272,7 @@ EXP int CALL init_table(ryzen_access ry)
 	}
 
 	//hold copy of table value in memory for our single value getters
-	ry->table_values = malloc(ry->table_size);
+	ry->table_values = calloc(ry->table_size / 4, 4);
 
 	errorcode = refresh_table(ry);
 	if(errorcode)
@@ -282,10 +282,11 @@ EXP int CALL init_table(ryzen_access ry)
 
 	if(!ry->table_values[0]){
 		//Raven and Picasso don't get table refresh on the very first transfer call after boot, but respond with OK
-		//if we detact 0 data, do an initial 2nd call after a small delay (copy_from_phyaddr is enough delay)
+		//if we detact 0 data, do an initial 2nd call after a small delay (copy_pm_table is enough delay)
 		//transfer, transfer, wait, wait longer; don't work
 		//transfer, wait, wait longer; don't work
 		//transfer, wait, transfer; does work
+		DBG("empty table detected, try again\n");
 		return refresh_table(ry);
 	}
 
@@ -329,14 +330,21 @@ EXP int CALL refresh_table(ryzen_access ry)
 
 	//only execute request table if we don't use SMU driver
 	if(!is_using_smu_driver()){
-		errorcode = request_transfer_table(ry);
+		//if other tools call tables transfer, we may already find new data inside the memory and can avoid calling transfer table twice
+		//avoiding transfer table twice is important because SMU tend to reject transfer table calls if you repeat them too fast
+		//transfer table rejection happens even if we did correctly wait for response register change
+		//if multiple tools retry transfer table in a loop, both will get rejections, avoid this issue by checking if we need to transfer table
+		//refresh table if this is the first call (table is empty) or if the first 6 table values in memory doesn't have new values (compare result = 0)
+		if(ry->table_values[0] == 0 || compare_pm_table(ry->table_values, 6 * 4) == 0){
+			errorcode = request_transfer_table(ry);
+		}
 	}
 
 	if(errorcode){
 		return errorcode;
 	}
 
-	if(copy_from_phyaddr(ry->table_values, ry->table_size)){
+	if(copy_pm_table(ry->table_values, ry->table_size)){
 		printf("refresh_table failed\n");
 		return ADJ_ERR_MEMORY_ACCESS;
 	}

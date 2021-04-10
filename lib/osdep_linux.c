@@ -99,7 +99,7 @@ void free_mem_obj(mem_obj_t obj)
 	return;
 }
 
-int copy_from_phyaddr(void *buffer, size_t size)
+int copy_pm_table(void *buffer, size_t size)
 {
 	int read_size;
 
@@ -120,6 +120,15 @@ int copy_from_phyaddr(void *buffer, size_t size)
 
 	printf("failed to get pm_table from /dev/mem\n");
 	return -1;
+}
+
+int compare_pm_table(void *buffer, size_t size)
+{
+	if(pm_table_fd > 0){
+		//we can not compare to physial pm table location because we don't have direct memory access via SMU driver
+		return 0;
+	}
+	return memcmp(buffer, phy_map, size);
 }
 
 bool is_using_smu_driver()

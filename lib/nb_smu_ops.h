@@ -110,7 +110,9 @@ mem_obj_t init_mem_obj(u32 physAddr);
 
 void free_mem_obj(mem_obj_t obj);
 
-int copy_from_phyaddr(void *buffer, size_t size);
+int copy_pm_table(void *buffer, size_t size);
+
+int compare_pm_table(void *buffer, size_t size);
 
 bool is_using_smu_driver();
 #endif
