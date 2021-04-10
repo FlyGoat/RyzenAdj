@@ -106,10 +106,10 @@ smu_t get_smu(nb_t nb, int smu_type);
 void free_smu(smu_t smu);
 u32 smu_service_req(smu_t smu ,u32 id ,smu_service_args_t *args);
 
-mem_obj_t init_mem_obj();
+mem_obj_t init_mem_obj(u32 physAddr);
 
 void free_mem_obj(mem_obj_t obj);
 
-int copy_from_phyaddr(u32 physAddr, void *buffer, size_t size);
+int copy_from_phyaddr(void *buffer, size_t size);
 
 #endif

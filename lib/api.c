@@ -264,7 +264,7 @@ EXP int CALL init_table(ryzen_access ry)
 	}
 
 	//init memory object because it is prerequiremt to woring with physical memory address
-	ry->mem_obj = init_mem_obj();
+	ry->mem_obj = init_mem_obj(ry->table_addr);
 	if(!ry->mem_obj)
 	{
 		printf("Unable to get MEM Obj\n");
@@ -332,7 +332,7 @@ EXP int CALL refresh_table(ryzen_access ry)
 		return errorcode;
 	}
 
-	if(copy_from_phyaddr(ry->table_addr, ry->table_values, ry->table_size)){
+	if(copy_from_phyaddr(ry->table_values, ry->table_size)){
 		printf("refresh_table failed\n");
 		return ADJ_ERR_MEMORY_ACCESS;
 	}
