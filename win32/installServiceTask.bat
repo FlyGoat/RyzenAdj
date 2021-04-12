@@ -18,7 +18,7 @@ echo Please configure RyzenAdjService by adding your prefered values in the top 
 timeout /t 2 > NUL
 notepad "%~dp0\readjustService.ps1"
 
-powershell -Command "(gc %~dp0RyzenAdjServiceTask.xml.template) -replace '###SCRIPTPATH###', '%~dp0readjustService.ps1' | Out-File -encoding ASCII %~dp0RyzenAdjServiceTask.xml"
+powershell -Command "(gc '%~dp0RyzenAdjServiceTask.xml.template') -replace '###SCRIPTPATH###', '%~dp0readjustService.ps1' | Out-File -encoding ASCII '%~dp0RyzenAdjServiceTask.xml'"
 
 SCHTASKS /Create /TN "AMD\RyzenAdj" /XML "%~dp0RyzenAdjServiceTask.xml" /F || goto failed
 
