@@ -94,21 +94,24 @@ EXP int get_bios_if_ver(ryzen_access ry)
 	return ry->bios_if_ver;
 }
 
-#define _return_translated_smu_error(SMU_RESP)         \
-do {                                                   \
-	if (SMU_RESP == REP_MSG_UnknownCmd) {              \
-		printf("%s is unsupported\n", __func__);       \
-		return ADJ_ERR_SMU_UNSUPPORTED;                \
-	} else if (SMU_RESP == REP_MSG_CmdRejectedPrereq){ \
-		printf("%s was rejected\n", __func__);         \
-		return ADJ_ERR_SMU_REJECTED;                   \
-	} else if (SMU_RESP == REP_MSG_CmdRejectedBusy) {  \
-		printf("%s was rejected - busy\n", __func__);  \
-		return ADJ_ERR_SMU_REJECTED;                   \
-	} else {                                           \
-		printf("%s failed\n", __func__);               \
-		return ADJ_ERR_SMU_REJECTED;                   \
-	}                                                  \
+#define _return_translated_smu_error(SMU_RESP)                              \
+do {                                                                        \
+	if (SMU_RESP == REP_MSG_UnknownCmd) {                                   \
+		printf("%s is unsupported\n", __func__);                            \
+		return ADJ_ERR_SMU_UNSUPPORTED;                                     \
+	} else if (SMU_RESP == REP_MSG_CmdRejectedPrereq){                      \
+		printf("%s was rejected\n", __func__);                              \
+		return ADJ_ERR_SMU_REJECTED;                                        \
+	} else if (SMU_RESP == REP_MSG_CmdRejectedBusy) {                       \
+		printf("%s was rejected - busy\n", __func__);                       \
+		return ADJ_ERR_SMU_REJECTED;                                        \
+	} else if (SMU_RESP == REP_MSG_Failed) {                                \
+		printf("%s failed\n", __func__);                                    \
+		return ADJ_ERR_SMU_REJECTED;                                        \
+	} else {                                                                \
+		printf("%s failed with unknown response %x\n", __func__, SMU_RESP); \
+		return ADJ_ERR_SMU_REJECTED;                                        \
+	}                                                                       \
 } while (0);
 
 int request_table_ver_and_size(ryzen_access ry)
