@@ -10,9 +10,10 @@
 #>
 
 Param([Parameter(Mandatory=$false)][switch]$noGUI)
-
+$Error.Clear()
+################################################################################
 #### Configuration Start
-
+################################################################################
 # WARNING: Use at your own risk!
 
 $pathToRyzenAdjDlls = Split-Path -Parent $PSCommandPath #script path is DLL path, needs to be absolut path if you define something else
@@ -22,11 +23,13 @@ $showErrorPopupsDuringInit = $true
 $debugMode = $false
 # if monitorField is set, this script does only adjust values if something did revert your monitored value. Clear monitorField String to disable monitoring
 # This needs to be an value which actually gets overwritten by your device firmware/software if no changes get detected, your settings will not reapplied
-# Don't use this feature if your device does not exetly apply your values. For example don't use it if setting fast-limit 40W does result into 36W fast-limit
+# Don't use this feature if your device does not exactly apply your values. For example don't use it if setting fast-limit 40W does result into 36W fast-limit
 $monitorField = "fast_limit"
+# HWiNFO needs to be restartet after this script did run the first time with this option set to true
+$updateHWINFOSensors = $false
 
 function doAdjust_ACmode {
-    $Script:repeatWaitTimeSeconds = 3    #reapplies setting every 3s
+    $Script:repeatWaitTimeSeconds = 1    #only use values below 5s if you are using $monitorField
     adjust "fast_limit" 46000
     adjust "slow_limit" 25000
     #adjust "slow_time" 30
@@ -51,7 +54,7 @@ function doAdjust_BatteryMode {
     #custom code, for example disable fan to save power
     #Start-Process -NoNewWindow -Wait -filePath "C:\Program Files (x86)\NoteBook FanControl\ec-probe.exe" -ArgumentList("write", "47", "0")
 }
-
+################################################################################
 #### Configuration End
 ################################################################################
 
@@ -92,9 +95,29 @@ $apiHeader = @'
 [DllImport("libryzenadj.dll")] public static extern int set_max_performance(IntPtr ry);
 
 [DllImport("libryzenadj.dll")] public static extern int refresh_table(IntPtr ry);
-
 [DllImport("libryzenadj.dll")] public static extern IntPtr get_table_values(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_stapm_limit(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_stapm_value(IntPtr ry);
 [DllImport("libryzenadj.dll")] public static extern float get_fast_limit(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_fast_value(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_slow_limit(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_slow_value(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_apu_slow_limit(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_apu_slow_value(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_vrm_current(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_vrm_current_value(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_vrmsoc_current(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_vrmsoc_current_value(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_vrmmax_current(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_vrmmax_current_value(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_vrmsocmax_current(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_vrmsocmax_current_value(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_tctl_temp(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_tctl_temp_value(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_apu_skin_temp_limit(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_apu_skin_temp_value(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_dgpu_skin_temp_limit(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_dgpu_skin_temp_value(IntPtr ry);
 
 [DllImport("kernel32.dll")] public static extern uint GetModuleFileName(IntPtr hModule, [Out]StringBuilder lpFilename, [In]int nSize);
 [DllImport("kernel32.dll")] public static extern Boolean GetSystemPowerStatus(out SystemPowerStatus sps);
@@ -231,6 +254,81 @@ function getMonitorValue {
     return 0
 }
 
+function createOrDeleteHWINFOSensors {
+    if($updateHWINFOSensors){
+        New-Item -Path HKCU:\Software\HWiNFO64\Sensors\Custom -Name RyzenAdj -Force > $null
+        'Key,Name,Value
+        Power0,STAPM Limit
+        Power1,STAPM
+        Power2,PPT FAST Limit
+        Power3,PPT FAST
+        Power4,PPT SLOW Limit
+        Power5,PPT SLOW
+        Power6,APU SLOW Limit
+        Power7,APU SLOW
+        Current0,TDC VRM Limit
+        Current1,TDC VRM
+        Current2,TDC VRM SoC Limit
+        Current3,TDC VRM SoC
+        Current4,EDC VRM Max Limit
+        Current5,EDC VRM Max
+        Current6,EDC VRM SoC Max Limit
+        Current7,EDC VRM SoC Max
+        Temp0,TCTL Temp Limit
+        Temp1,TCTL Temp
+        Temp2,SST APU Skin Temp Limit
+        Temp3,SST APU Skin Temp
+        Temp4,SST dGPU Skin Temp Limit
+        Temp5,SST dGPU Skin Temp
+        Usage0,STAPM Limit Usage, ("STAPM" / "STAPM Limit") * 100
+        Usage1,PPT FAST Limit Usage, ("PPT FAST" / "PPT FAST Limit") * 100
+        Usage2,PPT SLOW Limit Usage, ("PPT SLOW" / "PPT SLOW Limit") * 100
+        Usage3,APU SLOW Limit Usage, ("APU SLOW" / "APU SLOW Limit") * 100
+        Usage4,TDC VRM Limit Usage, ("TDC VRM" / "TDC VRM Limit") * 100
+        Usage5,TDC VRM SoC Limit Usage, ("TDC VRM SoC" / "TDC VRM SoC Limit") * 100
+        Usage6,EDC VRM Max Limit Usage, ("EDC VRM Max" / "EDC VRM Max Limit") * 100
+        Usage7,EDC VRM SoC Max Limit Usage, ("EDC VRM SoC Max" / "EDC VRM SoC Max Limit") * 100
+        Usage8,TCTL Temp Limit Usage, ("TCTL Temp" / "TCTL Temp Limit") * 100
+        Usage9,SST APU Skin Temp Limit Usage, ("SST APU Skin Temp" / "SST APU Skin Temp Limit") * 100
+        Usage10,SST dGPU Skin Temp Limit Usage, ("SST dGPU Skin Temp" / "SST dGPU Skin Temp Limit") * 100' | ConvertFrom-Csv -outvariable hwinfo_keys > $null
+        $hwinfo_keys | ForEach-Object {New-item -Path HKCU:\Software\HWiNFO64\Sensors\Custom\RyzenAdj -Name $_.Key -Force} > $null
+        $hwinfo_keys | ForEach-Object {[Microsoft.Win32.Registry]::SetValue("HKEY_CURRENT_USER\Software\HWiNFO64\Sensors\Custom\RyzenAdj\" + $_.Key,"Name",$_.Name)} > $null
+        $hwinfo_keys | Where Value -ne $null | ForEach-Object {[Microsoft.Win32.Registry]::SetValue("HKEY_CURRENT_USER\Software\HWiNFO64\Sensors\Custom\RyzenAdj\" + $_.Key,"Value",$_.Value)} > $null
+    } else {
+        Remove-Item HKCU:\Software\HWiNFO64\Sensors\Custom\RyzenAdj -Recurse -ErrorAction:Ignore
+    }
+}
+
+function setHWINFOValue ([String] $name, [float] $value) {
+    if(![float]::IsNaN($value)){ [Microsoft.Win32.Registry]::SetValue("HKEY_CURRENT_USER\Software\HWiNFO64\Sensors\Custom\RyzenAdj\" + $name,"Value",[String]$value) }
+}
+
+function updateHWINFOSensors {
+    setHWINFOValue Power0   ([ryzen.adj]::get_stapm_limit($ry))
+    setHWINFOValue Power1   ([ryzen.adj]::get_stapm_value($ry))
+    setHWINFOValue Power2   ([ryzen.adj]::get_fast_limit($ry))
+    setHWINFOValue Power3   ([ryzen.adj]::get_fast_value($ry))
+    setHWINFOValue Power4   ([ryzen.adj]::get_slow_limit($ry))
+    setHWINFOValue Power5   ([ryzen.adj]::get_slow_value($ry))
+    setHWINFOValue Power6   ([ryzen.adj]::get_apu_slow_limit($ry))
+    setHWINFOValue Power7   ([ryzen.adj]::get_apu_slow_value($ry))
+    setHWINFOValue Current0 ([ryzen.adj]::get_vrm_current($ry))
+    setHWINFOValue Current1 ([ryzen.adj]::get_vrm_current_value($ry))
+    setHWINFOValue Current2 ([ryzen.adj]::get_vrmsoc_current($ry))
+    setHWINFOValue Current3 ([ryzen.adj]::get_vrmsoc_current_value($ry))
+    setHWINFOValue Current4 ([ryzen.adj]::get_vrmmax_current($ry))
+    setHWINFOValue Current5 ([ryzen.adj]::get_vrmmax_current_value($ry))
+    setHWINFOValue Current6 ([ryzen.adj]::get_vrmsocmax_current($ry))
+    setHWINFOValue Current7 ([ryzen.adj]::get_vrmsocmax_current_value($ry))
+    setHWINFOValue Temp0    ([ryzen.adj]::get_tctl_temp($ry))
+    setHWINFOValue Temp1    ([ryzen.adj]::get_tctl_temp_value($ry))
+    setHWINFOValue Temp2    ([ryzen.adj]::get_apu_skin_temp_limit($ry))
+    setHWINFOValue Temp3    ([ryzen.adj]::get_apu_skin_temp_value($ry))
+    setHWINFOValue Temp4    ([ryzen.adj]::get_dgpu_skin_temp_limit($ry))
+    setHWINFOValue Temp5    ([ryzen.adj]::get_dgpu_skin_temp_value($ry))
+    #setHWINFOValue Usage11 $pmTable[546]
+}
+
 if(-not $Script:repeatWaitTimeSeconds) { $Script:repeatWaitTimeSeconds = 5 }
 $Script:targetMonitorValue = 0;
 
@@ -239,12 +337,12 @@ $systemPowerStatus = New-Object ryzen.adj+SystemPowerStatus
 
 testAdjustments
 
-<# Example how to get first 100 lines of ptable
-$pmTable = [float[]]::new(100)
+<# Example how to get 560 lines of ptable
+$pmTable = [float[]]::new(560)
 $tablePtr = [ryzen.adj]::get_table_values($ry);
-[System.Runtime.InteropServices.Marshal]::Copy($tablePtr, $pmTable, 0, 100);
-$pmTable
+[System.Runtime.InteropServices.Marshal]::Copy($tablePtr, $pmTable, 0, 560);
 #>
+createOrDeleteHWINFOSensors
 
 $processType = "Apply Settings"
 if($monitorField){
@@ -253,9 +351,15 @@ if($monitorField){
 
 Write-Host "$processType every $Script:repeatWaitTimeSeconds seconds..."
 while($true) {
-    if($monitorField) {
+    if($monitorField -or $updateHWINFOSensors) {
         [void][ryzen.adj]::refresh_table($ry)
+        #[System.Runtime.InteropServices.Marshal]::Copy($tablePtr, $pmTable, 0, 560);
     }
+
+    if($updateHWINFOSensors){
+        updateHWINFOSensors
+    }
+
     if(!$monitorField -or $Script:targetMonitorValue -ne [math]::floor((getMonitorValue))){
         [void][ryzen.adj]::GetSystemPowerStatus([ref]$systemPowerStatus)
         $oldWait = $Script:repeatWaitTimeSeconds
@@ -266,5 +370,6 @@ while($true) {
         }
         if($oldWait -ne $Script:repeatWaitTimeSeconds ) { Write-Host "$processType every $Script:repeatWaitTimeSeconds seconds..." }
     }
+
     sleep $Script:repeatWaitTimeSeconds
 }
