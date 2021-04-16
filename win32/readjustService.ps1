@@ -192,8 +192,8 @@ if($ry -eq 0){
 function adjust ([String] $fieldName, [uInt32] $value) {
     if($fieldName -eq $Script:monitorField) {
         $newTargetValue = [math]::round($value * 0.001, 3, 0)
-        if($Script:targetMonitorValue -ne $newTargetValue){
-            $Script:targetMonitorValue = $newTargetValue
+        if($Script:monitorFieldAdjTarget -ne $newTargetValue){
+            $Script:monitorFieldAdjTarget = $newTargetValue
             Write-Host "set new monitoring target $fieldName to $newTargetValue"
         }
     }
@@ -225,12 +225,18 @@ function enable ([String] $fieldName) {
 }
 
 function testMonitorField {
+    if($monitorField -and $Script:monitorFieldAdjTarget -eq 0){
+        Write-Error ("You forgot to set $monitorField in your profile.$NL$NL" +
+            "If you ignore it, the script will apply values unnessasary often.$NL")
+    }
+}
+
+function updateMonitorFieldAdjResult {
     if($monitorField){
         [void][ryzen.adj]::refresh_table($ry)
-        $monitorValue = getMonitorValue
-        if($Script:targetMonitorValue -ne [math]::round($monitorValue, 3, 0) -and $Script:targetMonitorValue -ne [math]::round(($monitorValue * $limitFactor), 3, 0)){
-            Write-Error ("Value Monitoring does not work, did you forget to set it? Should be '$Script:targetMonitorValue' but was '$monitorValue'.$NL$NL" +
-                "If you ignore it, the script will apply values unnessasary often.$NL")
+        $Script:monitorFieldAdjResult = [math]::round((getMonitorValue), 3, 0)
+        if($Script:monitorFieldAdjTarget -ne $Script:monitorFieldAdjResult){
+            Write-Host ("Warning - $monitorField adjust result $Script:monitorFieldAdjResult does not match target value $Script:monitorFieldAdjTarget. Value $Script:monitorFieldAdjResult will be used for monitoring")
         }
     }
 }
@@ -240,15 +246,16 @@ function testAdjustments {
     if($Script:systemPowerStatus.ACLineStatus){
         doAdjust_BatteryMode
         testMonitorField
-        $Script:targetMonitorValue = 0
+        $Script:monitorFieldAdjTarget = 0
         doAdjust_ACmode
     } else {
         doAdjust_ACmode
         testMonitorField
-        $Script:targetMonitorValue = 0
+        $Script:monitorFieldAdjTarget = 0
         doAdjust_BatteryMode
     }
     testMonitorField
+    updateMonitorFieldAdjResult
 
     if($Error -and $showErrorPopupsDuringInit){
         $answer = [System.Windows.Forms.MessageBox]::Show("Your Adjustment configuration did not work.$NL$NL$($Error -join $NL)", $PSCommandPath,
@@ -343,8 +350,8 @@ function updateHWINFOSensors {
 }
 
 if(-not $Script:repeatWaitTimeSeconds) { $Script:repeatWaitTimeSeconds = 5 }
-$Script:targetMonitorValue = 0;
-$limitFactor = (1/9) * 10 # SMU does support a 90% power limit mode which need to be corrected on monitorField check
+$Script:monitorFieldAdjResult = 0; #adjust result will be used for monitoring because SMU may only set 90% and 80% of your value
+$Script:monitorFieldAdjTarget = 0;
 $powerkey = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey("SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\")
 $Script:betterBattery = "961cc777-2547-4f9d-8174-7d86181b8a7a"
 $Script:betterPerformance = "00000000-0000-0000-0000-000000000000"
@@ -392,8 +399,8 @@ while($true) {
     }
     if($monitorField){
         $monitorValue = getMonitorValue
-        if($Script:targetMonitorValue -ne [math]::round($monitorValue, 3, 0) -and $Script:targetMonitorValue -ne [math]::round(($monitorValue * $limitFactor), 3, 0)){
-            Write-Host "$monitorField value unexpectedly changed to $monitorValue"
+        if($Script:monitorFieldAdjResult -ne [math]::round($monitorValue, 3, 0)){
+            Write-Host "$monitorField value unexpectedly changed from $Script:monitorFieldAdjResult to $monitorValue"
             $doAdjust = $true
         }
     }
@@ -406,6 +413,7 @@ while($true) {
         } else {
             doAdjust_BatteryMode
         }
+        updateMonitorFieldAdjResult
         if($oldWait -ne $Script:repeatWaitTimeSeconds ) { Write-Host "$processType every $Script:repeatWaitTimeSeconds seconds..." }
     }
 
