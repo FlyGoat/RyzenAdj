@@ -23,9 +23,10 @@ $showErrorPopupsDuringInit = $true
 $debugMode = $false
 # if monitorField is set, this script does only adjust values if something did revert your monitored value. Clear monitorField String to disable monitoring
 # This needs to be an value which actually gets overwritten by your device firmware/software if no changes get detected, your settings will not reapplied
-# Don't use this feature if your device does not exactly apply your values. For example don't use it if setting fast-limit 40W does result into 36W fast-limit
 $monitorField = "fast_limit"
-# HWiNFO needs to be restartet after this script did run the first time with this option set to true
+# Does reapply adjustments if power slider did change position, check $Script:acSlider or $Script:dcSlider to apply slider specific values
+$monitorPowerSlider = $true
+# HWiNFO needs to be restartet after this script did run the first time with this option
 $updateHWINFOSensors = $false
 
 function doAdjust_ACmode {
@@ -41,18 +42,29 @@ function doAdjust_ACmode {
     #custom code, for example set fan controll back to auto
     #values (WriteRegister: 47, FanSpeedResetValue:128) extracted from similar devices at https://github.com/hirschmann/nbfc/blob/master/Configs/
     #Start-Process -NoNewWindow -Wait -filePath "C:\Program Files (x86)\NoteBook FanControl\ec-probe.exe" -ArgumentList("write", "47", "128")
+
+    if($Script:acSlider -eq $Script:betterBattery){
+        #put adjustments for energie saving slider position here:
+        enable "power_saving" #add 10s boost delay for usage on cable to reduce idle power consumtion
+    }
 }
 
 function doAdjust_BatteryMode {
-    $Script:repeatWaitTimeSeconds = 10   #do less reapplies to save power
+    $Script:repeatWaitTimeSeconds = 10   #do less reapplies and less HWiNFO updates to save power
     adjust "fast_limit" 26000
     adjust "slow_limit" 10000
     #adjust "<any_other_field>" 1234
 
-    enable "max_performance" #removes 10s boost delay
+    if($Script:dcSlider -eq $Script:betterBattery){
+        #put adjustments for energie saving slider position here: for example disable fan to save power
+        #Start-Process -NoNewWindow -Wait -filePath "C:\Program Files (x86)\NoteBook FanControl\ec-probe.exe" -ArgumentList("write", "47", "0")
+    }
 
-    #custom code, for example disable fan to save power
-    #Start-Process -NoNewWindow -Wait -filePath "C:\Program Files (x86)\NoteBook FanControl\ec-probe.exe" -ArgumentList("write", "47", "0")
+    if($Script:dcSlider -eq $Script:bestPerformance){
+        #put adjustments for highest performance slider position here:
+        enable "max_performance" #removes 10s boost delay on battery
+        doAdjust_ACmode #set limits from cable mode on battery
+    }
 }
 ################################################################################
 #### Configuration End
@@ -179,13 +191,12 @@ if($ry -eq 0){
 
 function adjust ([String] $fieldName, [uInt32] $value) {
     if($fieldName -eq $Script:monitorField) {
-        $newTargetValue = [math]::floor($value / 1000)
+        $newTargetValue = [math]::round($value * 0.001, 3, 0)
         if($Script:targetMonitorValue -ne $newTargetValue){
             $Script:targetMonitorValue = $newTargetValue
             Write-Host "set new monitoring target $fieldName to $newTargetValue"
         }
     }
-
     $res = Invoke-Expression "[ryzen.adj]::set_$fieldName($ry, $value)"
     switch ($res) {
         0 {
@@ -216,9 +227,9 @@ function enable ([String] $fieldName) {
 function testMonitorField {
     if($monitorField){
         [void][ryzen.adj]::refresh_table($ry)
-        $monitorValue = [math]::floor((getMonitorValue))
-        if($Script:targetMonitorValue -ne $monitorValue){
-            Write-Error ("Value Monitoring does not work, should be '$Script:targetMonitorValue' but was '$monitorValue'.$NL$NL" +
+        $monitorValue = getMonitorValue
+        if($Script:targetMonitorValue -ne [math]::round($monitorValue, 3, 0) -and $Script:targetMonitorValue -ne [math]::round(($monitorValue * $limitFactor), 3, 0)){
+            Write-Error ("Value Monitoring does not work, did you forget to set it? Should be '$Script:targetMonitorValue' but was '$monitorValue'.$NL$NL" +
                 "If you ignore it, the script will apply values unnessasary often.$NL")
         }
     }
@@ -229,10 +240,12 @@ function testAdjustments {
     if($Script:systemPowerStatus.ACLineStatus){
         doAdjust_BatteryMode
         testMonitorField
+        $Script:targetMonitorValue = 0
         doAdjust_ACmode
     } else {
         doAdjust_ACmode
         testMonitorField
+        $Script:targetMonitorValue = 0
         doAdjust_BatteryMode
     }
     testMonitorField
@@ -331,6 +344,13 @@ function updateHWINFOSensors {
 
 if(-not $Script:repeatWaitTimeSeconds) { $Script:repeatWaitTimeSeconds = 5 }
 $Script:targetMonitorValue = 0;
+$limitFactor = (1/9) * 10 # SMU does support a 90% power limit mode which need to be corrected on monitorField check
+$powerkey = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey("SYSTEM\ControlSet001\Control\Power\User\PowerSchemes\")
+$Script:betterBattery = "961cc777-2547-4f9d-8174-7d86181b8a7a"
+$Script:betterPerformance = "00000000-0000-0000-0000-000000000000"
+$Script:bestPerformance = "ded574b5-45a0-4f42-8737-46345c09c238"
+$Script:acSlider = $powerkey.GetValue("ActiveOverlayACPowerScheme")
+$Script:dcSlider = $powerkey.GetValue("ActiveOverlayDCPowerScheme")
 
 $systemPowerStatus = New-Object ryzen.adj+SystemPowerStatus
 [void][ryzen.adj]::GetSystemPowerStatus([ref]$systemPowerStatus)
@@ -344,13 +364,17 @@ $tablePtr = [ryzen.adj]::get_table_values($ry);
 #>
 createOrDeleteHWINFOSensors
 
-$processType = "Apply Settings"
-if($monitorField){
-    $processType = "Monitor $monitorField changes"
+$mtxtArray = @()
+if($monitorField){$mtxtArray += "$monitorField changes"}
+if($monitorPowerSlider){$mtxtArray += "PowerSlider changes"}
+if($mtxtArray.Length){
+    $processType = "Monitor " + ($mtxtArray -join " and ")
+} else {
+    $processType = "Apply Settings"
 }
-
 Write-Host "$processType every $Script:repeatWaitTimeSeconds seconds..."
 while($true) {
+    $doAdjust = !$monitorField -and !$monitorPowerSlider
     if($monitorField -or $updateHWINFOSensors) {
         [void][ryzen.adj]::refresh_table($ry)
         #[System.Runtime.InteropServices.Marshal]::Copy($tablePtr, $pmTable, 0, 560);
@@ -360,7 +384,21 @@ while($true) {
         updateHWINFOSensors
     }
 
-    if(!$monitorField -or $Script:targetMonitorValue -ne [math]::floor((getMonitorValue))){
+    if($monitorPowerSlider -and ($Script:acSlider -ne $powerkey.GetValue("ActiveOverlayACPowerScheme") -or $Script:dcSlider -ne $powerkey.GetValue("ActiveOverlayDCPowerScheme"))){
+        Write-Host "Power Slider changed"
+        $Script:acSlider = $powerkey.GetValue("ActiveOverlayACPowerScheme")
+        $Script:dcSlider = $powerkey.GetValue("ActiveOverlayDCPowerScheme")
+        $doAdjust = $true
+    }
+    if($monitorField){
+        $monitorValue = getMonitorValue
+        if($Script:targetMonitorValue -ne [math]::round($monitorValue, 3, 0) -and $Script:targetMonitorValue -ne [math]::round(($monitorValue * $limitFactor), 3, 0)){
+            Write-Host "$monitorField value unexpectedly changed to $monitorValue"
+            $doAdjust = $true
+        }
+    }
+
+    if($doAdjust){
         [void][ryzen.adj]::GetSystemPowerStatus([ref]$systemPowerStatus)
         $oldWait = $Script:repeatWaitTimeSeconds
         if($systemPowerStatus.ACLineStatus){
