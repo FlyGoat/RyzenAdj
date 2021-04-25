@@ -253,10 +253,9 @@ int main(int argc, const char **argv)
 
 	if (info || dump_table) {
 		//init before adjustment to get the default values
-		int errorcode = init_table(ry);
-		if(errorcode){
-			printf("Unable to init power metric table: %d\n", errorcode);
-			return errorcode;
+		err = init_table(ry);
+		if (err) {
+			printf("Unable to init power metric table: %d, this does not affect adjustments because it is only needed for monitoring.\n", err);
 		}
 	}
 
@@ -291,13 +290,16 @@ int main(int argc, const char **argv)
 	_do_enable(power_saving);
 	_do_enable(max_performance);
 
-	//call show table dump before anybody did call table refresh, because we want to copy the old values first
-	if (dump_table)
-		show_table_dump(ry, any_adjust_applied);
-
-	//show power table after apply settings
-	if (info)
-		show_info_table(ry);
+	if (!err) {
+		//call show table dump before anybody did call table refresh, because we want to copy the old values first
+		if (dump_table) {
+			show_table_dump(ry, any_adjust_applied);
+		}
+		//show power table after apply settings
+		if (info) {
+			show_info_table(ry);
+		}
+	}
 
 	cleanup_ryzenadj(ry);
 

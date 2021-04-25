@@ -270,7 +270,7 @@ EXP int CALL init_table(ryzen_access ry)
 	ry->mem_obj = init_mem_obj(ry->table_addr);
 	if(!ry->mem_obj)
 	{
-		printf("Unable to get MEM Obj\n");
+		printf("Unable to get memory access\n");
 		return ADJ_ERR_MEMORY_ACCESS;
 	}
 
