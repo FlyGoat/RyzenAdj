@@ -159,8 +159,8 @@ int request_table_ver_and_size(ryzen_access ry)
 		case 0x400001: ry->table_size = 0x910; break;
 		case 0x400002: ry->table_size = 0x928; break;
 		case 0x400003: ry->table_size = 0x94C; break;
-		case 0x400004: ry->table_size = 0x950; break;
-		case 0x400005: ry->table_size = 0x950; break;
+		case 0x400004: ry->table_size = 0x944; break;
+		case 0x400005: ry->table_size = 0x944; break;
 		default:
 			//use a larger size then the largest known table to be able to test real table size of unknown tables
 			ry->table_size = 0xA00;
@@ -1259,7 +1259,7 @@ EXP float CALL get_stapm_time(ryzen_access ry)
 		_read_float_value(0x920);
 	case 0x00400004:
 	case 0x00400005:
-		_read_float_value(0x924);
+		_read_float_value(0x918);
 	}
 	return NAN;
 }
@@ -1295,7 +1295,7 @@ EXP float CALL get_slow_time(ryzen_access ry){
 		_read_float_value(0x924);
 	case 0x00400004:
 	case 0x00400005:
-		_read_float_value(0x928);
+		_read_float_value(0x91C);
 	}
 	return NAN;
 }
