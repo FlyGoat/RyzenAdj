@@ -70,7 +70,9 @@ EXP void CALL cleanup_ryzenadj(ryzen_access ry){
 	if (ry->table_values){
 		free(ry->table_values);
 	}
-	free_mem_obj(ry->mem_obj);
+	if (ry->mem_obj){
+		free_mem_obj(ry->mem_obj);
+	}
 	free_smu(ry->psmu);
 	free_smu(ry->mp1_smu);
 	free_nb(ry->nb);
