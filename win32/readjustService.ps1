@@ -28,6 +28,8 @@ $monitorField = "fast_limit"
 $monitorPowerSlider = $true
 # HWiNFO needs to be restartet after this script did run the first time with this option
 $updateHWINFOSensors = $false
+# some Zen3 devices have a locked STAPM limit, this workarround resets the stapm timer to have unlimited stapm. Use max stapm_limit and stapm_time (usually 500) to triger as less resets as possible
+$resetSTAPMUsage = $false
 
 function doAdjust_ACmode {
     $Script:repeatWaitTimeSeconds = 1    #only use values below 5s if you are using $monitorField
@@ -110,6 +112,7 @@ $apiHeader = @'
 [DllImport("libryzenadj.dll")] public static extern IntPtr get_table_values(IntPtr ry);
 [DllImport("libryzenadj.dll")] public static extern float get_stapm_limit(IntPtr ry);
 [DllImport("libryzenadj.dll")] public static extern float get_stapm_value(IntPtr ry);
+[DllImport("libryzenadj.dll")] public static extern float get_stapm_time(IntPtr ry);
 [DllImport("libryzenadj.dll")] public static extern float get_fast_limit(IntPtr ry);
 [DllImport("libryzenadj.dll")] public static extern float get_fast_value(IntPtr ry);
 [DllImport("libryzenadj.dll")] public static extern float get_slow_limit(IntPtr ry);
@@ -241,7 +244,7 @@ function updateMonitorFieldAdjResult {
     }
 }
 
-function testAdjustments {
+function testConfiguration {
     Write-Host "Test Adjustments"
     if($Script:systemPowerStatus.ACLineStatus){
         doAdjust_BatteryMode
@@ -257,13 +260,17 @@ function testAdjustments {
     testMonitorField
     updateMonitorFieldAdjResult
 
+    if($resetSTAPMUsage -and [ryzen.adj]::get_stapm_time($ry) -eq 1) {
+        Write-Error "resetSTAPMUsage function does only work on devices with active STAPM control and don't do anything on devices with enabled STT control."
+    }
+
     if($Error -and $showErrorPopupsDuringInit){
         $answer = [System.Windows.Forms.MessageBox]::Show("Your Adjustment configuration did not work.$NL$NL$($Error -join $NL)", $PSCommandPath,
             [System.Windows.Forms.MessageBoxButtons]::AbortRetryIgnore,
             [System.Windows.Forms.MessageBoxIcon]::Warning)
         $Error.Clear()
         if($answer -eq "Abort"){ exit 1 }
-        if($answer -eq "Retry"){ testAdjustments }
+        if($answer -eq "Retry"){ testConfiguration }
     }
 }
 
@@ -349,6 +356,23 @@ function updateHWINFOSensors {
     #setHWINFOValue Usage11 $pmTable[546]
 }
 
+function resetSTAPMIfNeeded {
+    $stapm_limit = [ryzen.adj]::get_stapm_limit($ry)
+    $stapm_value = [ryzen.adj]::get_stapm_value($ry)
+    $stapm_hysteresis = 1 #Throttling starts arround ~0.9W before limit
+
+    if ($stapm_value -gt ($stapm_limit - $stapm_hysteresis)) {
+        $stapm_time = [ryzen.adj]::get_stapm_time($ry)
+        $reduced_stapm_limit = ($stapm_limit - 5) #reduce stapm by 5W
+        Write-Host "[STAPM_RESET] stapm_value ($stapm_value) nearing stapm_limit ($stapm_limit), resetting..."
+        [void][ryzen.adj]::set_stapm_limit($ry, ($reduced_stapm_limit) * 1000)
+        [void][ryzen.adj]::set_stapm_time($ry, 0)
+        [Threading.Thread]::Sleep(10) #10ms is usually enough time
+        [void][ryzen.adj]::set_stapm_time($ry, $stapm_time)
+        [void][ryzen.adj]::set_stapm_limit($ry, $stapm_limit * 1250) # add 25% STAPM limit in case we are at battery saving mode where applied values get reduced by 10% or 20%
+    }
+}
+
 if(-not $Script:repeatWaitTimeSeconds) { $Script:repeatWaitTimeSeconds = 5 }
 $Script:monitorFieldAdjResult = 0; #adjust result will be used for monitoring because SMU may only set 90% and 80% of your value
 $Script:monitorFieldAdjTarget = 0;
@@ -362,7 +386,7 @@ $Script:dcSlider = $powerkey.GetValue("ActiveOverlayDCPowerScheme")
 $systemPowerStatus = New-Object ryzen.adj+SystemPowerStatus
 [void][ryzen.adj]::GetSystemPowerStatus([ref]$systemPowerStatus)
 
-testAdjustments
+testConfiguration
 
 <# Example how to get 560 lines of ptable
 $pmTable = [float[]]::new(560)
@@ -382,7 +406,7 @@ if($mtxtArray.Length){
 Write-Host "$processType every $Script:repeatWaitTimeSeconds seconds..."
 while($true) {
     $doAdjust = !$monitorField -and !$monitorPowerSlider
-    if($monitorField -or $updateHWINFOSensors) {
+    if($monitorField -or $updateHWINFOSensors -or $resetSTAPMUsage) {
         [void][ryzen.adj]::refresh_table($ry)
         #[System.Runtime.InteropServices.Marshal]::Copy($tablePtr, $pmTable, 0, 560);
     }
@@ -403,6 +427,10 @@ while($true) {
             Write-Host "$monitorField value unexpectedly changed from $Script:monitorFieldAdjResult to $monitorValue"
             $doAdjust = $true
         }
+    }
+
+    if($resetSTAPMUsage){
+        resetSTAPMIfNeeded
     }
 
     if($doAdjust){
