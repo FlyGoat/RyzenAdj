@@ -1058,7 +1058,7 @@ EXP float CALL get_tctl_temp(ryzen_access ry){
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
-		_read_float_value(0x50);
+		_read_float_value(0x58); //use core1 because core0 is not reported on dual core cpus
 	case 0x00370000:
 	case 0x00370001:
 	case 0x00370002:
@@ -1084,7 +1084,7 @@ EXP float CALL get_tctl_temp_value(ryzen_access ry){
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
-		_read_float_value(0x54);
+		_read_float_value(0x5C); //use core1 because core0 is not reported on dual core cpus
 	case 0x00370000:
 	case 0x00370001:
 	case 0x00370002:
