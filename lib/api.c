@@ -1227,6 +1227,62 @@ EXP float CALL get_psi0soc_current(ryzen_access ry){
 	return NAN;
 }
 
+EXP float CALL get_cclk_setpoint(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x001E0001:
+	case 0x001E0002:
+	case 0x001E0003:
+	case 0x001E0004:
+	case 0x001E0005:
+	case 0x001E000A:
+	case 0x001E0101:
+		_read_float_value(0x98); //use core1 because core0 is not reported on dual core cpus;
+	case 0x00370000:
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0xFC);
+	case 0x00400001:
+	case 0x00400002:
+	case 0x00400003:
+	case 0x00400004:
+	case 0x00400005:
+		_read_float_value(0x100);
+	}
+	return NAN;
+}
+
+EXP float CALL get_cclk_busy_value(ryzen_access ry){
+	switch (ry->table_ver)
+	{
+	case 0x001E0001:
+	case 0x001E0002:
+	case 0x001E0003:
+	case 0x001E0004:
+	case 0x001E0005:
+	case 0x001E000A:
+	case 0x001E0101:
+		_read_float_value(0x9C); //use core1 because core0 is not reported on dual core cpus
+	case 0x00370000:
+	case 0x00370001:
+	case 0x00370002:
+	case 0x00370003:
+	case 0x00370004:
+	case 0x00370005:
+		_read_float_value(0x100);
+	case 0x00400001:
+	case 0x00400002:
+	case 0x00400003:
+	case 0x00400004:
+	case 0x00400005:
+		_read_float_value(0x104);
+	}
+	return NAN;
+}
+
 EXP float CALL get_stapm_time(ryzen_access ry)
 {
 	switch (ry->table_ver)

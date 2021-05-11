@@ -124,6 +124,8 @@ EXP float CALL get_psi0_current(ryzen_access ry);
 EXP float CALL get_psi0soc_current(ryzen_access ry);
 EXP float CALL get_stapm_time(ryzen_access ry);
 EXP float CALL get_slow_time(ryzen_access ry);
+EXP float CALL get_cclk_setpoint(ryzen_access ry);
+EXP float CALL get_cclk_busy_value(ryzen_access ry);
 
 
 #ifdef __cplusplus
