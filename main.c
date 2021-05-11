@@ -97,9 +97,9 @@ static void show_info_table(ryzen_access ry)
 	}
 
 	//print table in github markdown
-	printf("|       Name       |   Value   |      Paramter      |\n");
-	printf("|------------------|-----------|--------------------|\n");
-	char tableFormat[] = "| %-16s | %9.3lf | %-18s |\n";
+	printf("|        Name         |   Value   |      Paramter      |\n");
+	printf("|---------------------|-----------|--------------------|\n");
+	char tableFormat[] = "| %-19s | %9.3lf | %-18s |\n";
 	printf(tableFormat, "STAPM LIMIT", get_stapm_limit(ry), "stapm-limit");
 	printf(tableFormat, "STAPM VALUE", get_stapm_value(ry), "");
 	printf(tableFormat, "PPT LIMIT FAST", get_fast_limit(ry), "fast-limit");
@@ -124,6 +124,8 @@ static void show_info_table(ryzen_access ry)
 	printf(tableFormat, "STT VALUE APU", get_apu_skin_temp_value(ry), "");
 	printf(tableFormat, "STT LIMIT dGPU", get_dgpu_skin_temp_limit(ry), "dgpu-skin-temp");
 	printf(tableFormat, "STT VALUE dGPU", get_dgpu_skin_temp_value(ry), "");
+	printf(tableFormat, "CCLK Boost SETPOINT", get_cclk_setpoint(ry), "power-saving /");
+	printf(tableFormat, "CCLK BUSY VALUE", get_cclk_busy_value(ry), "max-performance");
 }
 
 static void show_table_dump(ryzen_access ry, int any_adjust_applied)
