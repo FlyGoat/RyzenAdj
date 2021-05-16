@@ -36,10 +36,11 @@ function doAdjust_ACmode {
     adjust "fast_limit" 46000
     adjust "slow_limit" 25000
     #adjust "slow_time" 30
-    #adjust "tctl_temp" 95
+    #adjust "tctl_temp" 93
     #adjust "apu_skin_temp_limit" 50
     #adjust "vrmmax_current" 100000
-    #adjust "<any_other_field>" 1234
+    #replace any_other_field with additional adjustments. Name is equal to RyzenAdj options but it uses _ instead of -
+    #adjust "any_other_field" 1234
 
     #custom code, for example set fan controll back to auto
     #values (WriteRegister: 47, FanSpeedResetValue:128) extracted from similar devices at https://github.com/hirschmann/nbfc/blob/master/Configs/
@@ -55,7 +56,7 @@ function doAdjust_BatteryMode {
     $Script:repeatWaitTimeSeconds = 10   #do less reapplies and less HWiNFO updates to save power
     adjust "fast_limit" 26000
     adjust "slow_limit" 10000
-    #adjust "<any_other_field>" 1234
+    #adjust "any_other_field" 1234
 
     if($Script:dcSlider -eq $Script:betterBattery){
         #put adjustments for energie saving slider position here: for example disable fan to save power
