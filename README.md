@@ -68,6 +68,7 @@ then the command line should be:
 ### Documentation
 - [Supported Models](https://github.com/FlyGoat/RyzenAdj/wiki/Supported-Models)
 - [Renoir Tuning Guide](https://github.com/FlyGoat/RyzenAdj/wiki/Renoir-Tuning-Guide)
+- [Options](https://github.com/FlyGoat/RyzenAdj/wiki/Options)
 - [FAQ](https://github.com/FlyGoat/RyzenAdj/wiki/FAQ)
 
 ## Installation
