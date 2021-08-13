@@ -373,6 +373,22 @@ do {                                                 \
 	}                                                \
 } while (0);
 
+
+#define _do_adjust_psmu(OPT) \
+do {                                                 \
+	smu_service_args_t args = {0, 0, 0, 0, 0, 0};    \
+	int resp;										 \
+	args.arg0 = value;                               \
+	resp = smu_service_req(ry->psmu, OPT, &args); \
+	if (resp == REP_MSG_OK) {                        \
+		return 0;                                    \
+	} else if (resp == REP_MSG_UnknownCmd) {         \
+		return ADJ_ERR_SMU_UNSUPPORTED;              \
+	} else {                                         \
+		return ADJ_ERR_SMU_REJECTED;                 \
+	}                                                \
+} while (0);
+
 #define _read_float_value(OFFSET)                   \
 do {                                                \
 	if(!ry->table_values)                           \
@@ -754,6 +770,16 @@ EXP int CALL set_skin_temp_power_limit(ryzen_access ry, uint32_t value) {
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
 		_do_adjust(0x53);
+		break;
+	}
+	return ADJ_ERR_FAM_UNSUPPORTED;
+}
+
+EXP int CALL set_gfx_clk(ryzen_access ry, uint32_t value) {
+	switch (ry->family)
+	{
+	case FAM_RENOIR:
+		_do_adjust_psmu(0x89);
 		break;
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
