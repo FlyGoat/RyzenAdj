@@ -95,6 +95,7 @@ EXP int CALL set_apu_skin_temp_limit(ryzen_access, uint32_t value);
 EXP int CALL set_dgpu_skin_temp_limit(ryzen_access, uint32_t value);
 EXP int CALL set_apu_slow_limit(ryzen_access, uint32_t value);
 EXP int CALL set_skin_temp_power_limit(ryzen_access ry, uint32_t value);
+EXP int CALL set_gfx_clk(ryzen_access ry, uint32_t value);
 EXP int CALL set_power_saving(ryzen_access ry);
 EXP int CALL set_max_performance(ryzen_access ry);
 
