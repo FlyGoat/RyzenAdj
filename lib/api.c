@@ -22,6 +22,12 @@ EXP ryzen_access CALL init_ryzenadj()
 
 	ry = (ryzen_access)malloc((sizeof(*ry)));
 
+	if (!ry){
+		printf("Out of memory\n");
+		return NULL;
+	}
+	memset(ry, 0, sizeof(*ry));
+
 	ry->family = family;
 	//init version and power metric table only on demand to avoid unnecessary SMU writes
 	ry->bios_if_ver = 0;
