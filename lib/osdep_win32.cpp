@@ -31,6 +31,8 @@ HANDLE physicalMemoryHandle;
 extern "C" pci_obj_t init_pci_obj(){
     InitializeOls();
     int dllStatus = GetDllStatus();
+    if(dllStatus == 0)
+        return &nb_pci_obj;
     switch(dllStatus)
     {
         case OLS_DLL_NO_ERROR: return &nb_pci_obj;
@@ -52,8 +54,6 @@ extern "C" pci_obj_t init_pci_obj(){
         case OLS_DLL_UNKNOWN_ERROR:
             printf("WinRing0 Err: unknown error\n");
             break;
-        default:
-            printf("WinRing0 Err: unknown status code %d\n", dllStatus);
     }
     
     return NULL;
