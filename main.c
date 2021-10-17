@@ -39,7 +39,7 @@ do {                                                                            
 		int adjerr = set_##ARG(ry);                                               \
 		if (!adjerr){                                                             \
 			any_adjust_applied = 1;                                               \
-			printf("Sucessfully enable " STRINGIFY(ARG) "\n");                    \
+			printf("Sucessfully enable " STRINGIFY(ARG) );                        \
 		} else if (adjerr == ADJ_ERR_FAM_UNSUPPORTED) {                           \
 			printf("set_" STRINGIFY(ARG) " is not supported on this family\n");   \
 			err = -1;                                                             \
@@ -92,7 +92,7 @@ static void show_info_table(ryzen_access ry)
 	//get refresh table after adjust
 	int errorcode = refresh_table(ry);
 	if(errorcode){
-		printf("Unable to refresh power metric table: %d\n", errorcode);
+		printf("Unable to refresh power monitoring table: %d\n", errorcode);
 		return;
 	}
 
@@ -193,6 +193,7 @@ int main(int argc, const char **argv)
 	uint32_t max_socclk_freq = -1, min_socclk_freq = -1, max_fclk_freq = -1, min_fclk_freq = -1, max_vcn = -1, min_vcn = -1, max_lclk = -1, min_lclk = -1;
 	uint32_t max_gfxclk_freq = -1, min_gfxclk_freq = -1, prochot_deassertion_ramp = -1, apu_skin_temp_limit = -1, dgpu_skin_temp_limit = -1, apu_slow_limit = -1;
 	uint32_t skin_temp_power_limit = -1;
+	uint32_t gfx_clk = -1;
 
 	//create structure for parseing
 	struct argparse_option options[] = {
@@ -228,6 +229,7 @@ int main(int argc, const char **argv)
 		OPT_U32('\0', "dgpu-skin-temp", &dgpu_skin_temp_limit, "dGPU Skin Temperature Limit   - STT LIMIT dGPU (degree C)"),
 		OPT_U32('\0', "apu-slow-limit", &apu_slow_limit, "APU PPT Slow Power limit for A+A dGPU platform - PPT LIMIT APU (mW)"),
 		OPT_U32('\0', "skin-temp-limit", &skin_temp_power_limit, "Skin Temperature Power Limit (mW)"),
+		OPT_U32('\0', "gfx-clk", &gfx_clk, "Forced Clock Speed MHz (Renoir Only)"),
 		OPT_BOOLEAN('\0', "power-saving", &power_saving, "Hidden options to improve power efficiency (is set when AC unplugged): behavior depends on CPU generation, Device and Manufacture"),
 		OPT_BOOLEAN('\0', "max-performance", &max_performance, "Hidden options to improve performance (is set when AC plugged in): behavior depends on CPU generation, Device and Manufacture"),
 		OPT_GROUP("P-State Functions"),
@@ -289,6 +291,7 @@ int main(int argc, const char **argv)
 	_do_adjust(dgpu_skin_temp_limit);
 	_do_adjust(apu_slow_limit);
 	_do_adjust(skin_temp_power_limit);
+	_do_adjust(gfx_clk);
 	_do_enable(power_saving);
 	_do_enable(max_performance);
 
