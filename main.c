@@ -39,7 +39,7 @@ do {                                                                            
 		int adjerr = set_##ARG(ry);                                               \
 		if (!adjerr){                                                             \
 			any_adjust_applied = 1;                                               \
-			printf("Sucessfully enable " STRINGIFY(ARG) );                        \
+			printf("Sucessfully enable " STRINGIFY(ARG) "\n");                    \
 		} else if (adjerr == ADJ_ERR_FAM_UNSUPPORTED) {                           \
 			printf("set_" STRINGIFY(ARG) " is not supported on this family\n");   \
 			err = -1;                                                             \
@@ -92,7 +92,7 @@ static void show_info_table(ryzen_access ry)
 	//get refresh table after adjust
 	int errorcode = refresh_table(ry);
 	if(errorcode){
-		printf("Unable to refresh power monitoring table: %d\n", errorcode);
+		printf("Unable to refresh power metric table: %d\n", errorcode);
 		return;
 	}
 
