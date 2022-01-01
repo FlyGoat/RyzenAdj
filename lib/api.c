@@ -22,6 +22,12 @@ EXP ryzen_access CALL init_ryzenadj()
 
 	ry = (ryzen_access)malloc((sizeof(*ry)));
 
+	if (!ry){
+		printf("Out of memory\n");
+		return NULL;
+	}
+	memset(ry, 0, sizeof(*ry));
+
 	ry->family = family;
 	//init version and power metric table only on demand to avoid unnecessary SMU writes
 	ry->bios_if_ver = 0;
@@ -143,25 +149,25 @@ int request_table_ver_and_size(ryzen_access ry)
 
 	switch (ry->table_ver)
 	{
-		case 0x1E0001: ry->table_size = 0x568; break;
-		case 0x1E0002: ry->table_size = 0x580; break;
-		case 0x1E0003: ry->table_size = 0x578; break;
-		case 0x1E0004: ry->table_size = 0x608; break;
-		case 0x1E0005: ry->table_size = 0x608; break;
-		case 0x1E000A: ry->table_size = 0x608; break;
-		case 0x1E0101: ry->table_size = 0x608; break;
-		case 0x370000: ry->table_size = 0x794; break;
-		case 0x370001: ry->table_size = 0x884; break;
-		case 0x370002: ry->table_size = 0x88C; break;
-		case 0x370003: ry->table_size = 0x8AC; break;
-		case 0x370004: ry->table_size = 0x8AC; break;
-		case 0x370005: ry->table_size = 0x8C8; break;
-		case 0x400001: ry->table_size = 0x910; break;
-		case 0x400002: ry->table_size = 0x928; break;
-		case 0x400003: ry->table_size = 0x94C; break;
-		case 0x400004: ry->table_size = 0x944; break;
-		case 0x400005: ry->table_size = 0x944; break;
-		case 0x3F0000: ry->table_size = 0x7AC; break;
+	case 0x1E0001: ry->table_size = 0x568; break;
+	case 0x1E0002: ry->table_size = 0x580; break;
+	case 0x1E0003: ry->table_size = 0x578; break;
+	case 0x1E0004: ry->table_size = 0x608; break;
+	case 0x1E0005: ry->table_size = 0x608; break;
+	case 0x1E000A: ry->table_size = 0x608; break;
+	case 0x1E0101: ry->table_size = 0x608; break;
+	case 0x370000: ry->table_size = 0x794; break;
+	case 0x370001: ry->table_size = 0x884; break;
+	case 0x370002: ry->table_size = 0x88C; break;
+	case 0x370003: ry->table_size = 0x8AC; break;
+	case 0x370004: ry->table_size = 0x8AC; break;
+	case 0x370005: ry->table_size = 0x8C8; break;
+	case 0x400001: ry->table_size = 0x910; break;
+	case 0x400002: ry->table_size = 0x928; break;
+	case 0x400003: ry->table_size = 0x94C; break;
+	case 0x400004: ry->table_size = 0x944; break;
+	case 0x400005: ry->table_size = 0x944; break;
+	case 0x3F0000: ry->table_size = 0x7AC; break;
 		default:
 			//use a larger size then the largest known table to be able to test real table size of unknown tables
 			ry->table_size = 0xA00;
@@ -776,6 +782,7 @@ EXP int CALL set_skin_temp_power_limit(ryzen_access ry, uint32_t value) {
 	return ADJ_ERR_FAM_UNSUPPORTED;
 }
 
+
 EXP int CALL set_gfx_clk(ryzen_access ry, uint32_t value) {
 	switch (ry->family)
 	{
@@ -901,7 +908,7 @@ EXP float CALL get_slow_limit(ryzen_access ry){_read_float_value(0x10);}
 EXP float CALL get_slow_value(ryzen_access ry){_read_float_value(0x14);}
 
 //custom section, offsets are depending on table version
-EXP float CALL get_apu_slow_limit(ryzen_access ry){
+EXP float CALL get_apu_slow_limit(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x00370000:
@@ -920,7 +927,7 @@ EXP float CALL get_apu_slow_limit(ryzen_access ry){
 	}
 	return NAN;
 }
-EXP float CALL get_apu_slow_value(ryzen_access ry){
+EXP float CALL get_apu_slow_value(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x00370000:
@@ -939,7 +946,7 @@ EXP float CALL get_apu_slow_value(ryzen_access ry){
 	}
 	return NAN;
 }
-EXP float CALL get_vrm_current(ryzen_access ry){
+EXP float CALL get_vrm_current(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x001E0001:
@@ -965,7 +972,7 @@ EXP float CALL get_vrm_current(ryzen_access ry){
 	}
 	return NAN;
 }
-EXP float CALL get_vrm_current_value(ryzen_access ry){
+EXP float CALL get_vrm_current_value(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x001E0001:
@@ -991,7 +998,7 @@ EXP float CALL get_vrm_current_value(ryzen_access ry){
 	}
 	return NAN;
 }
-EXP float CALL get_vrmsoc_current(ryzen_access ry){
+EXP float CALL get_vrmsoc_current(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x001E0001:
@@ -1017,7 +1024,7 @@ EXP float CALL get_vrmsoc_current(ryzen_access ry){
 	}
 	return NAN;
 }
-EXP float CALL get_vrmsoc_current_value(ryzen_access ry){
+EXP float CALL get_vrmsoc_current_value(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x001E0001:
@@ -1043,7 +1050,7 @@ EXP float CALL get_vrmsoc_current_value(ryzen_access ry){
 	}
 	return NAN;
 }
-EXP float CALL get_vrmmax_current(ryzen_access ry){
+EXP float CALL get_vrmmax_current(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x001E0001:
@@ -1069,7 +1076,7 @@ EXP float CALL get_vrmmax_current(ryzen_access ry){
 	}
 	return NAN;
 }
-EXP float CALL get_vrmmax_current_value(ryzen_access ry){
+EXP float CALL get_vrmmax_current_value(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x001E0001:
@@ -1095,7 +1102,7 @@ EXP float CALL get_vrmmax_current_value(ryzen_access ry){
 	}
 	return NAN;
 }
-EXP float CALL get_vrmsocmax_current(ryzen_access ry){
+EXP float CALL get_vrmsocmax_current(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x001E0001:
@@ -1121,7 +1128,7 @@ EXP float CALL get_vrmsocmax_current(ryzen_access ry){
 	}
 	return NAN;
 }
-EXP float CALL get_vrmsocmax_current_value(ryzen_access ry){
+EXP float CALL get_vrmsocmax_current_value(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x001E0001:
@@ -1147,7 +1154,7 @@ EXP float CALL get_vrmsocmax_current_value(ryzen_access ry){
 	}
 	return NAN;
 }
-EXP float CALL get_tctl_temp(ryzen_access ry){
+EXP float CALL get_tctl_temp(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x001E0001:
@@ -1174,7 +1181,7 @@ EXP float CALL get_tctl_temp(ryzen_access ry){
 	}
 	return NAN;
 }
-EXP float CALL get_tctl_temp_value(ryzen_access ry){
+EXP float CALL get_tctl_temp_value(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x001E0001:
@@ -1201,7 +1208,7 @@ EXP float CALL get_tctl_temp_value(ryzen_access ry){
 	}
 	return NAN;
 }
-EXP float CALL get_apu_skin_temp_limit(ryzen_access ry){
+EXP float CALL get_apu_skin_temp_limit(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x00370000:
@@ -1220,7 +1227,7 @@ EXP float CALL get_apu_skin_temp_limit(ryzen_access ry){
 	}
 	return NAN;
 }
-EXP float CALL get_apu_skin_temp_value(ryzen_access ry){
+EXP float CALL get_apu_skin_temp_value(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x00370000:
@@ -1239,7 +1246,7 @@ EXP float CALL get_apu_skin_temp_value(ryzen_access ry){
 	}
 	return NAN;
 }
-EXP float CALL get_dgpu_skin_temp_limit(ryzen_access ry){
+EXP float CALL get_dgpu_skin_temp_limit(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x00370000:
@@ -1257,7 +1264,7 @@ EXP float CALL get_dgpu_skin_temp_limit(ryzen_access ry){
 	}
 	return NAN;
 }
-EXP float CALL get_dgpu_skin_temp_value(ryzen_access ry){
+EXP float CALL get_dgpu_skin_temp_value(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x00370000:
@@ -1276,7 +1283,7 @@ EXP float CALL get_dgpu_skin_temp_value(ryzen_access ry){
 	return NAN;
 }
 
-EXP float CALL get_psi0_current(ryzen_access ry){
+EXP float CALL get_psi0_current(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x001E0001:
@@ -1303,7 +1310,7 @@ EXP float CALL get_psi0_current(ryzen_access ry){
 	return NAN;
 }
 
-EXP float CALL get_psi0soc_current(ryzen_access ry){
+EXP float CALL get_psi0soc_current(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x001E0001:
@@ -1330,7 +1337,7 @@ EXP float CALL get_psi0soc_current(ryzen_access ry){
 	return NAN;
 }
 
-EXP float CALL get_cclk_setpoint(ryzen_access ry){
+EXP float CALL get_cclk_setpoint(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x001E0001:
@@ -1358,7 +1365,7 @@ EXP float CALL get_cclk_setpoint(ryzen_access ry){
 	return NAN;
 }
 
-EXP float CALL get_cclk_busy_value(ryzen_access ry){
+EXP float CALL get_cclk_busy_value(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x001E0001:
@@ -1423,7 +1430,7 @@ EXP float CALL get_stapm_time(ryzen_access ry)
 	return NAN;
 }
 
-EXP float CALL get_slow_time(ryzen_access ry){
+EXP float CALL get_slow_time(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
 	case 0x001E0002:
@@ -1555,7 +1562,7 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 		case 0x00400005:
 			_read_float_value(0x330); //816
 		}
-	
+
 	case 5:
 		switch (ry->table_ver)
 		{
@@ -1696,7 +1703,7 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x350); //848
-		
+
 		}
 	case 5:
 		switch (ry->table_ver)
@@ -2277,3 +2284,4 @@ EXP float CALL get_socket_power(ryzen_access ry) {
 	}
 	return NAN;
 }
+
