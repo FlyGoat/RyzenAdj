@@ -626,6 +626,15 @@ EXP int CALL set_psi0_current(ryzen_access ry, uint32_t value){
 	return ADJ_ERR_FAM_UNSUPPORTED;
 }
 
+EXP int CALL set_psi3cpu_current(ryzen_access ry, uint32_t value){
+    switch (ry->family)
+    {
+        case FAM_VANGOGH:
+            _do_adjust(0x20);
+    }
+    return ADJ_ERR_FAM_UNSUPPORTED;
+}
+
 EXP int CALL set_psi0soc_current(ryzen_access ry, uint32_t value){
 	switch (ry->family)
 	{
@@ -640,6 +649,15 @@ EXP int CALL set_psi0soc_current(ryzen_access ry, uint32_t value){
 		_do_adjust(0x1f);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
+}
+
+EXP int CALL set_psi3gfx_current(ryzen_access ry, uint32_t value){
+    switch (ry->family)
+    {
+        case FAM_VANGOGH:
+            _do_adjust(0x21);
+    }
+    return ADJ_ERR_FAM_UNSUPPORTED;
 }
 
 EXP int CALL set_max_gfxclk_freq(ryzen_access ry, uint32_t value) {
