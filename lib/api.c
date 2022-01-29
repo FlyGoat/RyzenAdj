@@ -549,8 +549,8 @@ EXP int CALL set_vrmsoc_current(ryzen_access ry, uint32_t value){
 EXP int CALL set_vrmgfx_current(ryzen_access ry, uint32_t value){
     switch (ry->family)
     {
-        case FAM_VANGOGH:
-            _do_adjust(0x1c);
+    case FAM_VANGOGH:
+        _do_adjust(0x1c);
     }
     return ADJ_ERR_FAM_UNSUPPORTED;
 }
@@ -558,8 +558,8 @@ EXP int CALL set_vrmgfx_current(ryzen_access ry, uint32_t value){
 EXP int CALL set_vrmcvip_current(ryzen_access ry, uint32_t value){
     switch (ry->family)
     {
-        case FAM_VANGOGH:
-            _do_adjust(0x1d);
+    case FAM_VANGOGH:
+        _do_adjust(0x1d);
     }
     return ADJ_ERR_FAM_UNSUPPORTED;
 }
@@ -629,8 +629,8 @@ EXP int CALL set_psi0_current(ryzen_access ry, uint32_t value){
 EXP int CALL set_psi3cpu_current(ryzen_access ry, uint32_t value){
     switch (ry->family)
     {
-        case FAM_VANGOGH:
-            _do_adjust(0x20);
+    case FAM_VANGOGH:
+        _do_adjust(0x20);
     }
     return ADJ_ERR_FAM_UNSUPPORTED;
 }
@@ -654,8 +654,8 @@ EXP int CALL set_psi0soc_current(ryzen_access ry, uint32_t value){
 EXP int CALL set_psi3gfx_current(ryzen_access ry, uint32_t value){
     switch (ry->family)
     {
-        case FAM_VANGOGH:
-            _do_adjust(0x21);
+    case FAM_VANGOGH:
+        _do_adjust(0x21);
     }
     return ADJ_ERR_FAM_UNSUPPORTED;
 }
