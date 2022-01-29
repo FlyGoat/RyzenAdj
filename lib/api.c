@@ -413,6 +413,8 @@ EXP int CALL set_stapm_limit(ryzen_access ry, uint32_t value){
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
+    case FAM_VANGOGH:
+    case FAM_REMBRANDT:
 		_do_adjust(0x14);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -429,6 +431,8 @@ EXP int CALL set_fast_limit(ryzen_access ry, uint32_t value){
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
+    case FAM_VANGOGH:
+    case FAM_REMBRANDT:
 		_do_adjust(0x15);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -445,6 +449,8 @@ EXP int CALL set_slow_limit(ryzen_access ry, uint32_t value){
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
+    case FAM_VANGOGH:
+    case FAM_REMBRANDT:
 		_do_adjust(0x16);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -461,6 +467,8 @@ EXP int CALL set_slow_time(ryzen_access ry, uint32_t value){
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
+    case FAM_VANGOGH:
+    case FAM_REMBRANDT:
 		_do_adjust(0x17);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -477,6 +485,8 @@ EXP int CALL set_stapm_time(ryzen_access ry, uint32_t value){
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
+    case FAM_VANGOGH:
+    case FAM_REMBRANDT:
 		_do_adjust(0x18);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -493,6 +503,8 @@ EXP int CALL set_tctl_temp(ryzen_access ry, uint32_t value){
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
+    case FAM_VANGOGH:
+    case FAM_REMBRANDT:
 		_do_adjust(0x19);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -509,6 +521,8 @@ EXP int CALL set_vrm_current(ryzen_access ry, uint32_t value){
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
+    case FAM_VANGOGH:
+    case FAM_REMBRANDT:
 		_do_adjust(0x1a);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -525,6 +539,8 @@ EXP int CALL set_vrmsoc_current(ryzen_access ry, uint32_t value){
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
+    case FAM_VANGOGH:
+    case FAM_REMBRANDT:
 		_do_adjust(0x1b);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -541,7 +557,11 @@ EXP int CALL set_vrmmax_current(ryzen_access ry, uint32_t value){
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
+    case FAM_REMBRANDT:
 		_do_adjust(0x1c);
+        break;
+    case FAM_VANGOGH:
+        _do_adjust(0x1e);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
 }
@@ -557,6 +577,7 @@ EXP int CALL set_vrmsocmax_current(ryzen_access ry, uint32_t value){
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
+    case FAM_REMBRANDT:
 		_do_adjust(0x1d);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -724,9 +745,14 @@ EXP int CALL set_prochot_deassertion_ramp(ryzen_access ry, uint32_t value) {
 		break;
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
-	case FAM_CEZANNE:
-		_do_adjust(0x20);
-		break;
+    case FAM_CEZANNE:
+        _do_adjust(0x20);
+        break;
+    case FAM_VANGOGH:
+        _do_adjust(0x22);
+        break;
+    case FAM_REMBRANDT:
+        _do_adjust(0x1f);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
 }
@@ -737,9 +763,13 @@ EXP int CALL set_apu_skin_temp_limit(ryzen_access ry, uint32_t value) {
 	{
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
-	case FAM_CEZANNE:
-		_do_adjust(0x38);
-		break;
+    case FAM_CEZANNE:
+        _do_adjust(0x38);
+        break;
+    case FAM_VANGOGH:
+    case FAM_REMBRANDT:
+        _do_adjust(0x33);
+        break;
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
 }
@@ -753,6 +783,10 @@ EXP int CALL set_dgpu_skin_temp_limit(ryzen_access ry, uint32_t value) {
 	case FAM_CEZANNE:
 		_do_adjust(0x39);
 		break;
+    case FAM_VANGOGH:
+    case FAM_REMBRANDT:
+        _do_adjust(0x34);
+        break;
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
 }
@@ -765,6 +799,9 @@ EXP int CALL set_apu_slow_limit(ryzen_access ry, uint32_t value) {
 	case FAM_CEZANNE:
 		_do_adjust(0x21);
 		break;
+    case FAM_REMBRANDT:
+        _do_adjust(0x23);
+        break;
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
 }
@@ -777,6 +814,10 @@ EXP int CALL set_skin_temp_power_limit(ryzen_access ry, uint32_t value) {
 	case FAM_CEZANNE:
 		_do_adjust(0x53);
 		break;
+    case FAM_VANGOGH:
+    case FAM_REMBRANDT:
+        _do_adjust(0x4a);
+        break;
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
 }
@@ -803,6 +844,8 @@ EXP int CALL set_power_saving(ryzen_access ry) {
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
+    case FAM_VANGOGH:
+    case FAM_REMBRANDT:
 		_do_adjust(0x12);
 		break;
 	}
@@ -821,6 +864,8 @@ EXP int CALL set_max_performance(ryzen_access ry) {
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
+    case FAM_VANGOGH:
+    case FAM_REMBRANDT:
 		_do_adjust(0x11);
 		break;
 	}

@@ -20,6 +20,8 @@ enum ryzen_family {
         FAM_CEZANNE,
         FAM_DALI,
         FAM_LUCIENNE,
+        FAM_VANGOGH,
+        FAM_REMBRANDT,
         FAM_END
 };
 
