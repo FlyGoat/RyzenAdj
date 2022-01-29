@@ -584,6 +584,15 @@ EXP int CALL set_vrmmax_current(ryzen_access ry, uint32_t value){
 	return ADJ_ERR_FAM_UNSUPPORTED;
 }
 
+EXP int CALL set_vrmgfxmax_current(ryzen_access ry, uint32_t value){
+    switch (ry->family)
+    {
+    case FAM_VANGOGH:
+        _do_adjust(0x1f);
+    }
+    return ADJ_ERR_FAM_UNSUPPORTED;
+}
+
 EXP int CALL set_vrmsocmax_current(ryzen_access ry, uint32_t value){
 	switch (ry->family)
 	{
