@@ -78,6 +78,7 @@ EXP int CALL set_stapm_time(ryzen_access, uint32_t value);
 EXP int CALL set_tctl_temp(ryzen_access, uint32_t value);
 EXP int CALL set_vrm_current(ryzen_access, uint32_t value);
 EXP int CALL set_vrmsoc_current(ryzen_access, uint32_t value);
+EXP int CALL set_vrmgfx_current(ryzen_access, uint32_t value);
 EXP int CALL set_vrmmax_current(ryzen_access, uint32_t value);
 EXP int CALL set_vrmsocmax_current(ryzen_access, uint32_t value);
 EXP int CALL set_psi0_current(ryzen_access, uint32_t value);
