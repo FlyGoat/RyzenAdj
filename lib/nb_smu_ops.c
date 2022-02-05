@@ -68,12 +68,21 @@ smu_t get_smu(nb_t nb, int smu_type) {
 
 	smu = (smu_t)malloc((sizeof(*smu)));
 	smu->nb = nb;
+
+	enum ryzen_family family = cpuid_get_family();
+
 	/* Fill SMU information */
 	switch(smu_type){
 		case TYPE_MP1:
-			smu->msg = MP1_C2PMSG_MESSAGE_ADDR;
-			smu->rep = MP1_C2PMSG_RESPONSE_ADDR;
-			smu->arg_base = MP1_C2PMSG_ARG_BASE;
+			if (family == FAM_REMBRANDT || family == FAM_VANGOGH) {
+				smu->msg = MP1_C2PMSG_MESSAGE_ADDR_2;
+				smu->rep = MP1_C2PMSG_RESPONSE_ADDR_2;
+				smu->arg_base = MP1_C2PMSG_ARG_BASE_2;
+			} else {
+				smu->msg = MP1_C2PMSG_MESSAGE_ADDR_1;
+				smu->rep = MP1_C2PMSG_RESPONSE_ADDR_1;
+				smu->arg_base = MP1_C2PMSG_ARG_BASE_1;
+			}
 			break;
 		case TYPE_PSMU:
 			smu->msg = PSMU_C2PMSG_MESSAGE_ADDR;

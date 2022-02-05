@@ -38,9 +38,14 @@ enum SMU_TYPE{
 	TYPE_COUNT,
 };
 
-#define MP1_C2PMSG_MESSAGE_ADDR          0x3B10528
-#define MP1_C2PMSG_RESPONSE_ADDR         0x3B10564
-#define MP1_C2PMSG_ARG_BASE              0x3B10998
+#define MP1_C2PMSG_MESSAGE_ADDR_1        0x3B10528
+#define MP1_C2PMSG_RESPONSE_ADDR_1       0x3B10564
+#define MP1_C2PMSG_ARG_BASE_1            0x3B10998
+
+/* For Vangogh and Rembrandt */
+#define MP1_C2PMSG_MESSAGE_ADDR_2        0x3B10528
+#define MP1_C2PMSG_RESPONSE_ADDR_2       0x3B10578
+#define MP1_C2PMSG_ARG_BASE_2            0x3B10998
 
 #define PSMU_C2PMSG_MESSAGE_ADDR          0x3B10a20
 #define PSMU_C2PMSG_RESPONSE_ADDR         0x3B10a80

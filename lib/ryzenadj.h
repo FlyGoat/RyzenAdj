@@ -20,6 +20,8 @@ enum ryzen_family {
         FAM_CEZANNE,
         FAM_DALI,
         FAM_LUCIENNE,
+        FAM_VANGOGH,
+        FAM_REMBRANDT,
         FAM_END
 };
 
@@ -154,8 +156,6 @@ EXP float CALL get_soc_power(ryzen_access ry);
 EXP float CALL get_soc_volt(ryzen_access ry);
 
 EXP float CALL get_socket_power(ryzen_access ry);
-
-
 
 #ifdef __cplusplus
 }
