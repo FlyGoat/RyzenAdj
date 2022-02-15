@@ -417,6 +417,7 @@ EXP int CALL set_stapm_limit(ryzen_access ry, uint32_t value){
 	case FAM_VANGOGH:
 	case FAM_REMBRANDT:
 		_do_adjust(0x14);
+		_do_adjust_psmu(0x31);
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
 }
@@ -927,6 +928,7 @@ EXP int CALL set_oc_clk(ryzen_access ry, uint32_t value) {
 	case FAM_CEZANNE:
 	case FAM_REMBRANDT:
 		_do_adjust(0x31);
+		_do_adjust_psmu(0x19);
 		break;
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -960,7 +962,7 @@ EXP int CALL set_oc_volt(ryzen_access ry, uint32_t value) {
 	return ADJ_ERR_FAM_UNSUPPORTED;
 }
 
-EXP int CALL disable_oc(ryzen_access ry) {
+EXP int CALL set_disable_oc(ryzen_access ry) {
 	uint32_t value = 0x0;
 	switch (ry->family)
 	{
@@ -975,7 +977,7 @@ EXP int CALL disable_oc(ryzen_access ry) {
 	return ADJ_ERR_FAM_UNSUPPORTED;
 }
 
-EXP int CALL enable_oc(ryzen_access ry) {
+EXP int CALL set_enable_oc(ryzen_access ry) {
 	uint32_t value = 0x0;
 	switch (ry->family)
 	{
