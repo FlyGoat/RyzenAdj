@@ -188,7 +188,7 @@ int main(int argc, const char **argv)
 	int err = 0;
 
 	int info = 0, dump_table = 0, any_adjust_applied = 0;
-	int power_saving = 0, max_performance = 0;
+	int power_saving = 0, max_performance = 0, enable_oc = 0x0, disable_oc = 0x0;
 	//init unsigned types with max value because we treat max value as unset
 	uint32_t stapm_limit = -1, fast_limit = -1, slow_limit = -1, slow_time = -1, stapm_time = -1, tctl_temp = -1;
 	uint32_t vrm_current = -1, vrmsoc_current = -1, vrmmax_current = -1, vrmsocmax_current = -1, psi0_current = -1, psi0soc_current = -1;
@@ -196,7 +196,7 @@ int main(int argc, const char **argv)
 	uint32_t max_socclk_freq = -1, min_socclk_freq = -1, max_fclk_freq = -1, min_fclk_freq = -1, max_vcn = -1, min_vcn = -1, max_lclk = -1, min_lclk = -1;
 	uint32_t max_gfxclk_freq = -1, min_gfxclk_freq = -1, prochot_deassertion_ramp = -1, apu_skin_temp_limit = -1, dgpu_skin_temp_limit = -1, apu_slow_limit = -1;
 	uint32_t skin_temp_power_limit = -1;
-	uint32_t gfx_clk = -1;
+	uint32_t gfx_clk = -1, oc_clk = -1, oc_volt = -1;
 
 	//create structure for parseing
 	struct argparse_option options[] = {
@@ -238,6 +238,10 @@ int main(int argc, const char **argv)
 		OPT_U32('\0', "apu-slow-limit", &apu_slow_limit, "APU PPT Slow Power limit for A+A dGPU platform - PPT LIMIT APU (mW)"),
 		OPT_U32('\0', "skin-temp-limit", &skin_temp_power_limit, "Skin Temperature Power Limit (mW)"),
 		OPT_U32('\0', "gfx-clk", &gfx_clk, "Forced Clock Speed MHz (Renoir Only)"),
+		OPT_U32('\0', "oc-clk", &oc_clk, "Forced Core Clock Speed MHz (Renoir and up Only)"),
+		OPT_U32('\0', "oc-volt", &oc_volt, "Forced Core VID: Must follow this calcuation (1.55 - [VID you want to set e.g. 1.25 for 1.25v]) / 0.00625 (Renoir and up Only)"),
+		OPT_BOOLEAN('\0', "enable-oc", &enable_oc, "Enable OC (Renoir and up Only)"),
+		OPT_BOOLEAN('\0', "disable-oc", &disable_oc, "Enable OC (Renoir and up Only)"),
 		OPT_BOOLEAN('\0', "power-saving", &power_saving, "Hidden options to improve power efficiency (is set when AC unplugged): behavior depends on CPU generation, Device and Manufacture"),
 		OPT_BOOLEAN('\0', "max-performance", &max_performance, "Hidden options to improve performance (is set when AC plugged in): behavior depends on CPU generation, Device and Manufacture"),
 		OPT_GROUP("P-State Functions"),
@@ -305,8 +309,12 @@ int main(int argc, const char **argv)
 	_do_adjust(apu_slow_limit);
 	_do_adjust(skin_temp_power_limit);
 	_do_adjust(gfx_clk);
+	_do_adjust(oc_clk);
+	_do_adjust(oc_volt);
 	_do_enable(power_saving);
 	_do_enable(max_performance);
+	_do_enable(enable_oc)
+	_do_enable(disable_oc);
 
 	if (!err) {
 		//call show table dump before anybody did call table refresh, because we want to copy the old values first
