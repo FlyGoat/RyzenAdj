@@ -78,15 +78,10 @@ EXP int CALL set_stapm_time(ryzen_access, uint32_t value);
 EXP int CALL set_tctl_temp(ryzen_access, uint32_t value);
 EXP int CALL set_vrm_current(ryzen_access, uint32_t value);
 EXP int CALL set_vrmsoc_current(ryzen_access, uint32_t value);
-EXP int CALL set_vrmgfx_current(ryzen_access, uint32_t value);
-EXP int CALL set_vrmcvip_current(ryzen_access, uint32_t value);
 EXP int CALL set_vrmmax_current(ryzen_access, uint32_t value);
 EXP int CALL set_vrmsocmax_current(ryzen_access, uint32_t value);
-EXP int CALL set_vrmgfxmax_current(ryzen_access, uint32_t value);
 EXP int CALL set_psi0_current(ryzen_access, uint32_t value);
-EXP int CALL set_psi3cpu_current(ryzen_access, uint32_t value);
 EXP int CALL set_psi0soc_current(ryzen_access, uint32_t value);
-EXP int CALL set_psi3gfx_current(ryzen_access, uint32_t value);
 EXP int CALL set_max_gfxclk_freq(ryzen_access, uint32_t value);
 EXP int CALL set_min_gfxclk_freq(ryzen_access, uint32_t value);
 EXP int CALL set_max_socclk_freq(ryzen_access, uint32_t value);
@@ -103,6 +98,11 @@ EXP int CALL set_dgpu_skin_temp_limit(ryzen_access, uint32_t value);
 EXP int CALL set_apu_slow_limit(ryzen_access, uint32_t value);
 EXP int CALL set_skin_temp_power_limit(ryzen_access ry, uint32_t value);
 EXP int CALL set_gfx_clk(ryzen_access ry, uint32_t value);
+EXP int CALL set_oc_clk(ryzen_access ry, uint32_t value);
+EXP int CALL set_per_core_oc_clk(ryzen_access ry, uint32_t value);
+EXP int CALL set_oc_volt(ryzen_access ry, uint32_t value);
+EXP int CALL disable_oc(ryzen_access ry);
+EXP int CALL enable_oc(ryzen_access ry);
 EXP int CALL set_power_saving(ryzen_access ry);
 EXP int CALL set_max_performance(ryzen_access ry);
 
@@ -135,6 +135,27 @@ EXP float CALL get_slow_time(ryzen_access ry);
 EXP float CALL get_cclk_setpoint(ryzen_access ry);
 EXP float CALL get_cclk_busy_value(ryzen_access ry);
 
+EXP float CALL get_core_clk(ryzen_access ry, uint32_t value);
+EXP float CALL get_core_volt(ryzen_access ry, uint32_t value);
+EXP float CALL get_core_power(ryzen_access ry, uint32_t value);
+EXP float CALL get_core_temp(ryzen_access ry, uint32_t value);
+
+EXP float CALL get_l3_clk(ryzen_access ry);
+EXP float CALL get_l3_logic(ryzen_access ry);
+EXP float CALL get_l3_vddm(ryzen_access ry);
+EXP float CALL get_l3_temp(ryzen_access ry);
+
+EXP float CALL get_gfx_clk(ryzen_access ry);
+EXP float CALL get_gfx_temp(ryzen_access ry);
+EXP float CALL get_gfx_volt(ryzen_access ry);
+
+EXP float CALL get_mem_clk(ryzen_access ry);
+EXP float CALL get_fclk(ryzen_access ry);
+
+EXP float CALL get_soc_power(ryzen_access ry);
+EXP float CALL get_soc_volt(ryzen_access ry);
+
+EXP float CALL get_socket_power(ryzen_access ry);
 
 #ifdef __cplusplus
 }
