@@ -72,6 +72,7 @@ enum ryzen_family cpuid_get_family()
         case 80:
             return FAM_CEZANNE;
         case 64:
+        case 68:
             return FAM_REMBRANDT;
         default:
             printf("Fam%xh: unsupported model %d\n", family, model);
