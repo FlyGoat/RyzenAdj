@@ -106,8 +106,8 @@ EXP int CALL set_gfx_clk(ryzen_access ry, uint32_t value);
 EXP int CALL set_oc_clk(ryzen_access ry, uint32_t value);
 EXP int CALL set_per_core_oc_clk(ryzen_access ry, uint32_t value);
 EXP int CALL set_oc_volt(ryzen_access ry, uint32_t value);
-EXP int CALL disable_oc(ryzen_access ry);
-EXP int CALL enable_oc(ryzen_access ry);
+EXP int CALL set_disable_oc(ryzen_access ry);
+EXP int CALL set_enable_oc(ryzen_access ry);
 EXP int CALL set_power_saving(ryzen_access ry);
 EXP int CALL set_max_performance(ryzen_access ry);
 
