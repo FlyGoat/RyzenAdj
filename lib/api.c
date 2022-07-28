@@ -874,6 +874,9 @@ EXP int CALL set_gfx_clk(ryzen_access ry, uint32_t value) {
 	{
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
+	case FAM_CEZANNE:
+	case FAM_VANGOGH:
+	case FAM_REMBRANDT:
 		_do_adjust_psmu(0x89);
 		break;
 	}
@@ -969,9 +972,11 @@ EXP int CALL set_disable_oc(ryzen_access ry) {
 	case FAM_LUCIENNE:
 	case FAM_RENOIR:
 	case FAM_CEZANNE:
-	case FAM_REMBRANDT:
 		_do_adjust(0x30);
 		_do_adjust_psmu(0x1d);
+		break;
+	case FAM_REMBRANDT:
+		_do_adjust_psmu(0x18);
 		break;
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
@@ -984,8 +989,54 @@ EXP int CALL set_enable_oc(ryzen_access ry) {
 	case FAM_LUCIENNE:
 	case FAM_RENOIR:
 	case FAM_CEZANNE:
-	case FAM_REMBRANDT:
 		_do_adjust(0x2F);
+		break;
+	case FAM_REMBRANDT:
+		_do_adjust_psmu(0x17);
+		break;
+	}
+	return ADJ_ERR_FAM_UNSUPPORTED;
+}
+
+EXP int CALL set_coall(ryzen_access ry, uint32_t value) {
+	switch (ry->family)
+	{
+	case FAM_CEZANNE:
+	case FAM_RENOIR:
+	case FAM_LUCIENNE:
+		_do_adjust(0x55);
+		break;
+	case FAM_REMBRANDT:
+		_do_adjust(0x4C);
+		break;
+	}
+	return ADJ_ERR_FAM_UNSUPPORTED;
+}
+
+EXP int CALL set_coper(ryzen_access ry, uint32_t value) {
+	switch (ry->family)
+	{
+	case FAM_CEZANNE:
+	case FAM_RENOIR:
+	case FAM_LUCIENNE:
+		_do_adjust(0x54);
+	case FAM_REMBRANDT:
+		_do_adjust(0x4B);
+		break;
+	}
+	return ADJ_ERR_FAM_UNSUPPORTED;
+}
+
+EXP int CALL set_cogfx(ryzen_access ry, uint32_t value) {
+	switch (ry->family)
+	{
+	case FAM_CEZANNE:
+	case FAM_RENOIR:
+	case FAM_LUCIENNE:
+		_do_adjust(0x64);
+		break;
+	case FAM_REMBRANDT:
+		_do_adjust_psmu(0xB7);
 		break;
 	}
 	return ADJ_ERR_FAM_UNSUPPORTED;
