@@ -110,6 +110,9 @@ EXP int CALL set_disable_oc(ryzen_access ry);
 EXP int CALL set_enable_oc(ryzen_access ry);
 EXP int CALL set_power_saving(ryzen_access ry);
 EXP int CALL set_max_performance(ryzen_access ry);
+EXP int CALL set_coall(ryzen_access ry, uint32_t value);
+EXP int CALL set_coper(ryzen_access ry, uint32_t value);
+EXP int CALL set_cogfx(ryzen_access ry, uint32_t value);
 
 EXP float CALL get_stapm_limit(ryzen_access ry);
 EXP float CALL get_stapm_value(ryzen_access ry);
