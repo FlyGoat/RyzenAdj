@@ -372,11 +372,11 @@ do {                                                 \
 	args.arg0 = value;                               \
 	resp = smu_service_req(ry->mp1_smu, OPT, &args); \
 	if (resp == REP_MSG_OK) {                        \
-		return 0;                                    \
+		err = 0;                                     \
 	} else if (resp == REP_MSG_UnknownCmd) {         \
-		return ADJ_ERR_SMU_UNSUPPORTED;              \
+		err = ADJ_ERR_SMU_UNSUPPORTED;               \
 	} else {                                         \
-		return ADJ_ERR_SMU_REJECTED;                 \
+		err = ADJ_ERR_SMU_REJECTED;                  \
 	}                                                \
 } while (0);
 
@@ -386,13 +386,13 @@ do {                                                 \
 	smu_service_args_t args = {0, 0, 0, 0, 0, 0};    \
 	int resp;										 \
 	args.arg0 = value;                               \
-	resp = smu_service_req(ry->psmu, OPT, &args); \
+	resp = smu_service_req(ry->psmu, OPT, &args);    \
 	if (resp == REP_MSG_OK) {                        \
-		return 0;                                    \
+		err = 0;                                     \
 	} else if (resp == REP_MSG_UnknownCmd) {         \
-		return ADJ_ERR_SMU_UNSUPPORTED;              \
+		err = ADJ_ERR_SMU_UNSUPPORTED;               \
 	} else {                                         \
-		return ADJ_ERR_SMU_REJECTED;                 \
+		err = ADJ_ERR_SMU_REJECTED;                  \
 	}                                                \
 } while (0);
 
@@ -404,6 +404,8 @@ do {                                                \
 } while (0);
 
 EXP int CALL set_stapm_limit(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -417,12 +419,17 @@ EXP int CALL set_stapm_limit(ryzen_access ry, uint32_t value){
 	case FAM_VANGOGH:
 	case FAM_REMBRANDT:
 		_do_adjust(0x14);
-		_do_adjust_psmu(0x31);
+        if (err) {
+            printf("%s: Retry with PSMU\n", __func__);
+		    _do_adjust_psmu(0x31);
+        }
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_fast_limit(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -437,10 +444,12 @@ EXP int CALL set_fast_limit(ryzen_access ry, uint32_t value){
 	case FAM_REMBRANDT:
 		_do_adjust(0x15);
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_slow_limit(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -455,10 +464,12 @@ EXP int CALL set_slow_limit(ryzen_access ry, uint32_t value){
 	case FAM_REMBRANDT:
 		_do_adjust(0x16);
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_slow_time(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -473,10 +484,12 @@ EXP int CALL set_slow_time(ryzen_access ry, uint32_t value){
 	case FAM_REMBRANDT:
 		_do_adjust(0x17);
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_stapm_time(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -491,10 +504,12 @@ EXP int CALL set_stapm_time(ryzen_access ry, uint32_t value){
 	case FAM_REMBRANDT:
 		_do_adjust(0x18);
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_tctl_temp(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -509,10 +524,12 @@ EXP int CALL set_tctl_temp(ryzen_access ry, uint32_t value){
 	case FAM_REMBRANDT:
 		_do_adjust(0x19);
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_vrm_current(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -527,10 +544,12 @@ EXP int CALL set_vrm_current(ryzen_access ry, uint32_t value){
 	case FAM_REMBRANDT:
 		_do_adjust(0x1a);
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_vrmsoc_current(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -545,28 +564,34 @@ EXP int CALL set_vrmsoc_current(ryzen_access ry, uint32_t value){
 	case FAM_REMBRANDT:
 		_do_adjust(0x1b);
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_vrmgfx_current(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_VANGOGH:
 		_do_adjust(0x1c);
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_vrmcvip_current(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_VANGOGH:
 		_do_adjust(0x1d);
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_vrmmax_current(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -583,19 +608,23 @@ EXP int CALL set_vrmmax_current(ryzen_access ry, uint32_t value){
 	case FAM_VANGOGH:
 		_do_adjust(0x1e);
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_vrmgfxmax_current(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_VANGOGH:
 		_do_adjust(0x1f);
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_vrmsocmax_current(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -609,10 +638,12 @@ EXP int CALL set_vrmsocmax_current(ryzen_access ry, uint32_t value){
 	case FAM_REMBRANDT:
 		_do_adjust(0x1d);
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_psi0_current(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -625,19 +656,23 @@ EXP int CALL set_psi0_current(ryzen_access ry, uint32_t value){
 	case FAM_CEZANNE:
 		_do_adjust(0x1e);
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_psi3cpu_current(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_VANGOGH:
 		_do_adjust(0x20);
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_psi0soc_current(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -650,19 +685,23 @@ EXP int CALL set_psi0soc_current(ryzen_access ry, uint32_t value){
 	case FAM_CEZANNE:
 		_do_adjust(0x1f);
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_psi3gfx_current(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_VANGOGH:
 		_do_adjust(0x21);
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_max_gfxclk_freq(ryzen_access ry, uint32_t value) {
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -671,10 +710,12 @@ EXP int CALL set_max_gfxclk_freq(ryzen_access ry, uint32_t value) {
 		_do_adjust(0x46);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_min_gfxclk_freq(ryzen_access ry, uint32_t value) {
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -683,10 +724,12 @@ EXP int CALL set_min_gfxclk_freq(ryzen_access ry, uint32_t value) {
 		_do_adjust(0x47);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_max_socclk_freq(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -695,10 +738,12 @@ EXP int CALL set_max_socclk_freq(ryzen_access ry, uint32_t value){
 		_do_adjust(0x48);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_min_socclk_freq(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -707,10 +752,12 @@ EXP int CALL set_min_socclk_freq(ryzen_access ry, uint32_t value){
 		_do_adjust(0x49);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_max_fclk_freq(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -719,10 +766,12 @@ EXP int CALL set_max_fclk_freq(ryzen_access ry, uint32_t value){
 		_do_adjust(0x4A);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_min_fclk_freq(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -731,10 +780,12 @@ EXP int CALL set_min_fclk_freq(ryzen_access ry, uint32_t value){
 		_do_adjust(0x4B);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_max_vcn(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -743,10 +794,12 @@ EXP int CALL set_max_vcn(ryzen_access ry, uint32_t value){
 		_do_adjust(0x4C);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_min_vcn(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -755,10 +808,12 @@ EXP int CALL set_min_vcn(ryzen_access ry, uint32_t value){
 		_do_adjust(0x4D);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_max_lclk(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -767,10 +822,12 @@ EXP int CALL set_max_lclk(ryzen_access ry, uint32_t value){
 		_do_adjust(0x4E);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_min_lclk(ryzen_access ry, uint32_t value){
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -779,10 +836,12 @@ EXP int CALL set_min_lclk(ryzen_access ry, uint32_t value){
 		_do_adjust(0x4F);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_prochot_deassertion_ramp(ryzen_access ry, uint32_t value) {
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -801,10 +860,12 @@ EXP int CALL set_prochot_deassertion_ramp(ryzen_access ry, uint32_t value) {
 	case FAM_REMBRANDT:
 		_do_adjust(0x1f);
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_apu_skin_temp_limit(ryzen_access ry, uint32_t value) {
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	value *= 256;
 	switch (ry->family)
 	{
@@ -818,10 +879,12 @@ EXP int CALL set_apu_skin_temp_limit(ryzen_access ry, uint32_t value) {
 		_do_adjust(0x33);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_dgpu_skin_temp_limit(ryzen_access ry, uint32_t value) {
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	value *= 256;
 	switch (ry->family)
 	{
@@ -835,10 +898,12 @@ EXP int CALL set_dgpu_skin_temp_limit(ryzen_access ry, uint32_t value) {
 		_do_adjust(0x34);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_apu_slow_limit(ryzen_access ry, uint32_t value) {
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RENOIR:
@@ -850,10 +915,12 @@ EXP int CALL set_apu_slow_limit(ryzen_access ry, uint32_t value) {
 		_do_adjust(0x23);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_skin_temp_power_limit(ryzen_access ry, uint32_t value) {
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RENOIR:
@@ -866,10 +933,12 @@ EXP int CALL set_skin_temp_power_limit(ryzen_access ry, uint32_t value) {
 		_do_adjust(0x4a);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_gfx_clk(ryzen_access ry, uint32_t value) {
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_RENOIR:
@@ -880,11 +949,13 @@ EXP int CALL set_gfx_clk(ryzen_access ry, uint32_t value) {
 		_do_adjust_psmu(0x89);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_power_saving(ryzen_access ry) {
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
 	uint32_t value = 0;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -900,11 +971,13 @@ EXP int CALL set_power_saving(ryzen_access ry) {
 		_do_adjust(0x12);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_max_performance(ryzen_access ry) {
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
 	uint32_t value = 0;
+
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -920,10 +993,12 @@ EXP int CALL set_max_performance(ryzen_access ry) {
 		_do_adjust(0x11);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_oc_clk(ryzen_access ry, uint32_t value) {
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_LUCIENNE:
@@ -931,13 +1006,18 @@ EXP int CALL set_oc_clk(ryzen_access ry, uint32_t value) {
 	case FAM_CEZANNE:
 	case FAM_REMBRANDT:
 		_do_adjust(0x31);
-		_do_adjust_psmu(0x19);
+        if (err) {
+            printf("%s: Retry with PSMU\n", __func__);
+		    _do_adjust_psmu(0x19);
+        }
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_per_core_oc_clk(ryzen_access ry, uint32_t value) {
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_LUCIENNE:
@@ -945,13 +1025,18 @@ EXP int CALL set_per_core_oc_clk(ryzen_access ry, uint32_t value) {
 	case FAM_CEZANNE:
 	case FAM_REMBRANDT:
 		_do_adjust(0x32);
-		_do_adjust_psmu(0x1a);
+        if (err) {
+            printf("%s: Retry with PSMU\n", __func__);
+		    _do_adjust_psmu(0x1a);
+        }
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_oc_volt(ryzen_access ry, uint32_t value) {
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_LUCIENNE:
@@ -959,31 +1044,41 @@ EXP int CALL set_oc_volt(ryzen_access ry, uint32_t value) {
 	case FAM_CEZANNE:
 	case FAM_REMBRANDT:
 		_do_adjust(0x33);
-		_do_adjust_psmu(0x1b);
+        if (err) {
+            printf("%s: Retry with PSMU\n", __func__);
+		    _do_adjust_psmu(0x1b);
+        }
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_disable_oc(ryzen_access ry) {
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
 	uint32_t value = 0x0;
+
 	switch (ry->family)
 	{
 	case FAM_LUCIENNE:
 	case FAM_RENOIR:
 	case FAM_CEZANNE:
 		_do_adjust(0x30);
-		_do_adjust_psmu(0x1d);
+        if (err) {
+            printf("%s: Retry with PSMU\n", __func__);
+		    _do_adjust_psmu(0x1d);
+        }
 		break;
 	case FAM_REMBRANDT:
 		_do_adjust_psmu(0x18);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_enable_oc(ryzen_access ry) {
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
 	uint32_t value = 0x0;
+
 	switch (ry->family)
 	{
 	case FAM_LUCIENNE:
@@ -995,10 +1090,12 @@ EXP int CALL set_enable_oc(ryzen_access ry) {
 		_do_adjust_psmu(0x17);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_coall(ryzen_access ry, uint32_t value) {
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_CEZANNE:
@@ -1010,10 +1107,12 @@ EXP int CALL set_coall(ryzen_access ry, uint32_t value) {
 		_do_adjust(0x4C);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_coper(ryzen_access ry, uint32_t value) {
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_CEZANNE:
@@ -1024,10 +1123,12 @@ EXP int CALL set_coper(ryzen_access ry, uint32_t value) {
 		_do_adjust(0x4B);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 EXP int CALL set_cogfx(ryzen_access ry, uint32_t value) {
+    int err = ADJ_ERR_FAM_UNSUPPORTED;
+
 	switch (ry->family)
 	{
 	case FAM_CEZANNE:
@@ -1039,7 +1140,7 @@ EXP int CALL set_cogfx(ryzen_access ry, uint32_t value) {
 		_do_adjust_psmu(0xB7);
 		break;
 	}
-	return ADJ_ERR_FAM_UNSUPPORTED;
+	return err;
 }
 
 //PM Table section, offset of first lines are stable across multiple PM Table versions
