@@ -1,0 +1,43 @@
+Source: ryzenadj
+Section: admin
+Priority: optional
+Maintainer: Johan Källström <joka90@gmail.com>
+Uploaders: Johan Källström <joka90@gmail.com>,
+Build-Depends: cmake (>= 3.0~),
+               debhelper-compat (= 13),
+               libpci-dev
+Standards-Version: 4.6.0
+Homepage: https://github.com/FlyGoat/RyzenAdj/
+Vcs-Browser: https://github.com/FlyGoat/RyzenAdj/
+Vcs-Git: https://github.com/FlyGoat/RyzenAdj.git
+Rules-Requires-Root: no
+
+
+Package: ryzenadj
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         libryzenadj0 (= ${binary:Version}),
+Description: Adjust power management settings for Ryzen Mobile Processors.
+ This is a commandline tool that allows you to adjust power management
+ settings for Ryzen Mobile Processors.
+
+Package: libryzenadj0
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+Description: power management library for Ryzen Mobile Processors.
+ This library provides APIs to Adjust power management settings for
+ Ryzen Mobile Processors.
+
+Package: libryzenadj-dev
+Architecture: any
+Depends: ${misc:Depends},
+         libryzenadj0 (= ${binary:Version})
+Description: power management library - development files
+ for Ryzen Mobile Processors.
+ This library provides APIs to Adjust power management settings for
+ Ryzen Mobile Processors.
+ .
+ This package contains the files needed for developing applications that
+ use libryzenadj.

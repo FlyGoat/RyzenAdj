@@ -348,3 +348,9 @@ ASALocalRun/
 healthchecksdb
 
 # End of https://www.gitignore.io/api/visualstudio
+
+# Debian package build
+obj-*/
+
+# Cmake generated version file
+lib/ryzenadj_version.h

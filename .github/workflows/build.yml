@@ -97,8 +97,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-
+    - uses: actions/checkout@v3
+      with: # fetch tags for git describe
+        fetch-depth: 0
+    - run: git fetch --tags
     - name: Install Dependencies
       run: |
         sudo apt-get update
@@ -112,6 +114,22 @@ jobs:
         mkdir build && cd build
         cmake DCMAKE_BUILD_TYPE=Release ..
         make
+
+    - name: Install Debian build Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install devscripts equivs dpkg-dev
+        sudo mk-build-deps -i
+
+    - name: Test debian build
+      shell: bash
+      run: |
+        gcc --version
+        rm -f debian/changelog.dch
+        debchange -Mv $(git describe --tags HEAD | cut -f2- -dv) 'CI/CD build'
+        dpkg-buildpackage -us -uc
+        mkdir -p out
+        mv ../*.*deb out/
 
     - name: Test Scripts
       shell: bash
@@ -131,3 +149,9 @@ jobs:
         fi
         exit 0
 
+    - name: Upload ryzenadj Debian
+      uses: actions/upload-artifact@v3
+      with:
+        name: ryzenadj-ubuntu-focal-amd64
+        path: |
+            ./out/*.*deb

@@ -1,0 +1,11 @@
+ryzenadj (0.11.1-1) unstable; urgency=medium
+
+  New revision
+
+ -- Johan Källström <joka90@gmail.com>  Sat, 27 Aug 2022 14:02:53 +0200
+
+ryzenadj (0.11.0-1) unstable; urgency=medium
+
+  initial debian package release
+
+ -- Johan Källström <joka90@gmail.com>  Sat, 27 Mar 2022 08:18:45 +0100
