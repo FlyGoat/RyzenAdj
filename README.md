@@ -129,7 +129,11 @@ The simplest way to build it:
     make
 
 modify permissions for executing as root when started from Ryzen controller
-and user belongs to the ryzenadj group.
+and user belongs to the ryzenadj group
+
+    setcap 'cap_sys_rawio=ep cap_dac_override=ep cap_sys_admin=ep' ./ryzenadj
+
+or via the suid bit
 
     sudo chow root:root ./ryzenadj
     sudo chmod u+s ./ryzenadj

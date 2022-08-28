@@ -20,6 +20,7 @@ Depends: ${misc:Depends},
          ${shlibs:Depends},
          libryzenadj0 (= ${binary:Version}),
 Pre-Depends: adduser (>= 3.11),
+             libcap2-bin,
 Description: Adjust power management settings for Ryzen Mobile Processors.
  This is a commandline tool that allows you to adjust power management
  settings for Ryzen Mobile Processors.

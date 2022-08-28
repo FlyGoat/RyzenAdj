@@ -10,6 +10,7 @@ include <tunables/global>
 
   capability sys_admin,
   capability sys_rawio,
+  capability dac_override,
 
   # Needed for some files in /proc see
   # https://gitlab.com/apparmor/apparmor/-/wikis/TechnicalDoc_Proc_and_ptrace#apparmor-3-with-ptrace-rules
