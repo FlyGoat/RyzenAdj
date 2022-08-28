@@ -12,3 +12,8 @@ override_dh_auto_configure:
 	dh_auto_configure -- \
 	-DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH) \
 	-DCMAKE_BUILD_TYPE=RelWithDebInfo
+
+
+override_dh_install:
+	dh_install
+	dh_apparmor -p ryzenadj --profile-name=usr.bin.ryzenadj

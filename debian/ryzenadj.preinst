@@ -1,0 +1,18 @@
+#!/bin/sh
+# preinst script for #PACKAGE#
+set -e
+RYZENADJ_GROUP=ryzenadj
+
+case "$1" in
+  install|upgrade)
+        # create group for authenticating users.
+        if ! getent group $RYZENADJ_GROUP 2>&1 >/dev/null ; then
+            echo "Adding group $RYZENADJ_GROUP.."
+            addgroup --quiet --system $RYZENADJ_GROUP
+        fi
+    ;;
+    *)
+    ;;
+esac
+
+#DEBHELPER#

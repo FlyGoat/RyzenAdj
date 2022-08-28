@@ -1,0 +1,14 @@
+#!/bin/sh
+# postinst script for #PACKAGE#
+
+case "$1" in
+    configure)
+        # Set setuid root on usr/bin/ryzenadj
+        chmod u+s /usr/bin/ryzenadj || ( echo 'Error: failed to setuid root on usr/bin/ryzenadj' >&2 )
+    ;;
+
+    *)
+    ;;
+esac
+
+#DEBHELPER#

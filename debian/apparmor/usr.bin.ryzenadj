@@ -1,0 +1,52 @@
+abi <abi/3.0>,
+
+include <tunables/global>
+
+/usr/bin/ryzenadj flags=(enforce) {
+  include <abstractions/base>
+  include <abstractions/consoles>
+  include <abstractions/nameservice>
+  include if exists <local/usr.bin.ryzenadj>
+
+  capability sys_admin,
+  capability sys_rawio,
+
+  # Needed for some files in /proc see
+  # https://gitlab.com/apparmor/apparmor/-/wikis/TechnicalDoc_Proc_and_ptrace#apparmor-3-with-ptrace-rules
+  # from man proc 5 :
+  # /proc/[pid]/exe :
+  #   Permission to dereference or read (readlink(2)) this symbolic link is governed by a ptrace access mode
+  #   PTRACE_MODE_READ_FSCREDS check; see ptrace(2).
+  capability sys_ptrace,
+  ptrace read peer=unconfined,
+
+  /etc/ld.so.cache r,
+  /lib/@{multiarch}/ld-*.so* mr,
+  /lib/@{multiarch}/libc-*.so* mr,
+  /lib/@{multiarch}/libgcc_s.so* mr,
+  /lib/@{multiarch}/libld-*.so* mr,
+  /lib/libgcc_s.so* mr,
+  /lib{,32,64}/ld-*.so* mr,
+  /lib{,32,64}/libc-*.so* mr,
+  /lib{,32,64}/libld-*.so* mr,
+  /usr/bin/ryzenadj mr,
+  /usr/lib/@{multiarch}/libpci.so* mr,
+  /usr/lib/@{multiarch}/libudev.so* mr,
+  /usr/lib/@{multiarch}/libz.so* mr,
+  /usr/lib/libpci.so* mr,
+  /usr/lib/libudev.so* mr,
+  /usr/lib/libz.so* mr,
+  @{PROC}/ r,
+  @{PROC}/[0-9]*/ r,
+  @{PROC}/[0-9]*/exe r,
+
+  @{sys}/kernel/ryzen_smu_drv/pm_table r,
+  /dev/mem r,
+
+  @{sys}/devices/pci0000:00/0000:00:00.0/class r,
+  @{sys}/devices/pci0000:00/0000:00:00.0/config rw,
+  @{sys}/devices/pci0000:00/0000:00:00.0/device r,
+  @{sys}/devices/pci0000:00/0000:00:00.0/resource r,
+  @{sys}/devices/pci0000:00/0000:00:00.0/vendor r,
+
+}

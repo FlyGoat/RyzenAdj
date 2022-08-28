@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Johan Källström <joka90@gmail.com>
 Uploaders: Johan Källström <joka90@gmail.com>,
 Build-Depends: cmake (>= 3.0~),
-               debhelper-compat (= 13),
+               dh-apparmor,
                libpci-dev,
                debhelper
 Standards-Version: 4.6.0
@@ -19,6 +19,7 @@ Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
          libryzenadj0 (= ${binary:Version}),
+Pre-Depends: adduser (>= 3.11),
 Description: Adjust power management settings for Ryzen Mobile Processors.
  This is a commandline tool that allows you to adjust power management
  settings for Ryzen Mobile Processors.

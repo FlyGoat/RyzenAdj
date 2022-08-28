@@ -128,6 +128,20 @@ The simplest way to build it:
     cmake -DCMAKE_BUILD_TYPE=Release ..
     make
 
+modify permissions for executing as root when started from Ryzen controller
+and user belongs to the ryzenadj group.
+
+    sudo chow root:root ./ryzenadj
+    sudo chmod u+s ./ryzenadj
+
+add system group for RyzenAdj authentication
+
+    getent group ryzenadj || sudo addgroup --quiet --system ryzenadj
+
+add allowed users to ryzenadj group
+
+    sudo usermod -aG ryzenadj $USER
+
 ### Package build
 
 On Debian/Ubuntu:
@@ -137,6 +151,10 @@ On Debian/Ubuntu:
 	sudo mk-build-deps -i
 	dpkg-buildpackage -us -uc
 	sudo dpkg -i ../ryzenadj_*.deb ../libryzenadj0_*.deb
+
+add allowed users to ryzenadj group
+
+	sudo usermod -aG ryzenadj $USER
 
 ### Windows
 

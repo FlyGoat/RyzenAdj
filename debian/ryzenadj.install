@@ -1,1 +1,2 @@
 usr/bin/ryzenadj
+debian/apparmor/usr.bin.ryzenadj etc/apparmor.d
