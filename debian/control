@@ -5,7 +5,8 @@ Maintainer: Johan Källström <joka90@gmail.com>
 Uploaders: Johan Källström <joka90@gmail.com>,
 Build-Depends: cmake (>= 3.0~),
                debhelper-compat (= 13),
-               libpci-dev
+               libpci-dev,
+               debhelper
 Standards-Version: 4.6.0
 Homepage: https://github.com/FlyGoat/RyzenAdj/
 Vcs-Browser: https://github.com/FlyGoat/RyzenAdj/
@@ -26,6 +27,7 @@ Package: libryzenadj0
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
+Suggests: ryzen-smu-dkms
 Description: power management library for Ryzen Mobile Processors.
  This library provides APIs to Adjust power management settings for
  Ryzen Mobile Processors.
