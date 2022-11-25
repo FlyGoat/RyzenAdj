@@ -83,7 +83,7 @@ extern "C" void smn_reg_write(nb_t nb, u32 addr, u32 data)
     WritePciConfigDword(*nb, NB_PCI_REG_DATA_ADDR, data);
 }
 
-extern "C" mem_obj_t init_mem_obj(u32 physAddr){
+extern "C" mem_obj_t init_mem_obj(uintptr_t physAddr){
     hInpOutDll = LoadLibrary ( "inpoutx64.DLL" );
 
     if(hInpOutDll == NULL)
@@ -103,7 +103,7 @@ extern "C" mem_obj_t init_mem_obj(u32 physAddr){
         return NULL;
     }
 
-    pdwLinAddr = (u32*)gfpMapPhysToLin((uintptr_t)physAddr, 0x1000, &physicalMemoryHandle);
+    pdwLinAddr = (u32*)gfpMapPhysToLin(physAddr, 0x1000, &physicalMemoryHandle);
     if (pdwLinAddr == NULL){
         printf("failed to map memory\n");
         return NULL;

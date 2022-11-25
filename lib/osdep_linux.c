@@ -48,7 +48,7 @@ void smn_reg_write(nb_t nb, u32 addr, u32 data)
 	pci_write_long(nb, NB_PCI_REG_DATA_ADDR, data);
 }
 
-mem_obj_t init_mem_obj(u32 physAddr)
+mem_obj_t init_mem_obj(uintptr_t physAddr)
 {
 	int dev_mem_fd; 
 	int dev_mem_errno, mmap_errno;
@@ -57,7 +57,7 @@ mem_obj_t init_mem_obj(u32 physAddr)
 	dev_mem_fd = open("/dev/mem", O_RDONLY);
 	dev_mem_errno = errno;
 	if (dev_mem_fd > 0){
-		phy_map = mmap(NULL, 0x1000, PROT_READ, MAP_SHARED, dev_mem_fd, physAddr);
+		phy_map = mmap(NULL, 0x1000, PROT_READ, MAP_SHARED, dev_mem_fd, (long)physAddr);
 		mmap_errno = errno;
 		close(dev_mem_fd);
 	}

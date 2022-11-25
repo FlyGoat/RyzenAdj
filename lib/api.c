@@ -136,6 +136,7 @@ int request_table_ver_and_size(ryzen_access ry)
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
+	case FAM_REMBRANDT:
 		get_table_ver_msg = 0x6;
 		break;
 	default:
@@ -162,12 +163,14 @@ int request_table_ver_and_size(ryzen_access ry)
 	case 0x370003: ry->table_size = 0x8AC; break;
 	case 0x370004: ry->table_size = 0x8AC; break;
 	case 0x370005: ry->table_size = 0x8C8; break;
+	case 0x3F0000: ry->table_size = 0x7AC; break;
 	case 0x400001: ry->table_size = 0x910; break;
 	case 0x400002: ry->table_size = 0x928; break;
 	case 0x400003: ry->table_size = 0x94C; break;
 	case 0x400004: ry->table_size = 0x944; break;
 	case 0x400005: ry->table_size = 0x944; break;
-	case 0x3F0000: ry->table_size = 0x7AC; break;
+	case 0x450004: ry->table_size = 0xA44; break;
+	case 0x450005: ry->table_size = 0xA44; break;
 		default:
 			//use a larger size then the largest known table to be able to test real table size of unknown tables
 			ry->table_size = 0xA00;
@@ -199,6 +202,7 @@ int request_table_addr(ryzen_access ry)
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
+	case FAM_REMBRANDT:
 		get_table_addr_msg = 0x66;
 		break;
 	default:
@@ -207,7 +211,13 @@ int request_table_addr(ryzen_access ry)
 	}
 
 	resp = smu_service_req(ry->psmu, get_table_addr_msg, &args);
-	ry->table_addr = args.arg0;
+
+	if (ry->family == FAM_REMBRANDT) {
+		ry->table_addr = (long)args.arg1 << 32 | args.arg0;
+	} else {
+		ry->table_addr = args.arg0;
+	}
+
 	if(resp != REP_MSG_OK){
 		_return_translated_smu_error(resp);
 	}
@@ -234,6 +244,7 @@ int request_transfer_table(ryzen_access ry)
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
+	case FAM_REMBRANDT:
 		transfer_table_msg = 0x65;
 		break;
 	default:
@@ -1060,12 +1071,14 @@ EXP float CALL get_apu_slow_limit(ryzen_access ry) {
 	case 0x00370003:
 	case 0x00370004:
 	case 0x00370005:
+	case 0x003F0000:
 	case 0x00400001:
 	case 0x00400002:
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
-	case 0x003F0000: // Van Gogh
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x18);
 	}
 	return NAN;
@@ -1079,12 +1092,14 @@ EXP float CALL get_apu_slow_value(ryzen_access ry) {
 	case 0x00370003:
 	case 0x00370004:
 	case 0x00370005:
+	case 0x003F0000:
 	case 0x00400001:
 	case 0x00400002:
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
-	case 0x003F0000: // Van Gogh
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x1C);
 	}
 	return NAN;
@@ -1111,6 +1126,8 @@ EXP float CALL get_vrm_current(ryzen_access ry) {
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x20);
 	}
 	return NAN;
@@ -1137,6 +1154,8 @@ EXP float CALL get_vrm_current_value(ryzen_access ry) {
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x24);
 	}
 	return NAN;
@@ -1163,6 +1182,8 @@ EXP float CALL get_vrmsoc_current(ryzen_access ry) {
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x28);
 	}
 	return NAN;
@@ -1189,6 +1210,8 @@ EXP float CALL get_vrmsoc_current_value(ryzen_access ry) {
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x2C);
 	}
 	return NAN;
@@ -1215,6 +1238,8 @@ EXP float CALL get_vrmmax_current(ryzen_access ry) {
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x30);
 	}
 	return NAN;
@@ -1241,6 +1266,8 @@ EXP float CALL get_vrmmax_current_value(ryzen_access ry) {
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x34);
 	}
 	return NAN;
@@ -1267,6 +1294,8 @@ EXP float CALL get_vrmsocmax_current(ryzen_access ry) {
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x38);
 	}
 	return NAN;
@@ -1293,6 +1322,8 @@ EXP float CALL get_vrmsocmax_current_value(ryzen_access ry) {
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x3C);
 	}
 	return NAN;
@@ -1314,12 +1345,14 @@ EXP float CALL get_tctl_temp(ryzen_access ry) {
 	case 0x00370003:
 	case 0x00370004:
 	case 0x00370005:
+	case 0x003F0000:
 	case 0x00400001:
 	case 0x00400002:
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
-	case 0x003F0000: // Van Gogh
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x40);
 	}
 	return NAN;
@@ -1341,12 +1374,14 @@ EXP float CALL get_tctl_temp_value(ryzen_access ry) {
 	case 0x00370003:
 	case 0x00370004:
 	case 0x00370005:
+	case 0x003F0000:
 	case 0x00400001:
 	case 0x00400002:
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
-	case 0x003F0000: // Van Gogh
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x44);
 	}
 	return NAN;
@@ -1360,12 +1395,14 @@ EXP float CALL get_apu_skin_temp_limit(ryzen_access ry) {
 	case 0x00370003:
 	case 0x00370004:
 	case 0x00370005:
+	case 0x003F0000:
 	case 0x00400001:
 	case 0x00400002:
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
-	case 0x003F0000: // Van Gogh
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x58);
 	}
 	return NAN;
@@ -1379,12 +1416,14 @@ EXP float CALL get_apu_skin_temp_value(ryzen_access ry) {
 	case 0x00370003:
 	case 0x00370004:
 	case 0x00370005:
+	case 0x003F0000:
 	case 0x00400001:
 	case 0x00400002:
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
-	case 0x003F0000: // Van Gogh
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x5C);
 	}
 	return NAN;
@@ -1403,6 +1442,8 @@ EXP float CALL get_dgpu_skin_temp_limit(ryzen_access ry) {
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x60);
 	}
 	return NAN;
@@ -1421,6 +1462,8 @@ EXP float CALL get_dgpu_skin_temp_value(ryzen_access ry) {
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x64);
 	}
 	return NAN;
