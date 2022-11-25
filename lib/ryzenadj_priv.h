@@ -21,7 +21,7 @@ struct _ryzen_access {
 	smu_t psmu;
 	enum ryzen_family family;
 	int bios_if_ver;
-	uint32_t table_addr;
+	uintptr_t table_addr;
 	uint32_t table_ver;
 	size_t table_size;
 	float *table_values;
