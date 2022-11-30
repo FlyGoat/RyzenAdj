@@ -3,6 +3,13 @@
 /* Ryzen NB SMU Service Request Tool */
 
 #include <string.h>
+
+#ifndef _WIN32
+#include <unistd.h>
+#include <grp.h>
+#include <pwd.h>
+#endif
+
 #include "lib/ryzenadj.h"
 #include "argparse.h"
 
@@ -181,6 +188,90 @@ static void show_table_dump(ryzen_access ry, int any_adjust_applied)
 	//don't free current_table_values because this would deinitialize our table
 }
 
+// Check if launched from ryzen-controller
+static int check_parent() {
+#ifndef _WIN32
+	pid_t ppid = getppid();
+	char pathname[512];
+	char buf[512];
+	char gt[38] = "/opt/Ryzen Controller/ryzen-controller";
+	int cx;
+	cx = snprintf(pathname, 512, "/proc/%d/exe", ppid);
+
+	if (cx >= 0 && cx < 512) {
+		ssize_t l = readlink(pathname, buf, 512);
+		if (l > 0) {
+			if (strncmp(buf, gt, 38) == 0) {
+				return 1;
+			}
+		}
+	}
+#endif
+	return 0;
+}
+
+// Are we launched via a root user?
+static int is_user_root() {
+#ifndef _WIN32
+	uid_t uid = getuid();
+	return uid == 0;
+#else
+	return 1;
+#endif
+}
+
+// Are we in ryzenadj group?
+static int is_in_ryzenadj_group() {
+#ifndef _WIN32
+	int ngroups = 0;
+	uid_t uid;
+	struct passwd *pw;
+	struct group *gr_allow;
+	gr_allow = getgrnam("ryzenadj");
+
+	if (gr_allow == NULL) {
+		fprintf(stderr, "getgrnam(ryzenadj): group does not exsist\n");
+		return 0;
+	}
+
+	uid = getuid();
+	pw = getpwuid(uid);
+	if (pw == NULL) {
+		fprintf(stderr, "getpwuid(uid): failed\n");
+		exit(EXIT_FAILURE);
+	}
+
+	/* Retrieve ngroups. */
+	getgrouplist(pw->pw_name, pw->pw_gid, NULL, &ngroups);
+
+	gid_t *groups = malloc(sizeof(*groups) * ngroups);
+	if (groups == NULL) {
+		perror("malloc");
+		exit(EXIT_FAILURE);
+	}
+
+	/* Retrieve group list. */
+	if (getgrouplist(pw->pw_name, pw->pw_gid, groups, &ngroups) == -1) {
+		fprintf(stderr, "getgrouplist() failed; ngroups = %d\n", ngroups);
+		exit(EXIT_FAILURE);
+	}
+
+	/* Check if we are in allowed group */
+	int found = 0;
+	for (int i = 0; i < ngroups; ++i) {
+		if (gr_allow->gr_gid == groups[i]) {
+			found = 1;
+			break;
+		}
+	}
+	free(groups);
+	return found;
+#else
+	return 1;
+#endif
+}
+
+
 
 int main(int argc, const char **argv)
 {
@@ -197,6 +288,14 @@ int main(int argc, const char **argv)
 	uint32_t max_gfxclk_freq = -1, min_gfxclk_freq = -1, prochot_deassertion_ramp = -1, apu_skin_temp_limit = -1, dgpu_skin_temp_limit = -1, apu_slow_limit = -1;
 	uint32_t skin_temp_power_limit = -1;
 	uint32_t gfx_clk = -1, oc_clk = -1, oc_volt = -1, coall = -1, coper = -1, cogfx = -1;
+
+	// Check if we run are lauched root or launched from ryzen-controller
+	// and the user is in the ryzenadj group. Exit if user is not not.
+	// As we want to limit the setuid bit capabilities.
+	if (!(is_user_root() || (check_parent() && is_in_ryzenadj_group()))) {
+		printf("Need root for ryzenadj\n");
+		return -1;
+	}
 
 	//create structure for parseing
 	struct argparse_option options[] = {

@@ -1,0 +1,19 @@
+#!/bin/sh
+# postinst script for #PACKAGE#
+
+BINARY=/usr/bin/ryzenadj
+case "$1" in
+    configure)
+        if which setcap > /dev/null && setcap 'cap_sys_rawio=ep cap_dac_override=ep cap_sys_admin=ep' "$BINARY" ; then
+            echo "Set setcap on $BINARY successfull"
+        else
+            echo "Set setuid root on $BINARY"
+            chmod u+s "$BINARY" || ( echo "Error: failed to setuid root on $BINARY" >&2 )
+        fi
+    ;;
+
+    *)
+    ;;
+esac
+
+#DEBHELPER#

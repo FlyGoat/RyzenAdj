@@ -1,0 +1,8 @@
+.debhelper/
+debhelper-build-stamp
+files
+*.substvars
+ryzenadj/
+libryzenadj-dev/
+libryzenadj0/
+tmp/

@@ -1,0 +1,8 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Contact: jiaxun.yang@flygoat.com
+Upstream-Name: ryzenadj
+Source: https://github.com/FlyGoat/RyzenAdj/
+
+Files: *
+Copyright: 2019-2022, Jiaxun Yang <jiaxun.yang@flygoat.com>
+License: LGPL-3
