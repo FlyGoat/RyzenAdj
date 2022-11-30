@@ -213,7 +213,7 @@ int request_table_addr(ryzen_access ry)
 	resp = smu_service_req(ry->psmu, get_table_addr_msg, &args);
 
 	if (ry->family == FAM_REMBRANDT) {
-		ry->table_addr = (long)args.arg1 << 32 | args.arg0;
+		ry->table_addr = (uint64_t) args.arg1 << 32 | args.arg0;
 	} else {
 		ry->table_addr = args.arg0;
 	}
