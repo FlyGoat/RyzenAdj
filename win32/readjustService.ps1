@@ -35,6 +35,7 @@ function doAdjust_ACmode {
     $Script:repeatWaitTimeSeconds = 1    #only use values below 5s if you are using $monitorField
     adjust "fast_limit" 46000
     adjust "slow_limit" 25000
+    #adjust "slow_time" 30
     #adjust "coall" 4294967266    #Curve optimizer at -30
     #adjust "tctl_temp" 93
     #adjust "apu_skin_temp_limit" 50
