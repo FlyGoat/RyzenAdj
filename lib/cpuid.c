@@ -25,7 +25,7 @@ static void getcpuid(unsigned int CPUInfo[4], unsigned int InfoType)
 
 static enum ryzen_family cpuid_family = WAIT_FOR_LOAD;
 
-enum ryzen_family cpuid_load_family()
+static enum ryzen_family cpuid_load_family()
 {
     uint32_t regs[4];
     int family, model;
