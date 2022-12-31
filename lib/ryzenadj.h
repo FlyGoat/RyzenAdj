@@ -13,6 +13,7 @@ extern "C" {
 #define RYZENADJ_MINIOR_VER 0
 
 enum ryzen_family {
+        WAIT_FOR_LOAD = -2,
         FAM_UNKNOWN = -1,
         FAM_RAVEN = 0,
         FAM_PICASSO,
