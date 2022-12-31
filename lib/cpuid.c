@@ -23,7 +23,9 @@ static void getcpuid(unsigned int CPUInfo[4], unsigned int InfoType)
 #endif
 }
 
-enum ryzen_family cpuid_get_family()
+static enum ryzen_family cpuid_family = WAIT_FOR_LOAD;
+
+enum ryzen_family cpuid_load_family()
 {
     uint32_t regs[4];
     int family, model;
@@ -87,4 +89,18 @@ enum ryzen_family cpuid_get_family()
 
     printf("Only Ryzen Mobile Series are supported\n");
     return FAM_UNKNOWN;
+}
+
+/*
+ * The function cpuid_load_family() processes a lot of
+ * information. This information will be used several
+ * times by acquiring the same data. Avoid this wasted
+ * computation by entering cpuid_get_family(). This function
+ * guarantees the load is done only 1 time.
+ */
+enum ryzen_family cpuid_get_family() {
+    if (cpuid_family == WAIT_FOR_LOAD)
+        cpuid_family = cpuid_load_family();
+
+    return cpuid_family;
 }
