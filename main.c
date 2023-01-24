@@ -241,7 +241,7 @@ int main(int argc, const char **argv)
 		OPT_U32('\0', "oc-clk", &oc_clk, "Forced Core Clock Speed MHz (Renoir and up Only)"),
 		OPT_U32('\0', "oc-volt", &oc_volt, "Forced Core VID: Must follow this calcuation (1.55 - [VID you want to set e.g. 1.25 for 1.25v]) / 0.00625 (Renoir and up Only)"),
 		OPT_BOOLEAN('\0', "enable-oc", &enable_oc, "Enable OC (Renoir and up Only)"),
-		OPT_BOOLEAN('\0', "disable-oc", &disable_oc, "Enable OC (Renoir and up Only)"),
+		OPT_BOOLEAN('\0', "disable-oc", &disable_oc, "Disable OC (Renoir and up Only)"),
 		OPT_U32('\0', "set-coall", &coall, "All core Curve Optimiser"),
 		OPT_U32('\0', "set-coper", &coper, "Per core Curve Optimiser"),
 		OPT_U32('\0', "set-cogfx", &cogfx, "iGPU Curve Optimiser"),
