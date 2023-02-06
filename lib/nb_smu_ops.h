@@ -24,9 +24,6 @@ typedef uint64_t u64;
 #define DBG(...) fprintf(stderr, __VA_ARGS__)
 #endif
 
-#define AMD_VENDOR_ID 0x1022
-#define NB_DEVICE_ID 0x15d0
-
 #define NB_PCI_REG_ADDR_ADDR 0xB8
 #define NB_PCI_REG_DATA_ADDR 0xBC
 
