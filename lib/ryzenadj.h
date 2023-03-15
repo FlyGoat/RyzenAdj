@@ -23,6 +23,8 @@ enum ryzen_family {
         FAM_LUCIENNE,
         FAM_VANGOGH,
         FAM_REMBRANDT,
+        FAM_MENDOCINO,
+        FAM_PHEONIX,
         FAM_END
 };
 
