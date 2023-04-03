@@ -202,7 +202,7 @@ int main(int argc, const char **argv)
 	struct argparse_option options[] = {
 		OPT_HELP(),
 		OPT_GROUP("Options"),
-		OPT_BOOLEAN('i', "info", &info, "Show information and most importand power metrics after adjustment"),
+		OPT_BOOLEAN('i', "info", &info, "Show information and most important power metrics after adjustment"),
 		OPT_BOOLEAN('\0', "dump-table", &dump_table, "Show whole power metric table before and after adjustment"),
 		OPT_GROUP("Settings"),
 		OPT_U32('a', "stapm-limit", &stapm_limit, "Sustained Power Limit         - STAPM LIMIT (mW)"),
