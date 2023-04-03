@@ -23,7 +23,7 @@ Usage: ryzenadj [options]
     -h, --help                            show this help message and exit
 
 Options
-    -i, --info                            Show information and most importand power metrics after adjustment
+    -i, --info                            Show information and most important power metrics after adjustment
     --dump-table                          Show whole power metric table before and after adjustment
 
 Settings
