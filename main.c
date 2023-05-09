@@ -99,7 +99,7 @@ static void show_info_table(ryzen_access ry)
 	}
 
 	//print table in github markdown
-	printf("|        Name         |   Value   |      Paramter      |\n");
+	printf("|        Name         |   Value   |     Parameter      |\n");
 	printf("|---------------------|-----------|--------------------|\n");
 	char tableFormat[] = "| %-19s | %9.3lf | %-18s |\n";
 	printf(tableFormat, "STAPM LIMIT", get_stapm_limit(ry), "stapm-limit");
