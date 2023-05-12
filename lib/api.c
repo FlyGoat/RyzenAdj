@@ -1150,6 +1150,7 @@ EXP int CALL set_coall(ryzen_access ry, uint32_t value) {
 		_do_adjust(0x55);
 		break;
 	case FAM_REMBRANDT:
+	case FAM_VANGOGH:
 		_do_adjust(0x4C);
 		break;
 	}
@@ -1183,6 +1184,7 @@ EXP int CALL set_cogfx(ryzen_access ry, uint32_t value) {
 		_do_adjust(0x64);
 		break;
 	case FAM_REMBRANDT:
+	case FAM_VANGOGH:
 		_do_adjust_psmu(0xB7);
 		break;
 	}
