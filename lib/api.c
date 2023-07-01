@@ -137,6 +137,7 @@ int request_table_ver_and_size(ryzen_access ry)
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
 	case FAM_REMBRANDT:
+	case FAM_PHEONIX:
 		get_table_ver_msg = 0x6;
 		break;
 	default:
@@ -171,6 +172,7 @@ int request_table_ver_and_size(ryzen_access ry)
 	case 0x400005: ry->table_size = 0x944; break;
 	case 0x450004: ry->table_size = 0xA44; break;
 	case 0x450005: ry->table_size = 0xA44; break;
+	case 0x4C0006: ry->table_size = 0xAA0; break;
 		default:
 			//use a larger size then the largest known table to be able to test real table size of unknown tables
 			ry->table_size = 0xA00;
@@ -203,6 +205,7 @@ int request_table_addr(ryzen_access ry)
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
 	case FAM_REMBRANDT:
+	case FAM_PHEONIX:
 		get_table_addr_msg = 0x66;
 		break;
 	default:
@@ -212,9 +215,12 @@ int request_table_addr(ryzen_access ry)
 
 	resp = smu_service_req(ry->psmu, get_table_addr_msg, &args);
 
-	if (ry->family == FAM_REMBRANDT) {
+	switch (ry->family)
+	{
+	case FAM_REMBRANDT:
+	case FAM_PHEONIX:
 		ry->table_addr = (uint64_t) args.arg1 << 32 | args.arg0;
-	} else {
+	default:
 		ry->table_addr = args.arg0;
 	}
 
@@ -245,6 +251,7 @@ int request_transfer_table(ryzen_access ry)
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
 	case FAM_REMBRANDT:
+	case FAM_PHEONIX:
 		transfer_table_msg = 0x65;
 		break;
 	default:
