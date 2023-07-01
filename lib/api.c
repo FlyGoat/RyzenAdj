@@ -220,6 +220,7 @@ int request_table_addr(ryzen_access ry)
 	case FAM_REMBRANDT:
 	case FAM_PHEONIX:
 		ry->table_addr = (uint64_t) args.arg1 << 32 | args.arg0;
+		break;
 	default:
 		ry->table_addr = args.arg0;
 	}
