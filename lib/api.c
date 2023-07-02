@@ -1225,6 +1225,7 @@ EXP float CALL get_apu_slow_limit(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
+	case 0x004C0006:
 		_read_float_value(0x18);
 	}
 	return NAN;
@@ -1246,6 +1247,7 @@ EXP float CALL get_apu_slow_value(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
+	case 0x004C0006:
 		_read_float_value(0x1C);
 	}
 	return NAN;
@@ -1274,6 +1276,7 @@ EXP float CALL get_vrm_current(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
+	case 0x004C0006:
 		_read_float_value(0x20);
 	}
 	return NAN;
@@ -1302,6 +1305,7 @@ EXP float CALL get_vrm_current_value(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
+	case 0x004C0006:
 		_read_float_value(0x24);
 	}
 	return NAN;
@@ -1330,6 +1334,7 @@ EXP float CALL get_vrmsoc_current(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
+	case 0x004C0006:
 		_read_float_value(0x28);
 	}
 	return NAN;
@@ -1358,6 +1363,7 @@ EXP float CALL get_vrmsoc_current_value(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
+	case 0x004C0006:
 		_read_float_value(0x2C);
 	}
 	return NAN;
@@ -1499,6 +1505,7 @@ EXP float CALL get_tctl_temp(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
+	case 0x004C0006:
 		_read_float_value(0x40);
 	}
 	return NAN;
@@ -1528,6 +1535,7 @@ EXP float CALL get_tctl_temp_value(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
+	case 0x004C0006:
 		_read_float_value(0x44);
 	}
 	return NAN;
@@ -1549,6 +1557,7 @@ EXP float CALL get_apu_skin_temp_limit(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
+	case 0x004C0006:
 		_read_float_value(0x58);
 	}
 	return NAN;
@@ -1570,6 +1579,7 @@ EXP float CALL get_apu_skin_temp_value(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
+	case 0x004C0006:
 		_read_float_value(0x5C);
 	}
 	return NAN;
@@ -1590,6 +1600,7 @@ EXP float CALL get_dgpu_skin_temp_limit(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
+	case 0x004C0006:
 		_read_float_value(0x60);
 	}
 	return NAN;
@@ -1610,6 +1621,7 @@ EXP float CALL get_dgpu_skin_temp_value(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
+	case 0x004C0006:
 		_read_float_value(0x64);
 	}
 	return NAN;
