@@ -73,6 +73,7 @@ static const char *family_name(enum ryzen_family fam)
 	case FAM_LUCIENNE: return "Lucienne";
 	case FAM_VANGOGH: return "Vangogh";
 	case FAM_REMBRANDT: return "Rembrandt";
+	case FAM_PHOENIX: return "Phoenix";
 	default:
 		break;
 	}
