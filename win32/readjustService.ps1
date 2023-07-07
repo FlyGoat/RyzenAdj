@@ -26,6 +26,8 @@ $debugMode = $false
 $monitorField = "fast_limit"
 # Does reapply adjustments if power slider did change position, check $Script:acSlider or $Script:dcSlider to apply slider specific values
 $monitorPowerSlider = $true
+# Does reapply adjustments if AC line status did change when AC power cable is plugged or unplugged
+$monitorACLineStatus = $true
 # HWiNFO needs to be restartet after this script did run the first time with this option
 $updateHWINFOSensors = $false
 # some Zen3 devices have a locked STAPM limit, this workarround resets the stapm timer to have unlimited stapm. Use max stapm_limit and stapm_time (usually 500) to triger as less resets as possible
@@ -386,6 +388,7 @@ $Script:dcSlider = $powerkey.GetValue("ActiveOverlayDCPowerScheme")
 
 $systemPowerStatus = New-Object ryzen.adj+SystemPowerStatus
 [void][ryzen.adj]::GetSystemPowerStatus([ref]$systemPowerStatus)
+$Script:acLineStatus = $systemPowerStatus.ACLineStatus
 
 testConfiguration
 
@@ -399,6 +402,7 @@ createOrDeleteHWINFOSensors
 $mtxtArray = @()
 if($monitorField){$mtxtArray += "$monitorField changes"}
 if($monitorPowerSlider){$mtxtArray += "PowerSlider changes"}
+if($monitorACLineStatus){$mtxtArray += "ACLineStatus changes"}
 if($mtxtArray.Length){
     $processType = "Monitor " + ($mtxtArray -join " and ")
 } else {
@@ -406,7 +410,7 @@ if($mtxtArray.Length){
 }
 Write-Host "$processType every $Script:repeatWaitTimeSeconds seconds..."
 while($true) {
-    $doAdjust = !$monitorField -and !$monitorPowerSlider
+    $doAdjust = !$monitorField -and !$monitorPowerSlider -and !$monitorACLineStatus
     if($monitorField -or $updateHWINFOSensors -or $resetSTAPMUsage) {
         [void][ryzen.adj]::refresh_table($ry)
         #[System.Runtime.InteropServices.Marshal]::Copy($tablePtr, $pmTable, 0, 560);
@@ -426,6 +430,14 @@ while($true) {
         $monitorValue = getMonitorValue
         if($Script:monitorFieldAdjResult -ne [math]::round($monitorValue, 3, 0)){
             Write-Host "$monitorField value unexpectedly changed from $Script:monitorFieldAdjResult to $monitorValue"
+            $doAdjust = $true
+        }
+    }
+    if($monitorACLineStatus){
+        [void][ryzen.adj]::GetSystemPowerStatus([ref]$systemPowerStatus)
+        if($Script:acLineStatus -ne $systemPowerStatus.ACLineStatus){
+            Write-Host "AC Line Status changed"
+            $Script:acLineStatus = $systemPowerStatus.ACLineStatus
             $doAdjust = $true
         }
     }
