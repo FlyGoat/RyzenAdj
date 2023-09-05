@@ -61,9 +61,8 @@ Settings
 ### Demo
 If I'm going to set all the Power Limit to 45W, and Tctl to 90 °C,
 then the command line should be:
-```
-./ryzenadj --stapm-limit=45000 --fast-limit=45000 --slow-limit=45000 --tctl-temp=90
-```
+
+    ./ryzenadj --stapm-limit=45000 --fast-limit=45000 --slow-limit=45000 --tctl-temp=90
 
 ### Documentation
 - [Supported Models](https://github.com/FlyGoat/RyzenAdj/wiki/Supported-Models)
@@ -81,18 +80,7 @@ We did provide some examples for automation. And these require configuration dur
 ### Linux Installation
 
 Because it is very easy to build the latest version of RyzenAdj on Linux, we don't provide precompiled packages for distributions.
-Just follow the build instructions and you are ready to use it.
-
-```
-git clone https://github.com/FlyGoat/RyzenAdj.git
-cd RyzenAdj
-rm -r win32
-cmake .
-make
-if [ -d "~/.local/bin" ]; then ln -s ryzenadj ~/.local/bin/ryzenadj && echo "symlinked to ~/.local/bin/ryzenadj"
-if [ -d "~/.bin" ]; then ln -s ryzenadj ~/.bin/ryzenadj && echo "symlinked to ~/.bin/ryzenadj"
-```
-
+Just follow the build instructions below and you are ready to use it.
 
 ### Windows Installation
 
@@ -109,9 +97,8 @@ Deinstallation of the Task can be done via `uninstallServiceTask.bat`
 
 Over Windows Task Scheduler you can check if it is running. It is called `RyzenAdj` below `AMD` folder.
 Or just run
-```
-SCHTASKS /query /TN "AMD\RyzenAdj"
-```
+
+    SCHTASKS /query /TN "AMD\RyzenAdj"
 
 ## Build
 
@@ -129,12 +116,16 @@ Debian-based distros this is covered by installing **pcilib-dev** package:
     sudo apt install libpci-dev
 
 On Fedora:
-```
-sudo dnf install pciutils-devel
-```
+
+    sudo dnf install pciutils-devel
+
+If your Distribution is not supported, try finding the packages or use [Distrobox](https://github.com/89luca89/distrobox) or [Toolbox](https://docs.fedoraproject.org/en-US/fedora-silverblue/toolbox/) instead.
 
 The simplest way to build it:
 
+    git clone https://github.com/FlyGoat/RyzenAdj.git
+    cd RyzenAdj
+    rm -r win32
     mkdir build && cd build
     cmake -DCMAKE_BUILD_TYPE=Release ..
     make
