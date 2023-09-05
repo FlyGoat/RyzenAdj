@@ -89,8 +89,8 @@ cd RyzenAdj
 rm -r win32
 cmake .
 make
-ln -S ryzenadj ~/.local/bin/ryzenadj
-ln -S ryzenadj ~/.bin/ryzenadj
+if [ -d "~/.local/bin" ]; then ln -s ryzenadj ~/.local/bin/ryzenadj && echo "symlinked to ~/.local/bin/ryzenadj"
+if [ -d "~/.bin" ]; then ln -s ryzenadj ~/.bin/ryzenadj && echo "symlinked to ~/.bin/ryzenadj"
 ```
 
 
