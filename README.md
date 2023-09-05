@@ -83,6 +83,17 @@ We did provide some examples for automation. And these require configuration dur
 Because it is very easy to build the latest version of RyzenAdj on Linux, we don't provide precompiled packages for distributions.
 Just follow the build instructions and you are ready to use it.
 
+```
+git clone https://github.com/FlyGoat/RyzenAdj.git
+cd RyzenAdj
+rm -r win32
+cmake .
+make
+ln -S ryzenadj ~/.local/bin/ryzenadj
+ln -S ryzenadj ~/.bin/ryzenadj
+```
+
+
 ### Windows Installation
 
 Before you start installing anything, it is highly recommended getting familiar with RyzenAdj to find out what can be done on your device.
