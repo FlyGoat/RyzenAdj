@@ -129,6 +129,8 @@ The simplest way to build it:
     mkdir build && cd build
     cmake -DCMAKE_BUILD_TYPE=Release ..
     make
+    if [ -d "~/.local/bin" ]; then ln -s ryzenadj ~/.local/bin/ryzenadj && echo "symlinked to ~/.local/bin/ryzenadj"
+    if [ -d "~/.bin" ]; then ln -s ryzenadj ~/.bin/ryzenadj && echo "symlinked to ~/.bin/ryzenadj"
 
 ### Windows
 
