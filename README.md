@@ -137,6 +137,11 @@ The simplest way to build it:
 It can be built by Visual Studio + MSVC automaticaly, or Clang + Nmake in command line.
 However, as for now, MingW-gcc can't be used to compile for some reason.
 
+To use other IDE like JetBrains Rider you can use `cmake -B Builds -G 'Visual Studio 17 2022'` to create sln file.
+This will create `Build` folder with solution containing all `*.vcxproj` files.
+Build the solution. Depending on the configuration name a matching folder will be created at `\Build\Configuration_Name`.
+Copy included dlls to that folder like described below. Now you can run/debug RyzenAdj.
+
 Required dll is included in ./win32 of source tree. Please put the dll
 library and sys driver in the same folder with ryzenadj.exe.
 
