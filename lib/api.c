@@ -1159,6 +1159,7 @@ EXP int CALL set_coall(ryzen_access ry, uint32_t value) {
 		break;
 	case FAM_REMBRANDT:
 	case FAM_VANGOGH:
+	case FAM_PHOENIX:
 		_do_adjust(0x4C);
 		break;
 	}
