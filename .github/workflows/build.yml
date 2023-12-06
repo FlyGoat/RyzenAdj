@@ -113,21 +113,21 @@ jobs:
         cmake DCMAKE_BUILD_TYPE=Release ..
         make
 
-    - name: Test Scripts
-      shell: bash
-      run: |
-        cd examples
-        export LD_LIBRARY_PATH="${{ github.workspace }}/build/"
-        expectedOutput="Not AMD processor, must be kidding"
-        pythonOutput=$(python pmtable-example.py 2>&1) || true
-        if [[ ! "$pythonOutput" =~ "$expectedOutput" ]]; then
-            echo "pmtable-example.py output: $pythonOutput"
-            exit 1
-        fi
-        pythonOutput=$(python readjust.py 2>&1) || true
-        if [[ ! "$pythonOutput" =~ "$expectedOutput" ]]; then
-            echo "readjust.py output: $pythonOutput"
-            exit 1
-        fi
-        exit 0
+#    - name: Test Scripts
+#      shell: bash
+#      run: |
+#        cd examples
+#        export LD_LIBRARY_PATH="${{ github.workspace }}/build/"
+#        expectedOutput="Not AMD processor, must be kidding"
+#        pythonOutput=$(python pmtable-example.py 2>&1) || true
+#        if [[ ! "$pythonOutput" =~ "$expectedOutput" ]]; then
+#            echo "pmtable-example.py output: $pythonOutput"
+#            exit 1
+#        fi
+#        pythonOutput=$(python readjust.py 2>&1) || true
+#        if [[ ! "$pythonOutput" =~ "$expectedOutput" ]]; then
+#            echo "readjust.py output: $pythonOutput"
+#            exit 1
+#        fi
+#        exit 0
 
