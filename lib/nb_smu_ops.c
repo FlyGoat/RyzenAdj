@@ -40,7 +40,7 @@ u32 smu_service_req(smu_t smu ,u32 id ,smu_service_args_t *args)
 	return response;
 }
 
-int smu_service_test(smu_t smu)
+static int smu_service_test(smu_t smu)
 {
 	u32 response = 0x0;
 

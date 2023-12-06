@@ -122,7 +122,7 @@ do {                                                                        \
 	}                                                                       \
 } while (0);
 
-int request_table_ver_and_size(ryzen_access ry)
+static int request_table_ver_and_size(ryzen_access ry)
 {
 	unsigned int get_table_ver_msg;
 	int resp;
@@ -188,7 +188,7 @@ int request_table_ver_and_size(ryzen_access ry)
 	return 0;
 }
 
-int request_table_addr(ryzen_access ry)
+static int request_table_addr(ryzen_access ry)
 {
 	unsigned int get_table_addr_msg;
 	int resp;
@@ -235,7 +235,7 @@ int request_table_addr(ryzen_access ry)
 	return 0;
 }
 
-int request_transfer_table(ryzen_access ry)
+static int request_transfer_table(ryzen_access ry)
 {
 	int resp;
 	unsigned int transfer_table_msg;
