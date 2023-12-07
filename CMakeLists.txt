@@ -1,12 +1,23 @@
 #cmake version
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.9)
 
 #define project name
 PROJECT(ryzenadj)
 
+set(CMAKE_C_VISIBILITY_PRESET hidden)
+
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+
+#Enable LTO
+include(CheckIPOSupported)
+check_ipo_supported(RESULT supported OUTPUT error)
+if( supported )
+    message(STATUS "IPO / LTO enabled")
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
 
 INCLUDE_DIRECTORIES(${INC_DIR})
 
