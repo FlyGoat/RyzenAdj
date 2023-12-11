@@ -25,6 +25,8 @@ enum ryzen_family {
         FAM_REMBRANDT,
         FAM_MENDOCINO,
         FAM_PHOENIX,
+        FAM_HAWKPOINT,
+        FAM_STRIXPOINT,
         FAM_END
 };
 
