@@ -1367,8 +1367,6 @@ EXP float CALL get_apu_slow_value(ryzen_access ry) {
 	case 0x00450004:
 	case 0x00450005:
 	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x1C);
 	default:
 		break;
