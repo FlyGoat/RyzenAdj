@@ -197,7 +197,9 @@ if($ry -eq 0){
 
 function adjust ([String] $fieldName, [uInt32] $value) {
     if($fieldName -eq $Script:monitorField) {
-        $newTargetValue = [math]::round($value * 0.001, 3, 0)
+        # Adjust target value to the unit of measurement of return value of RyzenAdj
+        $multiplier = if($value -gt 2000) { 0.001 } else { 1 }
+        $newTargetValue = [math]::round($value * $multiplier, 3, 0)
         if($Script:monitorFieldAdjTarget -ne $newTargetValue){
             $Script:monitorFieldAdjTarget = $newTargetValue
             Write-Host "set new monitoring target $fieldName to $newTargetValue"
