@@ -2024,6 +2024,14 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 	case 0:
 		switch (ry->table_ver)
 		{
+		case 0x001E0001:
+		case 0x001E0002:
+		case 0x001E0003:
+		case 0x001E0004:
+		case 0x001E0005:
+		case 0x001E000A:
+		case 0x001E0101:
+			_read_float_value(0xF8);
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
@@ -2038,6 +2046,8 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x304); //772
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x320); //800
 	default:
 		break;
@@ -2045,6 +2055,14 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 	case 1:
 		switch (ry->table_ver)
 		{
+		case 0x001E0001:
+		case 0x001E0002:
+		case 0x001E0003:
+		case 0x001E0004:
+		case 0x001E0005:
+		case 0x001E000A:
+		case 0x001E0101:
+			_read_float_value(0xFC);
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
@@ -2059,6 +2077,8 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x308); //776
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x324); //804
 	default:
 		break;
@@ -2080,6 +2100,8 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x30c); //780
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x328); //808
 	default:
 		break;
@@ -2101,6 +2123,8 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x310); //784
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x32c); //812
 	default:
 		break;
@@ -2120,6 +2144,8 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x314); //788
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x330); //816
 	default:
 		break;
@@ -2140,6 +2166,8 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x318); //792
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x334); //820
 	default:
 		break;
@@ -2159,6 +2187,8 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x31c); //796
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x338); //824
 	default:
 		break;
@@ -2178,6 +2208,8 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x320); //800
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x33c); //828
 	default:
 		break;
@@ -2194,6 +2226,14 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 	case 0:
 		switch (ry->table_ver)
 		{
+		case 0x001E0001:
+		case 0x001E0002:
+		case 0x001E0003:
+		case 0x001E0004:
+		case 0x001E0005:
+		case 0x001E000A:
+		case 0x001E0101:
+			_read_float_value(0xE4);
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
@@ -2206,6 +2246,8 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x248); //584
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x340); //832
 	default:
 		break;
@@ -2213,6 +2255,14 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 	case 1:
 		switch (ry->table_ver)
 		{
+		case 0x001E0001:
+		case 0x001E0002:
+		case 0x001E0003:
+		case 0x001E0004:
+		case 0x001E0005:
+		case 0x001E000A:
+		case 0x001E0101:
+			_read_float_value(0xF4);
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
@@ -2225,6 +2275,8 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x24C); //588
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x344); //836
 	default:
 		break;
@@ -2244,6 +2296,8 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x250); //592
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x348); //840
 	default:
 		break;
@@ -2263,6 +2317,8 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x254); //596
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x34c); //844
 	default:
 		break;
@@ -2280,6 +2336,8 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x34C);
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x350); //848
 
 	default:
@@ -2298,6 +2356,8 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x350);
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x354); //852
 	default:
 		break;
@@ -2315,6 +2375,8 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x354);
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x358); //856
 	default:
 		break;
@@ -2332,6 +2394,8 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x358);
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x35c); //860
 	default:
 		break;
@@ -2346,6 +2410,14 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 	case 0:
 		switch (ry->table_ver)
 		{
+		case 0x001E0001:
+		case 0x001E0002:
+		case 0x001E0003:
+		case 0x001E0004:
+		case 0x001E0005:
+		case 0x001E000A:
+		case 0x001E0101:
+			_read_float_value(0x1B0);
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
@@ -2358,6 +2430,8 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x258); //600
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x360); //864
 	default:
 		break;
@@ -2365,6 +2439,14 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 	case 1:
 		switch (ry->table_ver)
 		{
+		case 0x001E0001:
+		case 0x001E0002:
+		case 0x001E0003:
+		case 0x001E0004:
+		case 0x001E0005:
+		case 0x001E000A:
+		case 0x001E0101:
+			_read_float_value(0x1B4);
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
@@ -2377,6 +2459,8 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x25C); //604
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x364); //868
 	default:
 		break;
@@ -2384,6 +2468,14 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 	case 2:
 		switch (ry->table_ver)
 		{
+		case 0x001E0001:
+		case 0x001E0002:
+		case 0x001E0003:
+		case 0x001E0004:
+		case 0x001E0005:
+		case 0x001E000A:
+		case 0x001E0101:
+			_read_float_value(0x1B8);
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
@@ -2396,6 +2488,8 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x260); //608
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x368); //872
 	default:
 		break;
@@ -2403,6 +2497,14 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 	case 3:
 		switch (ry->table_ver)
 		{
+		case 0x001E0001:
+		case 0x001E0002:
+		case 0x001E0003:
+		case 0x001E0004:
+		case 0x001E0005:
+		case 0x001E000A:
+		case 0x001E0101:
+			_read_float_value(0x1BC);
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
@@ -2415,6 +2517,8 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x264); //612
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x36c); //876
 	default:
 		break;
@@ -2432,6 +2536,8 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x36C);
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x370); //880
 	default:
 		break;
@@ -2449,6 +2555,8 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x370);
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x374); //884
 	default:
 		break;
@@ -2466,6 +2574,8 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x374);
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x378); //888
 	default:
 		break;
@@ -2483,6 +2593,8 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x378);
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x37C); //892
 	default:
 		break;
@@ -2499,6 +2611,14 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 	case 0:
 		switch (ry->table_ver)
 		{
+		case 0x001E0001:
+		case 0x001E0002:
+		case 0x001E0003:
+		case 0x001E0004:
+		case 0x001E0005:
+		case 0x001E000A:
+		case 0x001E0101:
+			_read_float_value(0x1E4);
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
@@ -2511,6 +2631,8 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x288); //648
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x3c0); //960
 	default:
 		break;
@@ -2518,6 +2640,14 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 	case 1:
 		switch (ry->table_ver)
 		{
+		case 0x001E0001:
+		case 0x001E0002:
+		case 0x001E0003:
+		case 0x001E0004:
+		case 0x001E0005:
+		case 0x001E000A:
+		case 0x001E0101:
+			_read_float_value(0x1EC);
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
@@ -2530,6 +2660,8 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x2C8); //652
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x3c4); //964
 	default:
 		break;
@@ -2537,6 +2669,14 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 	case 2:
 		switch (ry->table_ver)
 		{
+		case 0x001E0001:
+		case 0x001E0002:
+		case 0x001E0003:
+		case 0x001E0004:
+		case 0x001E0005:
+		case 0x001E000A:
+		case 0x001E0101:
+			_read_float_value(0x1F4);
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
@@ -2549,6 +2689,8 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x290); //656
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x3c8); //968
 	default:
 		break;
@@ -2556,6 +2698,14 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 	case 3:
 		switch (ry->table_ver)
 		{
+		case 0x001E0001:
+		case 0x001E0002:
+		case 0x001E0003:
+		case 0x001E0004:
+		case 0x001E0005:
+		case 0x001E000A:
+		case 0x001E0101:
+			_read_float_value(0x1FC);
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
@@ -2568,6 +2718,8 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x294); //660
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x3cc); //972
 	default:
 		break;
@@ -2585,6 +2737,8 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x3CC);
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x3d0); //976
 	default:
 		break;
@@ -2602,6 +2756,8 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x3D0);
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x3d4); //980
 	default:
 		break;
@@ -2619,6 +2775,8 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x3D4);
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x3d8); //984
 	default:
 		break;
@@ -2636,6 +2794,8 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 			_read_float_value(0x3D8);
 		case 0x00400004:
 		case 0x00400005:
+		case 0x00450004:
+		case 0x00450005:
 			_read_float_value(0x3dc); //988
 	default:
 		break;
@@ -2649,6 +2809,14 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 EXP float CALL get_l3_clk(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
+	case 0x001E0001:
+	case 0x001E0002:
+	case 0x001E0003:
+	case 0x001E0004:
+	case 0x001E0005:
+	case 0x001E000A:
+	case 0x001E0101:
+		_read_float_value(0x254);
 	case 0x00370000:
 	case 0x00370001:
 	case 0x00370002:
@@ -2661,6 +2829,8 @@ EXP float CALL get_l3_clk(ryzen_access ry) {
 		_read_float_value(0x35C); //860
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x614); //1556
 	default:
 		break;
@@ -2671,6 +2841,14 @@ EXP float CALL get_l3_clk(ryzen_access ry) {
 EXP float CALL get_l3_logic(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
+	case 0x001E0001:
+	case 0x001E0002:
+	case 0x001E0003:
+	case 0x001E0004:
+	case 0x001E0005:
+	case 0x001E000A:
+	case 0x001E0101:
+		_read_float_value(0x244);
 	case 0x00370000:
 	case 0x00370001:
 	case 0x00370002:
@@ -2683,6 +2861,8 @@ EXP float CALL get_l3_logic(ryzen_access ry) {
 		_read_float_value(0x348); //840
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x600); //1536
 	default:
 		break;
@@ -2693,6 +2873,14 @@ EXP float CALL get_l3_logic(ryzen_access ry) {
 EXP float CALL get_l3_vddm(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
+	case 0x001E0001:
+	case 0x001E0002:
+	case 0x001E0003:
+	case 0x001E0004:
+	case 0x001E0005:
+	case 0x001E000A:
+	case 0x001E0101:
+		_read_float_value(0x240);
 	case 0x00370000:
 	case 0x00370001:
 	case 0x00370002:
@@ -2705,6 +2893,8 @@ EXP float CALL get_l3_vddm(ryzen_access ry) {
 		_read_float_value(0x34C); //844
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x604); //1540
 	default:
 		break;
@@ -2715,6 +2905,14 @@ EXP float CALL get_l3_vddm(ryzen_access ry) {
 EXP float CALL get_l3_temp(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
+	case 0x001E0001:
+	case 0x001E0002:
+	case 0x001E0003:
+	case 0x001E0004:
+	case 0x001E0005:
+	case 0x001E000A:
+	case 0x001E0101:
+		_read_float_value(0x248);
 	case 0x00370000:
 	case 0x00370001:
 	case 0x00370002:
@@ -2727,6 +2925,8 @@ EXP float CALL get_l3_temp(ryzen_access ry) {
 		_read_float_value(0x350); //848
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x608); //1544
 	default:
 		break;
@@ -2737,6 +2937,14 @@ EXP float CALL get_l3_temp(ryzen_access ry) {
 EXP float CALL get_gfx_clk(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
+	case 0x001E0001:
+	case 0x001E0002:
+	case 0x001E0003:
+	case 0x001E0004:
+	case 0x001E0005:
+	case 0x001E000A:
+	case 0x001E0101:
+		_read_float_value(0x26C);
 	case 0x00370000:
 	case 0x00370001:
 	case 0x00370002:
@@ -2753,6 +2961,8 @@ EXP float CALL get_gfx_clk(ryzen_access ry) {
 		_read_float_value(0x644); //1604
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x648); //1608
 	case 0x003F0000: //Van Gogh
 		_read_float_value(0x388); //904
@@ -2765,6 +2975,14 @@ EXP float CALL get_gfx_clk(ryzen_access ry) {
 EXP float CALL get_gfx_volt(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
+	case 0x001E0001:
+	case 0x001E0002:
+	case 0x001E0003:
+	case 0x001E0004:
+	case 0x001E0005:
+	case 0x001E000A:
+	case 0x001E0101:
+		_read_float_value(0x258);
 	case 0x00370000:
 	case 0x00370001:
 	case 0x00370002:
@@ -2781,6 +2999,8 @@ EXP float CALL get_gfx_volt(ryzen_access ry) {
 		_read_float_value(0x638); //1592
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x63C); //1596
 	case 0x003F0000: //Van Gogh
 		_read_float_value(0x37C); //896
@@ -2793,6 +3013,14 @@ EXP float CALL get_gfx_volt(ryzen_access ry) {
 EXP float CALL get_gfx_temp(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
+	case 0x001E0001:
+	case 0x001E0002:
+	case 0x001E0003:
+	case 0x001E0004:
+	case 0x001E0005:
+	case 0x001E000A:
+	case 0x001E0101:
+		_read_float_value(0x25C);
 	case 0x00370000:
 	case 0x00370001:
 	case 0x00370002:
@@ -2809,6 +3037,8 @@ EXP float CALL get_gfx_temp(ryzen_access ry) {
 		_read_float_value(0x63C); //1596
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x640); //1600
 	case 0x003F0000: //Van Gogh
 		_read_float_value(0x380); //896
@@ -2821,6 +3051,14 @@ EXP float CALL get_gfx_temp(ryzen_access ry) {
 EXP float CALL get_fclk(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
+	case 0x001E0001:
+	case 0x001E0002:
+	case 0x001E0003:
+	case 0x001E0004:
+	case 0x001E0005:
+	case 0x001E000A:
+	case 0x001E0101:
+		_read_float_value(0x29C);
 	case 0x00370000:
 	case 0x00370001:
 	case 0x00370002:
@@ -2833,6 +3071,8 @@ EXP float CALL get_fclk(ryzen_access ry) {
 		_read_float_value(0x3C5); //956
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x664); //1636
 	default:
 		break;
@@ -2843,6 +3083,14 @@ EXP float CALL get_fclk(ryzen_access ry) {
 EXP float CALL get_mem_clk(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
+	case 0x001E0001:
+	case 0x001E0002:
+	case 0x001E0003:
+	case 0x001E0004:
+	case 0x001E0005:
+	case 0x001E000A:
+	case 0x001E0101:
+		_read_float_value(0x2C8); //RAM0 stick freq
 	case 0x00370000:
 	case 0x00370001:
 	case 0x00370002:
@@ -2855,6 +3103,8 @@ EXP float CALL get_mem_clk(ryzen_access ry) {
 		_read_float_value(0x3C4); //964
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x66c); //1644
 	default:
 		break;
@@ -2865,6 +3115,14 @@ EXP float CALL get_mem_clk(ryzen_access ry) {
 EXP float CALL get_soc_volt(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
+	case 0x001E0001:
+	case 0x001E0002:
+	case 0x001E0003:
+	case 0x001E0004:
+	case 0x001E0005:
+	case 0x001E000A:
+	case 0x001E0101:
+		_read_float_value(0x104);
 	case 0x00370000:
 	case 0x00370001:
 	case 0x00370002:
@@ -2877,6 +3135,8 @@ EXP float CALL get_soc_volt(ryzen_access ry) {
 		_read_float_value(0x1A0); //416
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x19c); //412
 
 	default:
@@ -2888,6 +3148,14 @@ EXP float CALL get_soc_volt(ryzen_access ry) {
 EXP float CALL get_soc_power(ryzen_access ry) {
 	switch (ry->table_ver)
 	{
+	case 0x001E0001:
+	case 0x001E0002:
+	case 0x001E0003:
+	case 0x001E0004:
+	case 0x001E0005:
+	case 0x001E000A:
+	case 0x001E0101:
+		_read_float_value(0x10C);
 	case 0x00370000:
 	case 0x00370001:
 	case 0x00370002:
@@ -2900,6 +3168,8 @@ EXP float CALL get_soc_power(ryzen_access ry) {
 		_read_float_value(0x1A8); //424
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x1a4); //420
 	default:
 		break;
