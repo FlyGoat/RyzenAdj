@@ -1833,6 +1833,8 @@ EXP float CALL get_psi0_current(ryzen_access ry) {
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 	case 0x004C0006:
 	case 0x004C0007:
 	case 0x004C0008:
@@ -1865,6 +1867,8 @@ EXP float CALL get_psi0soc_current(ryzen_access ry) {
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 	case 0x004C0006:
 	case 0x004C0007:
 	case 0x004C0008:
@@ -1898,6 +1902,8 @@ EXP float CALL get_cclk_setpoint(ryzen_access ry) {
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
+	case 0x00450004:
+	case 0x00450005:
 		_read_float_value(0x100);
 	default:
 		break;
@@ -2085,7 +2091,7 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 	}
 	case 2:
 		switch (ry->table_ver)
-		{
+		{ 
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
@@ -2108,7 +2114,7 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 	}
 	case 3:
 		switch (ry->table_ver)
-		{
+		{ 
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
@@ -2131,7 +2137,7 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 	}
 	case 4:
 		switch (ry->table_ver)
-		{
+		{ 
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
@@ -2153,7 +2159,7 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 
 	case 5:
 		switch (ry->table_ver)
-		{
+		{ 
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
@@ -2174,7 +2180,7 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 	}
 	case 6:
 		switch (ry->table_ver)
-		{
+		{ 
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
@@ -2195,7 +2201,7 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 	}
 	case 7:
 		switch (ry->table_ver)
-		{
+		{ 
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
@@ -3090,7 +3096,7 @@ EXP float CALL get_mem_clk(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
-		_read_float_value(0x2C8); //RAM0 stick freq
+		_read_float_value(0x2C8);
 	case 0x00370000:
 	case 0x00370001:
 	case 0x00370002:
