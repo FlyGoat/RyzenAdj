@@ -90,7 +90,7 @@ static void show_info_header(ryzen_access ry)
 	printf("Version: v" STRINGIFY(RYZENADJ_REVISION_VER) "." STRINGIFY(RYZENADJ_MAJOR_VER) "." STRINGIFY(RYZENADJ_MINIOR_VER) " \n");
 }
 
-static void show_info_table_new(ryzen_access ry)
+static void show_info_table(ryzen_access ry)
 {
 	printf("PM Table Version: %x\n", get_table_ver(ry));
 	//fix GHz-MHz issue. On Raven, Dali, Picasso CPUs the CPU frequency in GHz but on newer lines in MHz then moltiply to 1000
@@ -304,49 +304,6 @@ static void show_info_table_new(ryzen_access ry)
 	printf(tableFormat, "SOC POWER", get_soc_power(ry), "");
 }
 
-static void show_info_table(ryzen_access ry)
-{
-	printf("PM Table Version: %x\n", get_table_ver(ry));
-
-	//get refresh table after adjust
-	int errorcode = refresh_table(ry);
-	if(errorcode){
-		printf("Unable to refresh power metric table: %d\n", errorcode);
-		return;
-	}
-
-	//print table in github markdown
-	printf("|        Name         |   Value   |     Parameter      |\n");
-	printf("|---------------------|-----------|--------------------|\n");
-	char tableFormat[] = "| %-19s | %9.3lf | %-18s |\n";
-	printf(tableFormat, "STAPM LIMIT", get_stapm_limit(ry), "stapm-limit");
-	printf(tableFormat, "STAPM VALUE", get_stapm_value(ry), "");
-	printf(tableFormat, "PPT LIMIT FAST", get_fast_limit(ry), "fast-limit");
-	printf(tableFormat, "PPT VALUE FAST", get_fast_value(ry), "");
-	printf(tableFormat, "PPT LIMIT SLOW", get_slow_limit(ry), "slow-limit");
-	printf(tableFormat, "PPT VALUE SLOW", get_slow_value(ry), "");
-	printf(tableFormat, "StapmTimeConst", get_stapm_time(ry), "stapm-time");
-	printf(tableFormat, "SlowPPTTimeConst", get_slow_time(ry), "slow-time");
-	printf(tableFormat, "PPT LIMIT APU", get_apu_slow_limit(ry), "apu-slow-limit");
-	printf(tableFormat, "PPT VALUE APU", get_apu_slow_value(ry), "");
-	printf(tableFormat, "TDC LIMIT VDD", get_vrm_current(ry), "vrm-current");
-	printf(tableFormat, "TDC VALUE VDD", get_vrm_current_value(ry), "");
-	printf(tableFormat, "TDC LIMIT SOC", get_vrmsoc_current(ry), "vrmsoc-current");
-	printf(tableFormat, "TDC VALUE SOC", get_vrmsoc_current_value(ry), "");
-	printf(tableFormat, "EDC LIMIT VDD", get_vrmmax_current(ry), "vrmmax-current");
-	printf(tableFormat, "EDC VALUE VDD", get_vrmmax_current_value(ry), "");
-	printf(tableFormat, "EDC LIMIT SOC", get_vrmsocmax_current(ry), "vrmsocmax-current");
-	printf(tableFormat, "EDC VALUE SOC", get_vrmsocmax_current_value(ry), "");
-	printf(tableFormat, "THM LIMIT CORE", get_tctl_temp(ry), "tctl-temp");
-	printf(tableFormat, "THM VALUE CORE", get_tctl_temp_value(ry), "");
-	printf(tableFormat, "STT LIMIT APU", get_apu_skin_temp_limit(ry), "apu-skin-temp");
-	printf(tableFormat, "STT VALUE APU", get_apu_skin_temp_value(ry), "");
-	printf(tableFormat, "STT LIMIT dGPU", get_dgpu_skin_temp_limit(ry), "dgpu-skin-temp");
-	printf(tableFormat, "STT VALUE dGPU", get_dgpu_skin_temp_value(ry), "");
-	printf(tableFormat, "CCLK Boost SETPOINT", get_cclk_setpoint(ry), "power-saving /");
-	printf(tableFormat, "CCLK BUSY VALUE", get_cclk_busy_value(ry), "max-performance");
-}
-
 static void show_table_dump(ryzen_access ry, int any_adjust_applied)
 {
 	size_t index, table_size;
@@ -404,7 +361,7 @@ int main(int argc, const char **argv)
 	ryzen_access ry;
 	int err = 0;
 
-	int info = 0, dump_table = 0, any_adjust_applied = 0, new_info = 0;
+	int info = 0, dump_table = 0, any_adjust_applied = 0;
 	int power_saving = 0, max_performance = 0, enable_oc = 0x0, disable_oc = 0x0;
 	//init unsigned types with max value because we treat max value as unset
 	uint32_t stapm_limit = -1, fast_limit = -1, slow_limit = -1, slow_time = -1, stapm_time = -1, tctl_temp = -1;
@@ -420,7 +377,6 @@ int main(int argc, const char **argv)
 		OPT_HELP(),
 		OPT_GROUP("Options"),
 		OPT_BOOLEAN('i', "info", &info, "Show information and most important power metrics after adjustment"),
-		OPT_BOOLEAN('z', "infonew", &new_info, "Show new information and most important power metrics after adjustment"),
 		OPT_BOOLEAN('\0', "dump-table", &dump_table, "Show whole power metric table before and after adjustment"),
 		OPT_GROUP("Settings"),
 		OPT_U32('a', "stapm-limit", &stapm_limit, "Sustained Power Limit         - STAPM LIMIT (mW)"),
@@ -484,11 +440,11 @@ int main(int argc, const char **argv)
 	}
 
 	//shows info header before init_table
-	if (info || new_info) {
+	if (info) {
 		show_info_header(ry);
 	}
 
-	if (info || dump_table || new_info) {
+	if (info || dump_table) {
 		//init before adjustment to get the default values
 		err = init_table(ry);
 		if (err) {
@@ -548,9 +504,6 @@ int main(int argc, const char **argv)
 		//show power table after apply settings
 		if (info) {
 			show_info_table(ry);
-		}
-		if (new_info) {
-			show_info_table_new(ry);
 		}
 	}
 
