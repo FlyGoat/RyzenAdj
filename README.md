@@ -24,7 +24,6 @@ Usage: ryzenadj [options]
 
 Options
     -i, --info                            Show information and most important power metrics after adjustment
-    -z, --infonew                            Show new information and most important power metrics after adjustment
     --dump-table                          Show whole power metric table before and after adjustment
 
 Settings
