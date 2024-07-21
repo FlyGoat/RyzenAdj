@@ -119,6 +119,10 @@ On Fedora:
 
     sudo dnf install cmake gcc-c++ pciutils-devel
 
+On Arch:
+
+    sudo pacman -S base-devel pciutils cmake
+
 If your Distribution is not supported, try finding the packages or use [Distrobox](https://github.com/89luca89/distrobox) or [Toolbox](https://docs.fedoraproject.org/en-US/fedora-silverblue/toolbox/) instead.
 
 The simplest way to build it:
