@@ -348,3 +348,5 @@ ASALocalRun/
 healthchecksdb
 
 # End of https://www.gitignore.io/api/visualstudio
+
+cmake-build-*
