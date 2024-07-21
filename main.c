@@ -57,7 +57,7 @@ do {                                                                            
 } while(0);
 
 static const char *const usage[] = {
-	"ryzenadj [options]",
+	"ryzenadjcli [options]",
 	NULL,
 };
 
