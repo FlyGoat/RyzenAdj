@@ -12,6 +12,7 @@ include(CheckIPOSupported)
 check_ipo_supported(RESULT has_ipo OUTPUT error)
 
 add_executable(${PROJECT_NAME} argparse.c main.c)
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "ryzenadj")
 
 if(has_ipo)
     message(STATUS "${PROJECT_NAME}: IPO / LTO enabled")
