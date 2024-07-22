@@ -17,9 +17,8 @@ jobs:
     #don't use run-cmake for windows because only one build should add warnings to pull request
     - name: Build Debug
       run: |
-        mkdir debug
+        cmake -B debug -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Debug
         cd debug
-        cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
         nmake
 
     - name: Upload ryzenadj debug
@@ -28,20 +27,19 @@ jobs:
         name: ryzenadj-win64-debug
         path: |
           debug/ryzenadj.exe
-          debug/libryzenadj.dll
+          debug/lib/libryzenadj.dll
 
     - name: Build Release
       run: |
-        mkdir build
+        cmake -B build -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release
         cd build
-        cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
         nmake
 
     - name: Prepair Release Folder
       run: |
         mkdir release
         copy build/ryzenadj.exe release/
-        copy build/libryzenadj.dll release/
+        copy build/lib/libryzenadj.dll release/
         copy win32/* release/
         copy examples/* release/
 
@@ -86,8 +84,8 @@ jobs:
       with:
         name: libryzenadj-win64
         path: |
-            ./build/libryzenadj.dll
-            ./build/libryzenadj.lib
+            ./build/lib/libryzenadj.dll
+            ./build/lib/libryzenadj.lib
             ./lib/ryzenadj.h
             ./win32/inpoutx64.dll
             ./win32/WinRing0x64.dll
