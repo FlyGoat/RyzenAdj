@@ -1,0 +1,23 @@
+Source: ryzenadj
+Section: admin
+Priority: optional
+Maintainer: queenkjuul <queenkjuul@pm.me>
+Rules-Requires-Root: no
+Build-Depends: debhelper-compat (= 13),
+  cmake,
+  libpci-dev,
+  pandoc,
+Standards-Version: 4.6.2
+Homepage: https://github.com/FlyGoat/RyzenAdj
+#Vcs-Browser: https://salsa.debian.org/debian/ryzenadj
+Vcs-Git: https://github.com/FlyGoat/RyzenAdj.git
+
+Package: ryzenadj
+Architecture: amd64
+Depends: ${shlibs:Depends},
+  ${misc:Depends},
+Description: CLI utility to adjust power management settings on AMD APUs
+  RyzenAdj can be used to alter the PM Table for a range of AMD APUs
+  used in small form factor PCs and laptops. APUs from the AMD Ryzen
+  2000-7000 series are generally supported to varying degrees, including
+  the Valve Steam Deck.

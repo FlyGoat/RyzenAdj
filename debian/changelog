@@ -1,0 +1,17 @@
+ryzenadj (0.15.0-qkj3build2) noble; urgency=medium
+
+  * More build/manpage fixes, attempting...
+
+ -- qkj <queenkjuul@pm.me>  Sun, 04 Aug 2024 06:51:08 -0500
+
+ryzenadj (0.15.0-qkj3build1) noble; urgency=medium
+
+  * Fix README.md/manpage.1 issue
+
+ -- qkj <queenkjuul@pm.me>  Sun, 04 Aug 2024 06:31:33 -0500
+
+ryzenadj (0.15.0-qkj3) noble; urgency=medium
+
+  * Initial release.
+
+ -- queenkjuul <queenkjuul@pm.me>  Sun, 04 Aug 2024 06:25:13 -0500
