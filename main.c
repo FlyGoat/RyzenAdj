@@ -5,6 +5,7 @@
 #include <string.h>
 #include "lib/ryzenadj.h"
 #include "argparse.h"
+#include "config.c"
 
 #define STRINGIFY2(X) #X
 #define STRINGIFY(X) STRINGIFY2(X)
@@ -83,54 +84,108 @@ static const char *family_name(enum ryzen_family fam)
 	return "Unknown";
 }
 
-static void show_info_header(ryzen_access ry)
+static void show_info_header(ryzen_access ry, config_t *config)
 {
-	printf("CPU Family: %s\n", family_name(get_cpu_family(ry)));
-	printf("SMU BIOS Interface Version: %d\n", get_bios_if_ver(ry));
-	printf("Version: v" STRINGIFY(RYZENADJ_REVISION_VER) "." STRINGIFY(RYZENADJ_MAJOR_VER) "." STRINGIFY(RYZENADJ_MINIOR_VER) " \n");
+	if (config->show_family_name) {
+		printf("CPU Family: %s\n", family_name(get_cpu_family(ry)));
+	}
+	if (config->show_bios_if_ver) {
+		printf("SMU BIOS Interface Version: %d\n", get_bios_if_ver(ry));
+	}
+	if (config->show_ryzenadj_ver) {
+		printf("Version: v" STRINGIFY(RYZENADJ_REVISION_VER) "." STRINGIFY(RYZENADJ_MAJOR_VER) "." STRINGIFY(RYZENADJ_MINIOR_VER) " \n");
+	}
 }
 
-static void show_info_table(ryzen_access ry)
-{
-	printf("PM Table Version: %x\n", get_table_ver(ry));
+static void show_info_table(ryzen_access ry, config_t *config) {
+    if (config->show_table_ver) {
+        printf("PM Table Version: %x\n", get_table_ver(ry));
+    }
 
-	//get refresh table after adjust
-	int errorcode = refresh_table(ry);
-	if(errorcode){
-		printf("Unable to refresh power metric table: %d\n", errorcode);
-		return;
-	}
+    //get refresh table after adjust
+    int errorcode = refresh_table(ry);
+    if(errorcode){
+        printf("Unable to refresh power metric table: %d\n", errorcode);
+        return;
+    }
 
-	//print table in github markdown
-	printf("|        Name         |   Value   |     Parameter      |\n");
-	printf("|---------------------|-----------|--------------------|\n");
-	char tableFormat[] = "| %-19s | %9.3lf | %-18s |\n";
-	printf(tableFormat, "STAPM LIMIT", get_stapm_limit(ry), "stapm-limit");
-	printf(tableFormat, "STAPM VALUE", get_stapm_value(ry), "");
-	printf(tableFormat, "PPT LIMIT FAST", get_fast_limit(ry), "fast-limit");
-	printf(tableFormat, "PPT VALUE FAST", get_fast_value(ry), "");
-	printf(tableFormat, "PPT LIMIT SLOW", get_slow_limit(ry), "slow-limit");
-	printf(tableFormat, "PPT VALUE SLOW", get_slow_value(ry), "");
-	printf(tableFormat, "StapmTimeConst", get_stapm_time(ry), "stapm-time");
-	printf(tableFormat, "SlowPPTTimeConst", get_slow_time(ry), "slow-time");
-	printf(tableFormat, "PPT LIMIT APU", get_apu_slow_limit(ry), "apu-slow-limit");
-	printf(tableFormat, "PPT VALUE APU", get_apu_slow_value(ry), "");
-	printf(tableFormat, "TDC LIMIT VDD", get_vrm_current(ry), "vrm-current");
-	printf(tableFormat, "TDC VALUE VDD", get_vrm_current_value(ry), "");
-	printf(tableFormat, "TDC LIMIT SOC", get_vrmsoc_current(ry), "vrmsoc-current");
-	printf(tableFormat, "TDC VALUE SOC", get_vrmsoc_current_value(ry), "");
-	printf(tableFormat, "EDC LIMIT VDD", get_vrmmax_current(ry), "vrmmax-current");
-	printf(tableFormat, "EDC VALUE VDD", get_vrmmax_current_value(ry), "");
-	printf(tableFormat, "EDC LIMIT SOC", get_vrmsocmax_current(ry), "vrmsocmax-current");
-	printf(tableFormat, "EDC VALUE SOC", get_vrmsocmax_current_value(ry), "");
-	printf(tableFormat, "THM LIMIT CORE", get_tctl_temp(ry), "tctl-temp");
-	printf(tableFormat, "THM VALUE CORE", get_tctl_temp_value(ry), "");
-	printf(tableFormat, "STT LIMIT APU", get_apu_skin_temp_limit(ry), "apu-skin-temp");
-	printf(tableFormat, "STT VALUE APU", get_apu_skin_temp_value(ry), "");
-	printf(tableFormat, "STT LIMIT dGPU", get_dgpu_skin_temp_limit(ry), "dgpu-skin-temp");
-	printf(tableFormat, "STT VALUE dGPU", get_dgpu_skin_temp_value(ry), "");
-	printf(tableFormat, "CCLK Boost SETPOINT", get_cclk_setpoint(ry), "power-saving /");
-	printf(tableFormat, "CCLK BUSY VALUE", get_cclk_busy_value(ry), "max-performance");
+    //print table in github markdown
+    printf("|        Name         |   Value   |     Parameter      |\n");
+    printf("|---------------------|-----------|--------------------|\n");
+    char tableFormat[] = "| %-19s | %9.3lf | %-18s |\n";
+    
+    if (config->show_stapm_limit) {
+        printf(tableFormat, "STAPM LIMIT", get_stapm_limit(ry), "stapm-limit");
+        if (config->show_stapm_limit_value) {
+            printf(tableFormat, "STAPM VALUE", get_stapm_value(ry), "");
+        }
+    }
+    if (config->show_fast_limit) {
+        printf(tableFormat, "PPT LIMIT FAST", get_fast_limit(ry), "fast-limit");
+        if (config->show_fast_limit_value) {
+            printf(tableFormat, "PPT VALUE FAST", get_fast_value(ry), "");
+        }
+    }
+    if (config->show_slow_limit) {
+        printf(tableFormat, "PPT LIMIT SLOW", get_slow_limit(ry), "slow-limit");
+        if (config->show_slow_limit_value) {
+            printf(tableFormat, "PPT VALUE SLOW", get_slow_value(ry), "");
+        }
+    }
+    if (config->show_stapm_time) {
+        printf(tableFormat, "StapmTimeConst", get_stapm_time(ry), "stapm-time");
+    }
+    if (config->show_slow_time) {
+        printf(tableFormat, "SlowPPTTimeConst", get_slow_time(ry), "slow-time");
+    }
+    if (config->show_apu_slow_limit) {
+        printf(tableFormat, "PPT LIMIT APU", get_apu_slow_limit(ry), "apu-slow-limit");
+        if (config->show_apu_slow_limit_value) {
+            printf(tableFormat, "PPT VALUE APU", get_apu_slow_value(ry), "");
+        }
+    }
+    if (config->show_vrm_current) {
+        printf(tableFormat, "TDC LIMIT VDD", get_vrm_current(ry), "vrm-current");
+        if (config->show_vrm_current_value) {
+            printf(tableFormat, "TDC VALUE VDD", get_vrm_current_value(ry), "");
+        }
+    }
+    if (config->show_vrmsoc_current) {
+        printf(tableFormat, "TDC LIMIT SOC", get_vrmsoc_current(ry), "vrmsoc-current");
+        if (config->show_vrmsoc_current_value) {
+            printf(tableFormat, "TDC VALUE SOC", get_vrmsoc_current_value(ry), "");
+        }
+    }
+    if (config->show_vrmsocmax_current) {
+        printf(tableFormat, "EDC LIMIT SOC", get_vrmsocmax_current(ry), "vrmsocmax-current");
+        if (config->show_vrmsocmax_current_value) {
+            printf(tableFormat, "EDC VALUE SOC", get_vrmsocmax_current_value(ry), "");
+        }
+    }
+    if (config->show_tctl_temp) {
+        printf(tableFormat, "THM LIMIT CORE", get_tctl_temp(ry), "tctl-temp");
+        if (config->show_tctl_temp_value) {
+            printf(tableFormat, "THM VALUE CORE", get_tctl_temp_value(ry), "");
+        }
+    }
+    if (config->show_apu_skin_temp) {
+        printf(tableFormat, "STT LIMIT APU", get_apu_skin_temp_limit(ry), "apu-skin-temp");
+        if (config->show_apu_skin_temp_value) {
+            printf(tableFormat, "STT VALUE APU", get_apu_skin_temp_value(ry), "");
+        }
+    }
+    if (config->show_dgpu_skin_temp) {
+        printf(tableFormat, "STT LIMIT dGPU", get_dgpu_skin_temp_limit(ry), "dgpu-skin-temp");
+        if (config->show_dgpu_skin_temp_value) {
+            printf(tableFormat, "STT VALUE dGPU", get_dgpu_skin_temp_value(ry), "");
+        }
+    }
+    if (config->show_power_saving) {
+        printf(tableFormat, "CCLK Boost SETPOINT", get_cclk_setpoint(ry), "power-saving");
+    }
+    if (config->show_max_performance) {
+        printf(tableFormat, "CCLK BUSY VALUE", get_cclk_busy_value(ry), "max-performance");
+    }
 }
 
 static void show_table_dump(ryzen_access ry, int any_adjust_applied)
@@ -187,6 +242,8 @@ static void show_table_dump(ryzen_access ry, int any_adjust_applied)
 
 int main(int argc, const char **argv)
 {
+	const char *config_file = "/etc/ryzenadj.conf";
+    config_t config = parse_config(config_file);
 	ryzen_access ry;
 	int err = 0;
 
@@ -270,7 +327,7 @@ int main(int argc, const char **argv)
 
 	//shows info header before init_table
 	if (info) {
-		show_info_header(ry);
+		show_info_header(ry, &config);
 	}
 
 	if (info || dump_table) {
@@ -324,7 +381,6 @@ int main(int argc, const char **argv)
 	_do_adjust(coall);
 	_do_adjust(coper);
 	_do_adjust(cogfx);
-
 	if (!err) {
 		//call show table dump before anybody did call table refresh, because we want to copy the old values first
 		if (dump_table) {
@@ -332,10 +388,9 @@ int main(int argc, const char **argv)
 		}
 		//show power table after apply settings
 		if (info) {
-			show_info_table(ry);
+			show_info_table(ry, &config);
 		}
 	}
-
 	cleanup_ryzenadj(ry);
 
 	return err;
