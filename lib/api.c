@@ -139,6 +139,7 @@ static int request_table_ver_and_size(ryzen_access ry)
 	case FAM_REMBRANDT:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
+	case FAM_STRIXPOINT:
 		get_table_ver_msg = 0x6;
 		break;
 	default:
@@ -208,8 +209,12 @@ static int request_table_addr(ryzen_access ry)
 	case FAM_REMBRANDT:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
+	case FAM_STRIXPOINT:
 		get_table_addr_msg = 0x66;
 		break;
+
+	//	get_table_addr_msg = 0x65;
+		//break;
 	default:
 		printf("request_table_addr is not supported on this family\n");
 		return ADJ_ERR_FAM_UNSUPPORTED;
@@ -222,6 +227,7 @@ static int request_table_addr(ryzen_access ry)
 	case FAM_REMBRANDT:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
+	case FAM_STRIXPOINT:
 		ry->table_addr = (uint64_t) args.arg1 << 32 | args.arg0;
 		break;
 	default:
@@ -257,6 +263,7 @@ static int request_transfer_table(ryzen_access ry)
 	case FAM_REMBRANDT:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
+	case FAM_STRIXPOINT:
 		transfer_table_msg = 0x65;
 		break;
 	default:

@@ -44,6 +44,11 @@ enum SMU_TYPE{
 #define MP1_C2PMSG_RESPONSE_ADDR_2       0x3B10578
 #define MP1_C2PMSG_ARG_BASE_2            0x3B10998
 
+#define MP1_C2PMSG_MESSAGE_ADDR_3        0x3b10a20
+#define MP1_C2PMSG_RESPONSE_ADDR_3       0x3b10a80
+#define MP1_C2PMSG_ARG_BASE_3            0x3b10a88
+
+
 #define PSMU_C2PMSG_MESSAGE_ADDR          0x3B10a20
 #define PSMU_C2PMSG_RESPONSE_ADDR         0x3B10a80
 #define PSMU_C2PMSG_ARG_BASE              0x3B10a88
