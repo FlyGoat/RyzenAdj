@@ -92,6 +92,7 @@ static enum ryzen_family cpuid_load_family()
     case 0x1A: /* Zen5, Zen6 */
         switch (model) {
         case 32:
+        case 36:
             return FAM_STRIXPOINT;
         default:
             printf("Fam%xh: unsupported model %d\n", family, model);
