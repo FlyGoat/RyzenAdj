@@ -22,7 +22,7 @@ EXP ryzen_access CALL init_ryzenadj()
 
 	ry = (ryzen_access)malloc((sizeof(*ry)));
 
-	if (!ry){
+	if (!ry) {
 		printf("Out of memory\n");
 		return NULL;
 	}
@@ -34,25 +34,25 @@ EXP ryzen_access CALL init_ryzenadj()
 	ry->table_values = NULL;
 
 	ry->pci_obj = init_pci_obj();
-	if(!ry->pci_obj){
+	if (!ry->pci_obj) {
 		printf("Unable to get PCI Obj, check permission\n");
 		return NULL;
 	}
 
 	ry->nb = get_nb(ry->pci_obj);
-	if(!ry->nb){
+	if (!ry->nb) {
 		printf("Unable to get NB Obj\n");
 		goto out_free_pci_obj;
 	}
 
 	ry->mp1_smu = get_smu(ry->nb, TYPE_MP1);
-	if(!ry->mp1_smu){
+	if (!ry->mp1_smu) {
 		printf("Unable to get MP1 SMU Obj\n");
 		goto out_free_nb;
 	}
 
 	ry->psmu = get_smu(ry->nb, TYPE_PSMU);
-	if(!ry->psmu){
+	if (!ry->psmu) {
 		printf("Unable to get RSMU Obj\n");
 		goto out_free_mp1_smu;
 	}
@@ -69,14 +69,14 @@ out_free_pci_obj:
 	return NULL;
 }
 
-EXP void CALL cleanup_ryzenadj(ryzen_access ry){
+EXP void CALL cleanup_ryzenadj(ryzen_access ry) {
 	if (ry == NULL)
-	    return;
+		return;
 
-	if (ry->table_values){
+	if (ry->table_values) {
 		free(ry->table_values);
 	}
-	if (ry->mem_obj){
+	if (ry->mem_obj) {
 		free_mem_obj(ry->mem_obj);
 	}
 	free_smu(ry->psmu);
@@ -93,34 +93,34 @@ EXP enum ryzen_family get_cpu_family(ryzen_access ry)
 
 EXP int get_bios_if_ver(ryzen_access ry)
 {
-	if(ry->bios_if_ver)
+	if (ry->bios_if_ver)
 		return ry->bios_if_ver;
 
-	smu_service_args_t args = {0, 0, 0, 0, 0, 0};
+	smu_service_args_t args = { 0, 0, 0, 0, 0, 0 };
 	smu_service_req(ry->mp1_smu, 0x3, &args);
 	ry->bios_if_ver = args.arg0;
 	return ry->bios_if_ver;
 }
 
 #define _return_translated_smu_error(SMU_RESP)                              \
-do {                                                                        \
-	if (SMU_RESP == REP_MSG_UnknownCmd) {                                   \
-		printf("%s is unsupported\n", __func__);                            \
-		return ADJ_ERR_SMU_UNSUPPORTED;                                     \
-	} else if (SMU_RESP == REP_MSG_CmdRejectedPrereq){                      \
-		printf("%s was rejected\n", __func__);                              \
-		return ADJ_ERR_SMU_REJECTED;                                        \
-	} else if (SMU_RESP == REP_MSG_CmdRejectedBusy) {                       \
-		printf("%s was rejected - busy\n", __func__);                       \
-		return ADJ_ERR_SMU_REJECTED;                                        \
-	} else if (SMU_RESP == REP_MSG_Failed) {                                \
-		printf("%s failed\n", __func__);                                    \
-		return ADJ_ERR_SMU_REJECTED;                                        \
-	} else {                                                                \
-		printf("%s failed with unknown response %x\n", __func__, SMU_RESP); \
-		return ADJ_ERR_SMU_REJECTED;                                        \
-	}                                                                       \
-} while (0);
+	do {                                                                        \
+		if (SMU_RESP == REP_MSG_UnknownCmd) {                                   \
+			printf("%s is unsupported\n", __func__);                            \
+			return ADJ_ERR_SMU_UNSUPPORTED;                                     \
+		} else if (SMU_RESP == REP_MSG_CmdRejectedPrereq){                      \
+			printf("%s was rejected\n", __func__);                              \
+			return ADJ_ERR_SMU_REJECTED;                                        \
+		} else if (SMU_RESP == REP_MSG_CmdRejectedBusy) {                       \
+			printf("%s was rejected - busy\n", __func__);                       \
+			return ADJ_ERR_SMU_REJECTED;                                        \
+		} else if (SMU_RESP == REP_MSG_Failed) {                                \
+			printf("%s failed\n", __func__);                                    \
+			return ADJ_ERR_SMU_REJECTED;                                        \
+		} else {                                                                \
+			printf("%s failed with unknown response %x\n", __func__, SMU_RESP); \
+			return ADJ_ERR_SMU_REJECTED;                                        \
+		}                                                                       \
+	} while (0);
 
 static int request_table_ver_and_size(ryzen_access ry)
 {
@@ -147,7 +147,7 @@ static int request_table_ver_and_size(ryzen_access ry)
 		return ADJ_ERR_FAM_UNSUPPORTED;
 	}
 
-	smu_service_args_t args = {0, 0, 0, 0, 0, 0};
+	smu_service_args_t args = { 0, 0, 0, 0, 0, 0 };
 	resp = smu_service_req(ry->psmu, get_table_ver_msg, &args);
 	ry->table_ver = args.arg0;
 
@@ -175,15 +175,15 @@ static int request_table_ver_and_size(ryzen_access ry)
 	case 0x450004: ry->table_size = 0xA44; break;
 	case 0x450005: ry->table_size = 0xA44; break;
 	case 0x4C0006: ry->table_size = 0xAA0; break;
-		default:
-			//use a larger size then the largest known table to be able to test real table size of unknown tables
-			ry->table_size = 0xA00;
+	default:
+		//use a larger size then the largest known table to be able to test real table size of unknown tables
+		ry->table_size = 0xA00;
 	}
 
 	if (resp != REP_MSG_OK) {
 		_return_translated_smu_error(resp);
 	}
-	if(!ry->table_ver){
+	if (!ry->table_ver) {
 		printf("request_table_ver_and_size did not return anything\n");
 		return ADJ_ERR_SMU_UNSUPPORTED;
 	}
@@ -194,7 +194,7 @@ static int request_table_addr(ryzen_access ry)
 {
 	unsigned int get_table_addr_msg;
 	int resp;
-	smu_service_args_t args = {0, 0, 0, 0, 0, 0};
+	smu_service_args_t args = { 0, 0, 0, 0, 0, 0 };
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -213,8 +213,8 @@ static int request_table_addr(ryzen_access ry)
 		get_table_addr_msg = 0x66;
 		break;
 
-	//	get_table_addr_msg = 0x65;
-		//break;
+		//	get_table_addr_msg = 0x65;
+			//break;
 	default:
 		printf("request_table_addr is not supported on this family\n");
 		return ADJ_ERR_FAM_UNSUPPORTED;
@@ -228,16 +228,16 @@ static int request_table_addr(ryzen_access ry)
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
-		ry->table_addr = (uint64_t) args.arg1 << 32 | args.arg0;
+		ry->table_addr = (uint64_t)args.arg1 << 32 | args.arg0;
 		break;
 	default:
 		ry->table_addr = args.arg0;
 	}
 
-	if(resp != REP_MSG_OK){
+	if (resp != REP_MSG_OK) {
 		_return_translated_smu_error(resp);
 	}
-	if(!ry->table_addr){
+	if (!ry->table_addr) {
 		printf("request_table_addr did not return anything\n");
 		return ADJ_ERR_SMU_UNSUPPORTED;
 	}
@@ -248,7 +248,7 @@ static int request_transfer_table(ryzen_access ry)
 {
 	int resp;
 	unsigned int transfer_table_msg;
-	smu_service_args_t args = {0, 0, 0, 0, 0, 0};
+	smu_service_args_t args = { 0, 0, 0, 0, 0, 0 };
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -278,13 +278,13 @@ static int request_transfer_table(ryzen_access ry)
 		//but because we don't have to check any physical memory values, don't waste CPU cycles and use sleep instead
 		Sleep(10);
 		resp = smu_service_req(ry->psmu, transfer_table_msg, &args);
-		if(resp == REP_MSG_CmdRejectedPrereq){
+		if (resp == REP_MSG_CmdRejectedPrereq) {
 			printf("request_transfer_table was rejected twice\n");
 			Sleep(100);
 			resp = smu_service_req(ry->psmu, transfer_table_msg, &args);
 		}
 	}
-	if(resp != REP_MSG_OK){
+	if (resp != REP_MSG_OK) {
 		_return_translated_smu_error(resp);
 	}
 	return 0;
@@ -296,18 +296,18 @@ EXP int CALL init_table(ryzen_access ry)
 	int errorcode = 0;
 
 	errorcode = request_table_ver_and_size(ry);
-	if(errorcode){
+	if (errorcode) {
 		return errorcode;
 	}
 
 	errorcode = request_table_addr(ry);
-	if(errorcode){
+	if (errorcode) {
 		return errorcode;
 	}
 
 	//init memory object because it is prerequiremt to woring with physical memory address
 	ry->mem_obj = init_mem_obj(ry->table_addr);
-	if(!ry->mem_obj)
+	if (!ry->mem_obj)
 	{
 		printf("Unable to get memory access\n");
 		return ADJ_ERR_MEMORY_ACCESS;
@@ -317,12 +317,12 @@ EXP int CALL init_table(ryzen_access ry)
 	ry->table_values = calloc(ry->table_size / 4, 4);
 
 	errorcode = refresh_table(ry);
-	if(errorcode)
+	if (errorcode)
 	{
 		return errorcode;
 	}
 
-	if(!ry->table_values[0]){
+	if (!ry->table_values[0]) {
 		//Raven and Picasso don't get table refresh on the very first transfer call after boot, but respond with OK
 		//if we detact 0 data, do an initial 2nd call after a small delay
 		//transfer, transfer, wait, wait longer; don't work
@@ -337,13 +337,13 @@ EXP int CALL init_table(ryzen_access ry)
 }
 
 #define _lazy_init_table(RETURN_VAR)                                 \
-do {                                                                 \
-	if(!ry->table_values) {                                          \
-		DBG("warning: %s was called before init_table\n", __func__); \
-		errorcode = init_table(ry);                                  \
-		if(errorcode) return RETURN_VAR;                             \
-	}                                                                \
-} while (0);
+	do {                                                                 \
+		if(!ry->table_values) {                                          \
+			DBG("warning: %s was called before init_table\n", __func__); \
+			errorcode = init_table(ry);                                  \
+			if(errorcode) return RETURN_VAR;                             \
+		}                                                                \
+	} while (0);
 
 EXP uint32_t CALL get_table_ver(ryzen_access ry)
 {
@@ -372,22 +372,22 @@ EXP int CALL refresh_table(ryzen_access ry)
 	_lazy_init_table(errorcode);
 
 	//only execute request table if we don't use SMU driver
-	if(!is_using_smu_driver()){
+	if (!is_using_smu_driver()) {
 		//if other tools call tables transfer, we may already find new data inside the memory and can avoid calling transfer table twice
 		//avoiding transfer table twice is important because SMU tend to reject transfer table calls if you repeat them too fast
 		//transfer table rejection happens even if we did correctly wait for response register change
 		//if multiple tools retry transfer table in a loop, both will get rejections, avoid this issue by checking if we need to transfer table
 		//refresh table if this is the first call (table is empty) or if the first 6 table values in memory doesn't have new values (compare result = 0)
-		if(ry->table_values[0] == 0 || compare_pm_table(ry->table_values, 6 * 4) == 0){
+		if (ry->table_values[0] == 0 || compare_pm_table(ry->table_values, 6 * 4) == 0) {
 			errorcode = request_transfer_table(ry);
 		}
 	}
 
-	if(errorcode){
+	if (errorcode) {
 		return errorcode;
 	}
 
-	if(copy_pm_table(ry->table_values, ry->table_size)){
+	if (copy_pm_table(ry->table_values, ry->table_size)) {
 		printf("refresh_table failed\n");
 		return ADJ_ERR_MEMORY_ACCESS;
 	}
@@ -396,46 +396,46 @@ EXP int CALL refresh_table(ryzen_access ry)
 }
 
 #define _do_adjust(OPT) \
-do {                                                 \
-	smu_service_args_t args = {0, 0, 0, 0, 0, 0};    \
-	int resp;										 \
-	args.arg0 = value;                               \
-	resp = smu_service_req(ry->mp1_smu, OPT, &args); \
-	if (resp == REP_MSG_OK) {                        \
-		err = 0;                                     \
-	} else if (resp == REP_MSG_UnknownCmd) {         \
-		err = ADJ_ERR_SMU_UNSUPPORTED;               \
-	} else {                                         \
-		err = ADJ_ERR_SMU_REJECTED;                  \
-	}                                                \
-} while (0);
+	do {                                                 \
+		smu_service_args_t args = {0, 0, 0, 0, 0, 0};    \
+		int resp;										 \
+		args.arg0 = value;                               \
+		resp = smu_service_req(ry->mp1_smu, OPT, &args); \
+		if (resp == REP_MSG_OK) {                        \
+			err = 0;                                     \
+		} else if (resp == REP_MSG_UnknownCmd) {         \
+			err = ADJ_ERR_SMU_UNSUPPORTED;               \
+		} else {                                         \
+			err = ADJ_ERR_SMU_REJECTED;                  \
+		}                                                \
+	} while (0);
 
 
 #define _do_adjust_psmu(OPT) \
-do {                                                 \
-	smu_service_args_t args = {0, 0, 0, 0, 0, 0};    \
-	int resp;										 \
-	args.arg0 = value;                               \
-	resp = smu_service_req(ry->psmu, OPT, &args);    \
-	if (resp == REP_MSG_OK) {                        \
-		err = 0;                                     \
-	} else if (resp == REP_MSG_UnknownCmd) {         \
-		err = ADJ_ERR_SMU_UNSUPPORTED;               \
-	} else {                                         \
-		err = ADJ_ERR_SMU_REJECTED;                  \
-	}                                                \
-} while (0);
+	do {                                                 \
+		smu_service_args_t args = {0, 0, 0, 0, 0, 0};    \
+		int resp;										 \
+		args.arg0 = value;                               \
+		resp = smu_service_req(ry->psmu, OPT, &args);    \
+		if (resp == REP_MSG_OK) {                        \
+			err = 0;                                     \
+		} else if (resp == REP_MSG_UnknownCmd) {         \
+			err = ADJ_ERR_SMU_UNSUPPORTED;               \
+		} else {                                         \
+			err = ADJ_ERR_SMU_REJECTED;                  \
+		}                                                \
+	} while (0);
 
 #define _read_float_value(OFFSET)                   \
-do {                                                \
-	if(!ry->table_values)                           \
-		return NAN;                                 \
-	return ry->table_values[OFFSET / 4];            \
-} while (0);
+	do {                                                \
+		if(!ry->table_values)                           \
+			return NAN;                                 \
+		return ry->table_values[OFFSET / 4];            \
+	} while (0);
 
 
-EXP int CALL set_stapm_limit(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_stapm_limit(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -452,19 +452,20 @@ EXP int CALL set_stapm_limit(ryzen_access ry, uint32_t value){
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
+	case FAM_STRIXPOINT:
 		_do_adjust(0x14);
-        if (err) {
-            printf("%s: Retry with PSMU\n", __func__);
-		    _do_adjust_psmu(0x31);
-        }
+		if (err) {
+			printf("%s: Retry with PSMU\n", __func__);
+			_do_adjust_psmu(0x31);
+		}
 	default:
 		break;
 	}
 	return err;
 }
 
-EXP int CALL set_fast_limit(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_fast_limit(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -481,6 +482,7 @@ EXP int CALL set_fast_limit(ryzen_access ry, uint32_t value){
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
+	case FAM_STRIXPOINT:
 		_do_adjust(0x15);
 	default:
 		break;
@@ -488,8 +490,8 @@ EXP int CALL set_fast_limit(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_slow_limit(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_slow_limit(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -506,6 +508,7 @@ EXP int CALL set_slow_limit(ryzen_access ry, uint32_t value){
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
+	case FAM_STRIXPOINT:
 		_do_adjust(0x16);
 	default:
 		break;
@@ -513,8 +516,8 @@ EXP int CALL set_slow_limit(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_slow_time(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_slow_time(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -538,8 +541,8 @@ EXP int CALL set_slow_time(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_stapm_time(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_stapm_time(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -563,8 +566,8 @@ EXP int CALL set_stapm_time(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_tctl_temp(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_tctl_temp(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -581,6 +584,7 @@ EXP int CALL set_tctl_temp(ryzen_access ry, uint32_t value){
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
+		//case FAM_STRIXPOINT:
 		_do_adjust(0x19);
 	default:
 		break;
@@ -588,8 +592,8 @@ EXP int CALL set_tctl_temp(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_vrm_current(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_vrm_current(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -613,8 +617,8 @@ EXP int CALL set_vrm_current(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_vrmsoc_current(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_vrmsoc_current(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -638,8 +642,8 @@ EXP int CALL set_vrmsoc_current(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_vrmgfx_current(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_vrmgfx_current(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -651,8 +655,8 @@ EXP int CALL set_vrmgfx_current(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_vrmcvip_current(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_vrmcvip_current(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -664,8 +668,8 @@ EXP int CALL set_vrmcvip_current(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_vrmmax_current(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_vrmmax_current(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -691,8 +695,8 @@ EXP int CALL set_vrmmax_current(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_vrmgfxmax_current(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_vrmgfxmax_current(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -704,8 +708,8 @@ EXP int CALL set_vrmgfxmax_current(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_vrmsocmax_current(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_vrmsocmax_current(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -728,8 +732,8 @@ EXP int CALL set_vrmsocmax_current(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_psi0_current(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_psi0_current(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -748,8 +752,8 @@ EXP int CALL set_psi0_current(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_psi3cpu_current(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_psi3cpu_current(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -761,8 +765,8 @@ EXP int CALL set_psi3cpu_current(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_psi0soc_current(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_psi0soc_current(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -781,8 +785,8 @@ EXP int CALL set_psi0soc_current(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_psi3gfx_current(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_psi3gfx_current(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -795,7 +799,7 @@ EXP int CALL set_psi3gfx_current(ryzen_access ry, uint32_t value){
 }
 
 EXP int CALL set_max_gfxclk_freq(ryzen_access ry, uint32_t value) {
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -811,7 +815,7 @@ EXP int CALL set_max_gfxclk_freq(ryzen_access ry, uint32_t value) {
 }
 
 EXP int CALL set_min_gfxclk_freq(ryzen_access ry, uint32_t value) {
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -826,8 +830,8 @@ EXP int CALL set_min_gfxclk_freq(ryzen_access ry, uint32_t value) {
 	return err;
 }
 
-EXP int CALL set_max_socclk_freq(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_max_socclk_freq(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -842,8 +846,8 @@ EXP int CALL set_max_socclk_freq(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_min_socclk_freq(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_min_socclk_freq(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -858,8 +862,8 @@ EXP int CALL set_min_socclk_freq(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_max_fclk_freq(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_max_fclk_freq(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -874,8 +878,8 @@ EXP int CALL set_max_fclk_freq(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_min_fclk_freq(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_min_fclk_freq(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -890,8 +894,8 @@ EXP int CALL set_min_fclk_freq(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_max_vcn(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_max_vcn(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -906,8 +910,8 @@ EXP int CALL set_max_vcn(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_min_vcn(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_min_vcn(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -922,8 +926,8 @@ EXP int CALL set_min_vcn(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_max_lclk(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_max_lclk(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -938,8 +942,8 @@ EXP int CALL set_max_lclk(ryzen_access ry, uint32_t value){
 	return err;
 }
 
-EXP int CALL set_min_lclk(ryzen_access ry, uint32_t value){
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+EXP int CALL set_min_lclk(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -955,7 +959,7 @@ EXP int CALL set_min_lclk(ryzen_access ry, uint32_t value){
 }
 
 EXP int CALL set_prochot_deassertion_ramp(ryzen_access ry, uint32_t value) {
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -984,7 +988,7 @@ EXP int CALL set_prochot_deassertion_ramp(ryzen_access ry, uint32_t value) {
 }
 
 EXP int CALL set_apu_skin_temp_limit(ryzen_access ry, uint32_t value) {
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	value *= 256;
 	switch (ry->family)
@@ -1008,7 +1012,7 @@ EXP int CALL set_apu_skin_temp_limit(ryzen_access ry, uint32_t value) {
 }
 
 EXP int CALL set_dgpu_skin_temp_limit(ryzen_access ry, uint32_t value) {
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	value *= 256;
 	switch (ry->family)
@@ -1032,7 +1036,7 @@ EXP int CALL set_dgpu_skin_temp_limit(ryzen_access ry, uint32_t value) {
 }
 
 EXP int CALL set_apu_slow_limit(ryzen_access ry, uint32_t value) {
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -1053,7 +1057,7 @@ EXP int CALL set_apu_slow_limit(ryzen_access ry, uint32_t value) {
 }
 
 EXP int CALL set_skin_temp_power_limit(ryzen_access ry, uint32_t value) {
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -1076,7 +1080,7 @@ EXP int CALL set_skin_temp_power_limit(ryzen_access ry, uint32_t value) {
 }
 
 EXP int CALL set_gfx_clk(ryzen_access ry, uint32_t value) {
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -1097,7 +1101,7 @@ EXP int CALL set_gfx_clk(ryzen_access ry, uint32_t value) {
 }
 
 EXP int CALL set_power_saving(ryzen_access ry) {
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 	uint32_t value = 0;
 
 	switch (ry->family)
@@ -1124,7 +1128,7 @@ EXP int CALL set_power_saving(ryzen_access ry) {
 }
 
 EXP int CALL set_max_performance(ryzen_access ry) {
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 	uint32_t value = 0;
 
 	switch (ry->family)
@@ -1151,7 +1155,7 @@ EXP int CALL set_max_performance(ryzen_access ry) {
 }
 
 EXP int CALL set_oc_clk(ryzen_access ry, uint32_t value) {
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -1160,10 +1164,10 @@ EXP int CALL set_oc_clk(ryzen_access ry, uint32_t value) {
 	case FAM_CEZANNE:
 	case FAM_REMBRANDT:
 		_do_adjust(0x31);
-        if (err) {
-            printf("%s: Retry with PSMU\n", __func__);
-		    _do_adjust_psmu(0x19);
-        }
+		if (err) {
+			printf("%s: Retry with PSMU\n", __func__);
+			_do_adjust_psmu(0x19);
+		}
 		break;
 	default:
 		break;
@@ -1172,7 +1176,7 @@ EXP int CALL set_oc_clk(ryzen_access ry, uint32_t value) {
 }
 
 EXP int CALL set_per_core_oc_clk(ryzen_access ry, uint32_t value) {
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -1181,10 +1185,10 @@ EXP int CALL set_per_core_oc_clk(ryzen_access ry, uint32_t value) {
 	case FAM_CEZANNE:
 	case FAM_REMBRANDT:
 		_do_adjust(0x32);
-        if (err) {
-            printf("%s: Retry with PSMU\n", __func__);
-		    _do_adjust_psmu(0x1a);
-        }
+		if (err) {
+			printf("%s: Retry with PSMU\n", __func__);
+			_do_adjust_psmu(0x1a);
+		}
 		break;
 	default:
 		break;
@@ -1193,7 +1197,7 @@ EXP int CALL set_per_core_oc_clk(ryzen_access ry, uint32_t value) {
 }
 
 EXP int CALL set_oc_volt(ryzen_access ry, uint32_t value) {
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -1202,10 +1206,10 @@ EXP int CALL set_oc_volt(ryzen_access ry, uint32_t value) {
 	case FAM_CEZANNE:
 	case FAM_REMBRANDT:
 		_do_adjust(0x33);
-        if (err) {
-            printf("%s: Retry with PSMU\n", __func__);
-		    _do_adjust_psmu(0x1b);
-        }
+		if (err) {
+			printf("%s: Retry with PSMU\n", __func__);
+			_do_adjust_psmu(0x1b);
+		}
 		break;
 	default:
 		break;
@@ -1214,7 +1218,7 @@ EXP int CALL set_oc_volt(ryzen_access ry, uint32_t value) {
 }
 
 EXP int CALL set_disable_oc(ryzen_access ry) {
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 	uint32_t value = 0x0;
 
 	switch (ry->family)
@@ -1223,10 +1227,10 @@ EXP int CALL set_disable_oc(ryzen_access ry) {
 	case FAM_RENOIR:
 	case FAM_CEZANNE:
 		_do_adjust(0x30);
-        if (err) {
-            printf("%s: Retry with PSMU\n", __func__);
-		    _do_adjust_psmu(0x1d);
-        }
+		if (err) {
+			printf("%s: Retry with PSMU\n", __func__);
+			_do_adjust_psmu(0x1d);
+		}
 		break;
 	case FAM_REMBRANDT:
 		_do_adjust_psmu(0x18);
@@ -1238,7 +1242,7 @@ EXP int CALL set_disable_oc(ryzen_access ry) {
 }
 
 EXP int CALL set_enable_oc(ryzen_access ry) {
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 	uint32_t value = 0x0;
 
 	switch (ry->family)
@@ -1258,7 +1262,7 @@ EXP int CALL set_enable_oc(ryzen_access ry) {
 }
 
 EXP int CALL set_coall(ryzen_access ry, uint32_t value) {
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -1280,7 +1284,7 @@ EXP int CALL set_coall(ryzen_access ry, uint32_t value) {
 }
 
 EXP int CALL set_coper(ryzen_access ry, uint32_t value) {
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -1290,8 +1294,8 @@ EXP int CALL set_coper(ryzen_access ry, uint32_t value) {
 		_do_adjust(0x54);
 	case FAM_REMBRANDT:
 	case FAM_PHOENIX:
-	case FAM_VANGOGH:  
-		_do_adjust(0x4b);  
+	case FAM_VANGOGH:
+		_do_adjust(0x4b);
 		break;
 	case FAM_HAWKPOINT:
 		_do_adjust(0x4B);
@@ -1303,7 +1307,7 @@ EXP int CALL set_coper(ryzen_access ry, uint32_t value) {
 }
 
 EXP int CALL set_cogfx(ryzen_access ry, uint32_t value) {
-    int err = ADJ_ERR_FAM_UNSUPPORTED;
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
 
 	switch (ry->family)
 	{
@@ -1325,12 +1329,12 @@ EXP int CALL set_cogfx(ryzen_access ry, uint32_t value) {
 }
 
 //PM Table section, offset of first lines are stable across multiple PM Table versions
-EXP float CALL get_stapm_limit(ryzen_access ry){_read_float_value(0x0);}
-EXP float CALL get_stapm_value(ryzen_access ry){_read_float_value(0x4);}
-EXP float CALL get_fast_limit(ryzen_access ry){_read_float_value(0x8);}
-EXP float CALL get_fast_value(ryzen_access ry){_read_float_value(0xC);}
-EXP float CALL get_slow_limit(ryzen_access ry){_read_float_value(0x10);}
-EXP float CALL get_slow_value(ryzen_access ry){_read_float_value(0x14);}
+EXP float CALL get_stapm_limit(ryzen_access ry) { _read_float_value(0x0); }
+EXP float CALL get_stapm_value(ryzen_access ry) { _read_float_value(0x4); }
+EXP float CALL get_fast_limit(ryzen_access ry) { _read_float_value(0x8); }
+EXP float CALL get_fast_value(ryzen_access ry) { _read_float_value(0xC); }
+EXP float CALL get_slow_limit(ryzen_access ry) { _read_float_value(0x10); }
+EXP float CALL get_slow_value(ryzen_access ry) { _read_float_value(0x14); }
 
 //custom section, offsets are depending on table version
 EXP float CALL get_apu_slow_limit(ryzen_access ry) {
@@ -1353,6 +1357,7 @@ EXP float CALL get_apu_slow_limit(ryzen_access ry) {
 	case 0x004C0006:
 	case 0x004C0007:
 	case 0x004C0008:
+	case 0x005d0008:
 		_read_float_value(0x18);
 	default:
 		break;
@@ -1377,6 +1382,7 @@ EXP float CALL get_apu_slow_value(ryzen_access ry) {
 	case 0x00450004:
 	case 0x00450005:
 	case 0x004C0006:
+	case 0x005d0008:
 		_read_float_value(0x1C);
 	default:
 		break;
@@ -1393,6 +1399,7 @@ EXP float CALL get_vrm_current(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
+	case 0x005d0008:
 		_read_float_value(0x18);
 	case 0x00370000:
 	case 0x00370001:
@@ -1426,6 +1433,7 @@ EXP float CALL get_vrm_current_value(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
+	case 0x005d0008:
 		_read_float_value(0x1C);
 	case 0x00370000:
 	case 0x00370001:
@@ -1459,6 +1467,7 @@ EXP float CALL get_vrmsoc_current(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
+	case 0x005d0008:
 		_read_float_value(0x20);
 	case 0x00370000:
 	case 0x00370001:
@@ -1492,6 +1501,7 @@ EXP float CALL get_vrmsoc_current_value(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
+	case 0x005d0008:
 		_read_float_value(0x24);
 	case 0x00370000:
 	case 0x00370001:
@@ -1525,6 +1535,7 @@ EXP float CALL get_vrmmax_current(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
+	case 0x005d0008:
 		_read_float_value(0x28);
 	case 0x00370000:
 	case 0x00370001:
@@ -1558,6 +1569,7 @@ EXP float CALL get_vrmmax_current_value(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
+	case 0x005d0008:
 		_read_float_value(0x2C);
 	case 0x00370000:
 	case 0x00370001:
@@ -1591,6 +1603,7 @@ EXP float CALL get_vrmsocmax_current(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
+	case 0x005d0008:
 		_read_float_value(0x34);
 	case 0x00370000:
 	case 0x00370001:
@@ -1624,6 +1637,7 @@ EXP float CALL get_vrmsocmax_current_value(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
+	case 0x005d0008:
 		_read_float_value(0x38);
 	case 0x00370000:
 	case 0x00370001:
@@ -1657,6 +1671,7 @@ EXP float CALL get_tctl_temp(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
+	case 0x005d0008:
 		_read_float_value(0x58); //use core1 because core0 is not reported on dual core cpus
 	case 0x00370000:
 	case 0x00370001:
@@ -1691,6 +1706,7 @@ EXP float CALL get_tctl_temp_value(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
+	case 0x005d0008:
 		_read_float_value(0x5C); //use core1 because core0 is not reported on dual core cpus
 	case 0x00370000:
 	case 0x00370001:
@@ -1735,6 +1751,7 @@ EXP float CALL get_apu_skin_temp_limit(ryzen_access ry) {
 	case 0x004C0006:
 	case 0x004C0007:
 	case 0x004C0008:
+	case 0x005d0008:
 		_read_float_value(0x58);
 	default:
 		break;
@@ -1761,6 +1778,7 @@ EXP float CALL get_apu_skin_temp_value(ryzen_access ry) {
 	case 0x004C0006:
 	case 0x004C0007:
 	case 0x004C0008:
+	case 0x005d0008:
 		_read_float_value(0x5C);
 	default:
 		break;
@@ -1786,6 +1804,7 @@ EXP float CALL get_dgpu_skin_temp_limit(ryzen_access ry) {
 	case 0x004C0006:
 	case 0x004C0007:
 	case 0x004C0008:
+	case 0x005d0008:
 		_read_float_value(0x60);
 	default:
 		break;
@@ -1811,6 +1830,7 @@ EXP float CALL get_dgpu_skin_temp_value(ryzen_access ry) {
 	case 0x004C0006:
 	case 0x004C0007:
 	case 0x004C0008:
+	case 0x005d0008:
 		_read_float_value(0x64);
 	default:
 		break;
@@ -1828,6 +1848,7 @@ EXP float CALL get_psi0_current(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
+	case 0x005d0008:
 		_read_float_value(0x40);
 	case 0x00370000:
 	case 0x00370001:
@@ -1860,6 +1881,7 @@ EXP float CALL get_psi0soc_current(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
+	case 0x005d0008:
 		_read_float_value(0x48);
 	case 0x00370000:
 	case 0x00370001:
@@ -1892,6 +1914,7 @@ EXP float CALL get_cclk_setpoint(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
+	case 0x005d0008:
 		_read_float_value(0x98); //use core1 because core0 is not reported on dual core cpus;
 	case 0x00370000:
 	case 0x00370001:
@@ -1922,6 +1945,7 @@ EXP float CALL get_cclk_busy_value(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
+	case 0x005d0008:
 		_read_float_value(0x9C); //use core1 because core0 is not reported on dual core cpus
 	case 0x00370000:
 	case 0x00370001:
@@ -1954,6 +1978,7 @@ EXP float CALL get_stapm_time(ryzen_access ry)
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
+	case 0x005d0008:
 		_read_float_value(0x5E0);
 	case 0x00370000:
 		_read_float_value(0x768);
@@ -1995,6 +2020,7 @@ EXP float CALL get_slow_time(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
+	case 0x005d0008:
 		_read_float_value(0x5E4);
 	case 0x00370000:
 		_read_float_value(0x76C);
@@ -2046,9 +2072,9 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x320); //800
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 1:
 		switch (ry->table_ver)
 		{
@@ -2067,9 +2093,9 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x324); //804
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 2:
 		switch (ry->table_ver)
 		{
@@ -2088,9 +2114,9 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x328); //808
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 3:
 		switch (ry->table_ver)
 		{
@@ -2109,9 +2135,9 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x32c); //812
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 4:
 		switch (ry->table_ver)
 		{
@@ -2128,9 +2154,9 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x330); //816
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 
 	case 5:
 		switch (ry->table_ver)
@@ -2148,9 +2174,9 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x334); //820
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 6:
 		switch (ry->table_ver)
 		{
@@ -2167,9 +2193,9 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x338); //824
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 7:
 		switch (ry->table_ver)
 		{
@@ -2186,9 +2212,9 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x33c); //828
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	default:
 		break;
 	}
@@ -2214,9 +2240,9 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x340); //832
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 1:
 		switch (ry->table_ver)
 		{
@@ -2233,9 +2259,9 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x344); //836
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 2:
 		switch (ry->table_ver)
 		{
@@ -2252,9 +2278,9 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x348); //840
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 3:
 		switch (ry->table_ver)
 		{
@@ -2271,9 +2297,9 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x34c); //844
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 4:
 		switch (ry->table_ver)
 		{
@@ -2289,9 +2315,9 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 		case 0x00400005:
 			_read_float_value(0x350); //848
 
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 5:
 		switch (ry->table_ver)
 		{
@@ -2306,9 +2332,9 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x354); //852
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 6:
 		switch (ry->table_ver)
 		{
@@ -2323,9 +2349,9 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x358); //856
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 7:
 		switch (ry->table_ver)
 		{
@@ -2340,9 +2366,9 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x35c); //860
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	}
 	return NAN;
 }
@@ -2366,9 +2392,9 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x360); //864
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 1:
 		switch (ry->table_ver)
 		{
@@ -2385,9 +2411,9 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x364); //868
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 2:
 		switch (ry->table_ver)
 		{
@@ -2404,9 +2430,9 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x368); //872
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 3:
 		switch (ry->table_ver)
 		{
@@ -2423,9 +2449,9 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x36c); //876
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 4:
 		switch (ry->table_ver)
 		{
@@ -2440,9 +2466,9 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x370); //880
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 5:
 		switch (ry->table_ver)
 		{
@@ -2457,9 +2483,9 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x374); //884
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 6:
 		switch (ry->table_ver)
 		{
@@ -2474,9 +2500,9 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x378); //888
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 7:
 		switch (ry->table_ver)
 		{
@@ -2491,9 +2517,9 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x37C); //892
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	default:
 		break;
 	}
@@ -2519,9 +2545,9 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x3c0); //960
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 1:
 		switch (ry->table_ver)
 		{
@@ -2538,9 +2564,9 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x3c4); //964
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 2:
 		switch (ry->table_ver)
 		{
@@ -2557,9 +2583,9 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x3c8); //968
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 3:
 		switch (ry->table_ver)
 		{
@@ -2576,9 +2602,9 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x3cc); //972
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 4:
 		switch (ry->table_ver)
 		{
@@ -2593,9 +2619,9 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x3d0); //976
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 5:
 		switch (ry->table_ver)
 		{
@@ -2610,9 +2636,9 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x3d4); //980
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 6:
 		switch (ry->table_ver)
 		{
@@ -2627,9 +2653,9 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x3d8); //984
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	case 7:
 		switch (ry->table_ver)
 		{
@@ -2644,9 +2670,9 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			_read_float_value(0x3dc); //988
-	default:
-		break;
-	}
+		default:
+			break;
+		}
 	default:
 		break;
 	}
