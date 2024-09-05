@@ -74,14 +74,26 @@ smu_t get_smu(nb_t nb, int smu_type) {
 	/* Fill SMU information */
 	switch(smu_type){
 		case TYPE_MP1:
-			if (family == FAM_REMBRANDT || family == FAM_VANGOGH || family == FAM_MENDOCINO || family == FAM_PHOENIX || family == FAM_HAWKPOINT) {
+			switch (family) {
+			case FAM_REMBRANDT:
+			case FAM_VANGOGH:
+			case FAM_MENDOCINO:
+			case FAM_PHOENIX:
+			case FAM_HAWKPOINT:
 				smu->msg = MP1_C2PMSG_MESSAGE_ADDR_2;
 				smu->rep = MP1_C2PMSG_RESPONSE_ADDR_2;
 				smu->arg_base = MP1_C2PMSG_ARG_BASE_2;
-			} else {
+				break;
+			case FAM_STRIXPOINT:
+				smu->msg = MP1_C2PMSG_MESSAGE_ADDR_3;
+				smu->rep = MP1_C2PMSG_RESPONSE_ADDR_3;
+				smu->arg_base = MP1_C2PMSG_ARG_BASE_3;
+				break;
+			default:
 				smu->msg = MP1_C2PMSG_MESSAGE_ADDR_1;
 				smu->rep = MP1_C2PMSG_RESPONSE_ADDR_1;
 				smu->arg_base = MP1_C2PMSG_ARG_BASE_1;
+				break;
 			}
 			break;
 		case TYPE_PSMU:
