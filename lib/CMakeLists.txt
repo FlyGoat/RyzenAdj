@@ -44,7 +44,6 @@ if(has_ipo)
 endif()
 
 if (WIN32)
-    set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "libryzenadj")
     target_link_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../win32")
 endif ()
 
