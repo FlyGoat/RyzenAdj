@@ -129,13 +129,12 @@ The simplest way to build it:
 
     git clone https://github.com/FlyGoat/RyzenAdj.git
     cd RyzenAdj
-    cmake -B build -DCMAKE_BUILD_TYPE=Release
-    cd build
+    rm -r win32
+    mkdir build && cd build
+    cmake -DCMAKE_BUILD_TYPE=Release ..
     make
-
-To install to your system
-
-    make install
+    if [ -d ~/.local/bin ]; then ln -s ryzenadjcli ~/.local/bin/ryzenadjcli && echo "symlinked to ~/.local/bin/ryzenadjcli"; fi
+    if [ -d ~/.bin ]; then ln -s ryzenadjcli ~/.bin/ryzenadjcli && echo "symlinked to ~/.bin/ryzenadjcli"; fi
 
 ### Windows
 
@@ -146,23 +145,4 @@ Required dll is included in ./win32 of source tree. Please put the dll
 library and sys driver in the same folder with ryzenadjcli.exe.
 
 We don't recommend you to build by yourself on Windows since the environment configuarion
-is very complicated.
-The easier way is to use an IDE like QT Creator, CLion or Visual Studio.
-
-### Library
-
-If you would like to use ryzenadj functions in your program, see libryzenadj.
-
-If you would like to use ryzenadj in your project, you can add it as submodule or import the folder.
-
-Add ryzenadj library to your CMakeLists.txt
-
-    add_subdirectory(PathTo/RyzenAdj/lib EXCLUDE_FROM_ALL)
-
-If building for Windows, add
-
-    target_link_directories(${PROJECT_NAME} PRIVATE PathTo/RyzenAdj/win32)
-
-Finally, link libryzenadj
-
-    target_link_libraries(${PROJECT_NAME} PRIVATE RYADJ::RyzenAdjLib)
+is very complicated. If you would like to use ryzenadj functions in your program, see libryzenadj.
