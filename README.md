@@ -15,8 +15,8 @@ You should run it with Administrator on Windows or root on Linux.
 You can write a shell script or bat to do it automaticly.
 
 ```
-$./ryzenadj -h
-Usage: ryzenadj [options]
+$./ryzenadjcli -h
+Usage: ryzenadjcli [options]
 
  Ryzen Power Management adjust tool.
 
@@ -62,7 +62,7 @@ Settings
 If I'm going to set all the Power Limit to 45W, and Tctl to 90 °C,
 then the command line should be:
 
-    ./ryzenadj --stapm-limit=45000 --fast-limit=45000 --slow-limit=45000 --tctl-temp=90
+    ./ryzenadjcli --stapm-limit=45000 --fast-limit=45000 --slow-limit=45000 --tctl-temp=90
 
 ### Documentation
 - [Supported Models](https://github.com/FlyGoat/RyzenAdj/wiki/Supported-Models)
@@ -85,7 +85,7 @@ Just follow the build instructions below and you are ready to use it.
 ### Windows Installation
 
 Before you start installing anything, it is highly recommended getting familiar with RyzenAdj to find out what can be done on your device.
-Use the CLI `ryzenadj.exe` to test the support of your device and to benchmark the effects of each setting.
+Use the CLI `ryzenadjcli.exe` to test the support of your device and to benchmark the effects of each setting.
 If your values don't stay persistent you may want to consider installing our example script for automation.
 
 1. Prepare your favorite RyzenAdj arguments
@@ -143,7 +143,7 @@ It can be built by Visual Studio + MSVC automaticaly, or Clang + Nmake in comman
 However, as for now, MingW-gcc can't be used to compile for some reason.
 
 Required dll is included in ./win32 of source tree. Please put the dll
-library and sys driver in the same folder with ryzenadj.exe.
+library and sys driver in the same folder with ryzenadjcli.exe.
 
 We don't recommend you to build by yourself on Windows since the environment configuarion
 is very complicated.
