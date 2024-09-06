@@ -14,13 +14,15 @@ jobs:
 
     - uses: ilammy/msvc-dev-cmd@v1
 
+    - name: Install Meson
+      run: |
+        pip install meson
+
     #don't use run-cmake for windows because only one build should add warnings to pull request
     - name: Build Debug
       run: |
-        mkdir debug
-        cd debug
-        cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
-        nmake
+        meson setup debug --buildtype=debug --backend=vs
+        meson compile -C debug
 
     - name: Upload ryzenadj debug
       uses: actions/upload-artifact@v2
@@ -32,10 +34,8 @@ jobs:
 
     - name: Build Release
       run: |
-        mkdir build
-        cd build
-        cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
-        nmake
+        meson setup build --buildtype=release --backend=vs
+        meson compile -C build
 
     - name: Prepair Release Folder
       run: |
@@ -102,16 +102,12 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install libpci-dev
+        sudo apt-get install -y libpci-dev meson ninja-build
 
-    - name: run-cmake #with support for inline error reporting
-      uses: lukka/run-cmake@v3.3
-
-    - name: Test make like readme
+    - name: Meson Build
       run: |
-        mkdir build && cd build
-        cmake DCMAKE_BUILD_TYPE=Release ..
-        make
+        meson setup build --buildtype=release
+        meson compile -C build
 
 #    - name: Test Scripts
 #      shell: bash
