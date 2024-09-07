@@ -146,8 +146,15 @@ Required dll is included in ./win32 of source tree. Please put the dll
 library and sys driver in the same folder with ryzenadj.exe.
 
 We don't recommend you to build by yourself on Windows since the environment configuarion
-is very complicated.
+may be convoluted.
 The easier way is to use an IDE like QT Creator, CLion or Visual Studio.
+
+A new option is [Windows Terminal](https://github.com/microsoft/terminal) (pre-installed in Windows 11 and above) and VS 2022.
+
+- Run terminal and open a new `Developer Command Prompt for VS 2022` or `Developer PowerSchell for VS 2022`
+- cd to ryzenadj folder
+- run `cmake -B build -G Ninja`
+- run `ninja -C build`
 
 ### Library
 
