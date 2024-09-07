@@ -11,35 +11,46 @@ jobs:
     steps:
     # Checks-out
     - uses: actions/checkout@v2
-
     - uses: ilammy/msvc-dev-cmd@v1
 
     #don't use run-cmake for windows because only one build should add warnings to pull request
-    - name: Build Debug
+    - name: Build ryzenadj Debug
       run: |
         cmake -B debug -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Debug
         cd debug
         nmake
 
-    - name: Upload ryzenadj debug
+    - name: Upload ryzenadj Debug
       uses: actions/upload-artifact@v2
       with:
         name: ryzenadj-win64-debug
         path: |
           debug/ryzenadj.exe
-          debug/lib/libryzenadj.dll
 
-    - name: Build Release
+    - name: Build libryzenadj Debug
+      run: |
+        cmake -S lib -B debuglib -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Debug
+        cd debuglib
+        nmake
+
+    - name: Upload libryzenadj Debug
+      uses: actions/upload-artifact@v2
+      with:
+        name: libryzenadj-win64-debug
+        path: |
+          debuglib/libryzenadj.dll
+
+    - name: Build ryzenadj Release
       run: |
         cmake -B build -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release
         cd build
         nmake
 
-    - name: Prepair Release Folder
+    - name: Prepair ryzenadj Release Folder
       run: |
         mkdir release
         copy build/ryzenadj.exe release/
-        copy build/lib/libryzenadj.dll release/
+        copy build/lib/libryzenadj.lib release/
         copy win32/* release/
         copy examples/* release/
 
@@ -70,7 +81,7 @@ jobs:
 #        }
 #        exit 0
 
-    - name: Upload ryzenadj
+    - name: Upload ryzenadj Release
       uses: actions/upload-artifact@v2
       with:
         name: ryzenadj-win64
@@ -79,13 +90,19 @@ jobs:
             !release/*.lib
             !release/*.exp
 
-    - name: Upload libryzenadj
+    - name: Build libryzenadj Release
+      run: |
+        cmake -S lib -B buildlib -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release
+        cd buildlib
+        nmake
+
+    - name: Upload libryzenadj Release
       uses: actions/upload-artifact@v2
       with:
         name: libryzenadj-win64
         path: |
-            ./build/lib/libryzenadj.dll
-            ./build/lib/libryzenadj.lib
+            ./buildlib/libryzenadj.dll
+            ./buildlib/libryzenadj.lib
             ./lib/ryzenadj.h
             ./win32/inpoutx64.dll
             ./win32/WinRing0x64.dll
@@ -107,8 +124,8 @@ jobs:
 
     - name: Test make like readme
       run: |
-        mkdir build && cd build
-        cmake DCMAKE_BUILD_TYPE=Release ..
+        cmake -B build -DCMAKE_BUILD_TYPE=Release
+        cd build
         make
 
 #    - name: Test Scripts
@@ -128,4 +145,3 @@ jobs:
 #            exit 1
 #        fi
 #        exit 0
-
