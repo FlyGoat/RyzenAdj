@@ -6,6 +6,7 @@ set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
+option(BUILD_SHARED_LIBS OFF)
 add_subdirectory(lib)
 
 include(CheckIPOSupported)
