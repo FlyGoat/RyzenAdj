@@ -12,7 +12,7 @@ The command line interface is identical on both Windows and Unix-Like OS.
 
 You should run it with Administrator on Windows or root on Linux.
 
-You can write a shell script or bat to do it automaticly.
+You can write a shell script or bat to do it automatically.
 
 ```
 $./ryzenadj -h
