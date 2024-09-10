@@ -6,11 +6,6 @@
 #ifndef RYZENADJ_PRIV_H
 #define RYZENADJ_PRIV_H
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
-
 #include  "nb_smu_ops.h"
 
 struct _ryzen_access {

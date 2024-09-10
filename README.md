@@ -119,18 +119,23 @@ On Fedora:
 
     sudo dnf install cmake gcc-c++ pciutils-devel
 
+On Arch:
+
+    sudo pacman -S base-devel pciutils cmake
+
 If your Distribution is not supported, try finding the packages or use [Distrobox](https://github.com/89luca89/distrobox) or [Toolbox](https://docs.fedoraproject.org/en-US/fedora-silverblue/toolbox/) instead.
 
 The simplest way to build it:
 
     git clone https://github.com/FlyGoat/RyzenAdj.git
     cd RyzenAdj
-    rm -r win32
-    mkdir build && cd build
-    cmake -DCMAKE_BUILD_TYPE=Release ..
+    cmake -B build -DCMAKE_BUILD_TYPE=Release
+    cd build
     make
-    if [ -d ~/.local/bin ]; then ln -s ryzenadj ~/.local/bin/ryzenadj && echo "symlinked to ~/.local/bin/ryzenadj"; fi
-    if [ -d ~/.bin ]; then ln -s ryzenadj ~/.bin/ryzenadj && echo "symlinked to ~/.bin/ryzenadj"; fi
+
+To install to your system
+
+    make install
 
 ### Windows
 
@@ -141,4 +146,30 @@ Required dll is included in ./win32 of source tree. Please put the dll
 library and sys driver in the same folder with ryzenadj.exe.
 
 We don't recommend you to build by yourself on Windows since the environment configuarion
-is very complicated. If you would like to use ryzenadj functions in your program, see libryzenadj.
+may be convoluted.
+The easier way is to use an IDE like QT Creator, CLion or Visual Studio.
+
+A new option is [Windows Terminal](https://github.com/microsoft/terminal) (pre-installed in Windows 11 and above) and VS 2022.
+
+- Run terminal and open a new `Developer Command Prompt for VS 2022` or `Developer PowerSchell for VS 2022`
+- cd to ryzenadj folder
+- run `cmake -B build -G Ninja`
+- run `ninja -C build`
+
+### Library
+
+If you would like to use ryzenadj functions in your program, see libryzenadj.
+
+If you would like to use ryzenadj in your project, you can add it as submodule or import the folder.
+
+Add ryzenadj library to your CMakeLists.txt
+
+    add_subdirectory(PathTo/RyzenAdj/lib EXCLUDE_FROM_ALL)
+
+If building for Windows, add
+
+    target_link_directories(${PROJECT_NAME} PRIVATE PathTo/RyzenAdj/win32)
+
+Finally, link libryzenadj
+
+    target_link_libraries(${PROJECT_NAME} PRIVATE RYADJ::RyzenAdjLib)
