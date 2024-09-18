@@ -23,7 +23,7 @@ jobs:
         nmake
 
     - name: Upload ryzenadj debug
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ryzenadj-win64-debug
         path: |
@@ -73,7 +73,7 @@ jobs:
 #        exit 0
 
     - name: Upload ryzenadj
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ryzenadj-win64
         path: |
@@ -82,7 +82,7 @@ jobs:
             !release/*.exp
 
     - name: Upload libryzenadj
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: libryzenadj-win64
         path: |
