@@ -828,6 +828,7 @@ EXP int CALL set_max_gfxclk_freq(ryzen_access ry, uint32_t value) {
 	case FAM_RAVEN:
 	case FAM_PICASSO:
 	case FAM_DALI:
+	case FAM_LUCIENNE:
 		_do_adjust(0x46);
 		break;
 	default:
@@ -844,6 +845,7 @@ EXP int CALL set_min_gfxclk_freq(ryzen_access ry, uint32_t value) {
 	case FAM_RAVEN:
 	case FAM_PICASSO:
 	case FAM_DALI:
+	case FAM_LUCIENNE:
 		_do_adjust(0x47);
 		break;
 	default:
