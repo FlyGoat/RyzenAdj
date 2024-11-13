@@ -94,188 +94,10 @@ static void show_info_header(ryzen_access ry)
 static void show_info_table(ryzen_access ry)
 {
 	printf("PM Table Version: %x\n", get_table_ver(ry));
-	//fix GHz-MHz issue. On Raven, Dali, Picasso CPUs the CPU frequency in GHz but on newer lines in MHz then moltiply to 1000
-	float core0_clk = 0.0f;
-	switch (get_table_ver(ry))
-	{
-	case 0x001E0001:
-	case 0x001E0002:
-	case 0x001E0003:
-	case 0x001E0004:
-	case 0x001E0005:
-	case 0x001E000A:
-	case 0x001E0101:
-		core0_clk = get_core_clk(ry, 0) * 1000;
-		break;
-	case 0x00370000:
-	case 0x00370001:
-	case 0x00370002:
-	case 0x00370003:
-	case 0x00370004:
-		core0_clk = get_core_clk(ry, 0);
-		break;
-	case 0x00370005:
-		core0_clk = get_core_clk(ry, 0);
-		break;
-	case 0x003F0000:
-		core0_clk = get_core_clk(ry, 0);
-		break;
-	case 0x00400004:
-	case 0x00400005:
-	case 0x00450004:
-	case 0x00450005:
-		core0_clk = get_core_clk(ry, 0);
-		break;
-	default:
-		break;
-	}
-	float core1_clk = 0.0f;
-	switch (get_table_ver(ry))
-	{
-	case 0x001E0001:
-	case 0x001E0002:
-	case 0x001E0003:
-	case 0x001E0004:
-	case 0x001E0005:
-	case 0x001E000A:
-	case 0x001E0101:
-		core1_clk = get_core_clk(ry, 1) * 1000;
-		break;
-	case 0x00370000:
-	case 0x00370001:
-	case 0x00370002:
-	case 0x00370003:
-	case 0x00370004:
-		core1_clk = get_core_clk(ry, 1);
-		break;
-	case 0x00370005:
-		core1_clk = get_core_clk(ry, 1);
-		break;
-	case 0x003F0000:
-		core1_clk = get_core_clk(ry, 1);
-		break;
-	case 0x00400004:
-	case 0x00400005:
-	case 0x00450004:
-	case 0x00450005:
-		core1_clk = get_core_clk(ry, 1);
-		break;
-	default:
-		break;
-	}
-	float core2_clk = 0.0f;
-	switch (get_table_ver(ry))
-	{
-	case 0x001E0001:
-	case 0x001E0002:
-	case 0x001E0003:
-	case 0x001E0004:
-	case 0x001E0005:
-	case 0x001E000A:
-	case 0x001E0101:
-		core2_clk = get_core_clk(ry, 2) * 1000;
-		break;
-	case 0x00370000:
-	case 0x00370001:
-	case 0x00370002:
-	case 0x00370003:
-	case 0x00370004:
-		core2_clk = get_core_clk(ry, 2);
-		break;
-	case 0x00370005:
-		core2_clk = get_core_clk(ry, 2);
-		break;
-	case 0x003F0000:
-		core2_clk = get_core_clk(ry, 2);
-		break;
-	case 0x00400004:
-	case 0x00400005:
-	case 0x00450004:
-	case 0x00450005:
-		core2_clk = get_core_clk(ry, 2);
-		break;
-	default:
-		break;
-	}
-	float core3_clk = 0.0f;
-	switch (get_table_ver(ry))
-	{
-	case 0x001E0001:
-	case 0x001E0002:
-	case 0x001E0003:
-	case 0x001E0004:
-	case 0x001E0005:
-	case 0x001E000A:
-	case 0x001E0101:
-		core3_clk = get_core_clk(ry, 3) * 1000;
-		break;
-	case 0x00370000:
-	case 0x00370001:
-	case 0x00370002:
-	case 0x00370003:
-	case 0x00370004:
-		core3_clk = get_core_clk(ry, 3);
-		break;
-	case 0x00370005:
-		core3_clk = get_core_clk(ry, 3);
-		break;
-	case 0x003F0000:
-		core3_clk = get_core_clk(ry, 3);
-		break;
-	case 0x00400004:
-	case 0x00400005:
-	case 0x00450004:
-	case 0x00450005:
-		core3_clk = get_core_clk(ry, 3);
-		break;
-	default:
-		break;
-	}
+
 	//get refresh table after adjust
 	int errorcode = refresh_table(ry);
-	if (errorcode) {
-		printf("Unable to refresh power metric table: %d\n", errorcode);
-		return;
-	}
-
-	//print table in github markdown
-	printf("|        Name         |   Value   |     Parameter      |\n");
-	printf("|---------------------|-----------|--------------------|\n");
-	char tableFormat[] = "| %-19s | %9.3lf | %-18s |\n";
-	printf(tableFormat, "STAPM LIMIT", get_stapm_limit(ry), "stapm-limit");
-	printf(tableFormat, "STAPM VALUE", get_stapm_value(ry), "");
-	printf(tableFormat, "PPT LIMIT FAST", get_fast_limit(ry), "fast-limit");
-	printf(tableFormat, "PPT VALUE FAST", get_fast_value(ry), "");
-	printf(tableFormat, "PPT LIMIT SLOW", get_slow_limit(ry), "slow-limit");
-	printf(tableFormat, "PPT VALUE SLOW", get_slow_value(ry), "");
-	printf(tableFormat, "StapmTimeConst", get_stapm_time(ry), "stapm-time");
-	printf(tableFormat, "SlowPPTTimeConst", get_slow_time(ry), "slow-time");
-	printf(tableFormat, "PPT LIMIT APU", get_apu_slow_limit(ry), "apu-slow-limit");
-	printf(tableFormat, "PPT VALUE APU", get_apu_slow_value(ry), "");
-	printf(tableFormat, "TDC LIMIT VDD", get_vrm_current(ry), "vrm-current");
-	printf(tableFormat, "TDC VALUE VDD", get_vrm_current_value(ry), "");
-	printf(tableFormat, "TDC LIMIT SOC", get_vrmsoc_current(ry), "vrmsoc-current");
-	printf(tableFormat, "TDC VALUE SOC", get_vrmsoc_current_value(ry), "");
-	printf(tableFormat, "EDC LIMIT VDD", get_vrmmax_current(ry), "vrmmax-current");
-	printf(tableFormat, "EDC VALUE VDD", get_vrmmax_current_value(ry), "");
-	printf(tableFormat, "EDC LIMIT SOC", get_vrmsocmax_current(ry), "vrmsocmax-current");
-	printf(tableFormat, "EDC VALUE SOC", get_vrmsocmax_current_value(ry), "");
-	printf(tableFormat, "THM LIMIT CORE", get_tctl_temp(ry), "tctl-temp");
-	printf(tableFormat, "THM VALUE CORE", get_tctl_temp_value(ry), "");
-	printf(tableFormat, "STT LIMIT APU", get_apu_skin_temp_limit(ry), "apu-skin-temp");
-	printf(tableFormat, "STT VALUE APU", get_apu_skin_temp_value(ry), "");
-	printf(tableFormat, "STT LIMIT dGPU", get_dgpu_skin_temp_limit(ry), "dgpu-skin-temp");
-	printf(tableFormat, "STT VALUE dGPU", get_dgpu_skin_temp_value(ry), "");
-	printf(tableFormat, "CCLK Boost SETPOINT", get_cclk_setpoint(ry), "power-saving /");
-	printf(tableFormat, "CCLK BUSY VALUE", get_cclk_busy_value(ry), "max-performance"); 
-}
-
-static void show_info_table_new(ryzen_access ry)
-{
-	printf("PM Table Version: %x\n", get_table_ver(ry)); 
-	//get refresh table after adjust
-	int errorcode = refresh_table(ry);
-	if (errorcode) {
+	if(errorcode){
 		printf("Unable to refresh power metric table: %d\n", errorcode);
 		return;
 	}
@@ -468,31 +290,31 @@ int main(int argc, const char **argv)
 		OPT_U32('a', "stapm-limit", &stapm_limit, "Sustained Power Limit         - STAPM LIMIT (mW)"),
 		OPT_U32('b', "fast-limit", &fast_limit, "Actual Power Limit            - PPT LIMIT FAST (mW)"),
 		OPT_U32('c', "slow-limit", &slow_limit, "Average Power Limit           - PPT LIMIT SLOW (mW)"),
-		OPT_U32('d', "slow-time", &slow_time, "Slow PPT Constant Time (s). Lower - higher wattage, performance and higher temps"),
+		OPT_U32('d', "slow-time", &slow_time, "Slow PPT Constant Time (s)"),
 		OPT_U32('e', "stapm-time", &stapm_time, "STAPM constant time (s)"),
 		OPT_U32('f', "tctl-temp", &tctl_temp, "Tctl Temperature Limit (degree C)"),
 		OPT_U32('g', "vrm-current", &vrm_current, "VRM Current Limit             - TDC LIMIT VDD (mA)"),
 		OPT_U32('j', "vrmsoc-current", &vrmsoc_current, "VRM SoC Current Limit         - TDC LIMIT SoC (mA)"),
-		OPT_U32('\0', "vrmgfx-current", &vrmgfx_current, "VRM GFX Current Limit - TDC LIMIT GFX (mA) (Van Gogh Only)"),
-		OPT_U32('\0', "vrmcvip-current", &vrmcvip_current, "VRM CVIP Current Limit - TDC LIMIT CVIP (mA) (Van Gogh Only)"),
+		OPT_U32('\0', "vrmgfx-current", &vrmgfx_current, "VRM GFX Current Limit - TDC LIMIT GFX (mA)"),
+		OPT_U32('\0', "vrmcvip-current", &vrmcvip_current, "VRM CVIP Current Limit - TDC LIMIT CVIP (mA)"),
 		OPT_U32('k', "vrmmax-current", &vrmmax_current, "VRM Maximum Current Limit     - EDC LIMIT VDD (mA)"),
 		OPT_U32('l', "vrmsocmax-current", &vrmsocmax_current, "VRM SoC Maximum Current Limit - EDC LIMIT SoC (mA)"),
 		OPT_U32('\0', "vrmgfxmax_current", &vrmgfxmax_current, "VRM GFX Maximum Current Limit - EDC LIMIT GFX (mA)"),
 		OPT_U32('m', "psi0-current", &psi0_current, "PSI0 VDD Current Limit (mA)"),
-		OPT_U32('\0', "psi3cpu_current", &psi3cpu_current, "PSI3 CPU Current Limit (mA) (Renoir and up Only)"),
+		OPT_U32('\0', "psi3cpu_current", &psi3cpu_current, "PSI3 CPU Current Limit (mA)"),
 		OPT_U32('n', "psi0soc-current", &psi0soc_current, "PSI0 SoC Current Limit (mA)"),
-		OPT_U32('\0', "psi3gfx_current", &psi3gfx_current, "PSI3 GFX Current Limit (mA) (Renoir and up Only)"),
-		OPT_U32('o', "max-socclk-frequency", &max_socclk_freq, "Maximum SoC Clock Frequency (MHz) (Raven, Dali, Picasso only)"),
-		OPT_U32('p', "min-socclk-frequency", &min_socclk_freq, "Minimum SoC Clock Frequency (MHz) (Raven, Dali, Picasso only)"),
-		OPT_U32('q', "max-fclk-frequency", &max_fclk_freq, "Maximum Transmission (CPU-GPU) Frequency infinity fabric (MHz) (Raven, Dali, Picasso only)"),
-		OPT_U32('r', "min-fclk-frequency", &min_fclk_freq, "Minimum Transmission (CPU-GPU) Frequency infinity fabric (MHz) (Raven, Dali, Picasso only)"),
-		OPT_U32('s', "max-vcn", &max_vcn, "Maximum Video Core Next (VCE - Video Coding Engine) (MHz) (Raven, Dali, Picasso only)"),
-		OPT_U32('t', "min-vcn", &min_vcn, "Minimum Video Core Next (VCE - Video Coding Engine) (MHz) (Raven, Dali, Picasso only)"),
-		OPT_U32('u', "max-lclk", &max_lclk, "Maximum Data Launch Clock (MHz) (Raven, Dali, Picasso only)"),
-		OPT_U32('v', "min-lclk", &min_lclk, "Minimum Data Launch Clock (MHz) (Raven, Dali, Picasso only)"),
-		OPT_U32('w', "max-gfxclk", &max_gfxclk_freq, "Maximum GFX Clock (MHz) (Raven, Dali, Picasso only)"),
-		OPT_U32('x', "min-gfxclk", &min_gfxclk_freq, "Minimum GFX Clock (MHz) (Raven, Dali, Picasso only)"),
-		OPT_U32('y', "prochot-deassertion-ramp", &prochot_deassertion_ramp, "Ramp Time After Prochot is Deasserted: limit power based on value, higher values does apply tighter limits after prochot is over. Default value is 20 (mS). This settings affects on frequency restore after prochot signal or STAPM limit reaching (mS)"),
+		OPT_U32('\0', "psi3gfx_current", &psi3gfx_current, "PSI3 GFX Current Limit (mA)"),
+		OPT_U32('o', "max-socclk-frequency", &max_socclk_freq, "Maximum SoC Clock Frequency (MHz)"),
+		OPT_U32('p', "min-socclk-frequency", &min_socclk_freq, "Minimum SoC Clock Frequency (MHz)"),
+		OPT_U32('q', "max-fclk-frequency", &max_fclk_freq, "Maximum Transmission (CPU-GPU) Frequency (MHz)"),
+		OPT_U32('r', "min-fclk-frequency", &min_fclk_freq, "Minimum Transmission (CPU-GPU) Frequency (MHz)"),
+		OPT_U32('s', "max-vcn", &max_vcn, "Maximum Video Core Next (VCE - Video Coding Engine) (MHz)"),
+		OPT_U32('t', "min-vcn", &min_vcn, "Minimum Video Core Next (VCE - Video Coding Engine) (MHz)"),
+		OPT_U32('u', "max-lclk", &max_lclk, "Maximum Data Launch Clock (MHz)"),
+		OPT_U32('v', "min-lclk", &min_lclk, "Minimum Data Launch Clock (MHz)"),
+		OPT_U32('w', "max-gfxclk", &max_gfxclk_freq, "Maximum GFX Clock (MHz)"),
+		OPT_U32('x', "min-gfxclk", &min_gfxclk_freq, "Minimum GFX Clock (MHz)"),
+		OPT_U32('y', "prochot-deassertion-ramp", &prochot_deassertion_ramp, "Ramp Time After Prochot is Deasserted: limit power based on value, higher values does apply tighter limits after prochot is over"),
 		OPT_U32('\0', "apu-skin-temp", &apu_skin_temp_limit, "APU Skin Temperature Limit    - STT LIMIT APU (degree C)"),
 		OPT_U32('\0', "dgpu-skin-temp", &dgpu_skin_temp_limit, "dGPU Skin Temperature Limit   - STT LIMIT dGPU (degree C)"),
 		OPT_U32('\0', "apu-slow-limit", &apu_slow_limit, "APU PPT Slow Power limit for A+A dGPU platform - PPT LIMIT APU (mW)"),
@@ -500,13 +322,13 @@ int main(int argc, const char **argv)
 		OPT_U32('\0', "gfx-clk", &gfx_clk, "Forced Clock Speed MHz (Renoir Only)"),
 		OPT_U32('\0', "oc-clk", &oc_clk, "Forced Core Clock Speed MHz (Renoir and up Only)"),
 		OPT_U32('\0', "oc-volt", &oc_volt, "Forced Core VID: Must follow this calcuation (1.55 - [VID you want to set e.g. 1.25 for 1.25v]) / 0.00625 (Renoir and up Only)"),
-		OPT_BOOLEAN('\0', "enable-oc", &enable_oc, "Enable OC (Renoir and up Only). OC mode is a flag which allows changing some commands on Ryzen CPUs like oc-volt, oc-clk and more. Its better to enable OC1 mode in BIOS. Also OC mode give you opportunity to change PStates correctly. All Ryzen CPUs have this mode but it will not higher your frequency. Its just a flag"),
+		OPT_BOOLEAN('\0', "enable-oc", &enable_oc, "Enable OC (Renoir and up Only)"),
 		OPT_BOOLEAN('\0', "disable-oc", &disable_oc, "Disable OC (Renoir and up Only)"),
-		OPT_U32('\0', "set-coall", &coall, "All core Curve Optimiser. Curve optimiser is ability on Ryzen H/HX CPUs which can be used to change volt/frequency curve for optimization performance and temperatures. If Curve Optimiser value is higher than 0 or equal then formula is --set-coall=Value if your number is negative then formula is --set-coall=(Convert.ToUInt32(0x100000 - (-1 * Value))) Calculate the value of (Convert.ToUInt32(0x100000 - (-1 * Value))) and set the result by using this command (H/HX CPUs Only)"),
-		OPT_U32('\0', "set-coper", &coper, "Per core Curve Optimiser. Same curve with All core Curve Optimiser, but for each core. This will give you maximum performance boost. To use  --set-coper=((NeededCore << 20) | (YourFreqInMHz & 0xFFFF)) where NeededCore is needed to adjust core. Starts from 0!!! 0,1,2,3... and YourFreqInMHz is your frequency in MHz. Calculate the value of ((NeededCore << 20) | (YourFreqInMHz & 0xFFFF)) and set the result by using this command (H/HX CPUs Only)"),
+		OPT_U32('\0', "set-coall", &coall, "All core Curve Optimiser"),
+		OPT_U32('\0', "set-coper", &coper, "Per core Curve Optimiser"),
 		OPT_U32('\0', "set-cogfx", &cogfx, "iGPU Curve Optimiser"),
-		OPT_BOOLEAN('\0', "power-saving", &power_saving, "Hidden options to improve power efficiency (is set when AC unplugged): behavior depends on CPU generation, Device and Manufacture. Behave like unplugging laptop from charger. If you unplug your laptop from the charger the CPU will enter in this state. Limited RAM bandwidth, lower CPU clocks"),
-		OPT_BOOLEAN('\0', "max-performance", &max_performance, "Hidden options to improve performance (is set when AC plugged in): behavior depends on CPU generation, Device and Manufacture. Behave like plugging laptop to charger. If you plug in charger to your laptop the CPU will enter in this state"),
+		OPT_BOOLEAN('\0', "power-saving", &power_saving, "Hidden options to improve power efficiency (is set when AC unplugged): behavior depends on CPU generation, Device and Manufacture"),
+		OPT_BOOLEAN('\0', "max-performance", &max_performance, "Hidden options to improve performance (is set when AC plugged in): behavior depends on CPU generation, Device and Manufacture"),
 		OPT_GROUP("P-State Functions"),
 		OPT_END(),
 	};
