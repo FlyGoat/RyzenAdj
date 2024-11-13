@@ -7,9 +7,9 @@
 u32 smu_service_req(smu_t smu ,u32 id ,smu_service_args_t *args)
 {
 	u32 response = 0x0;
-	DBG("SMU_SERVICE REQ_ID:0x%x\n", id);
+	/*DBG("SMU_SERVICE REQ_ID:0x%x\n", id);
 	DBG("SMU_SERVICE REQ: arg0: 0x%x, arg1:0x%x, arg2:0x%x, arg3:0x%x, arg4: 0x%x, arg5: 0x%x\n",  \
-		args->arg0, args->arg1, args->arg2, args->arg3, args->arg4, args->arg5);
+		args->arg0, args->arg1, args->arg2, args->arg3, args->arg4, args->arg5);*/
 
 	/* Clear the response */
 	smn_reg_write(smu->nb, smu->rep, 0x0);
@@ -34,8 +34,8 @@ u32 smu_service_req(smu_t smu ,u32 id ,smu_service_args_t *args)
 	args->arg4 = smn_reg_read(smu->nb, C2PMSG_ARGx_ADDR(smu->arg_base, 4));
 	args->arg5 = smn_reg_read(smu->nb, C2PMSG_ARGx_ADDR(smu->arg_base, 5));
 
-	DBG("SMU_SERVICE REP: REP: 0x%x, arg0: 0x%x, arg1:0x%x, arg2:0x%x, arg3:0x%x, arg4: 0x%x, arg5: 0x%x\n",  \
-		response, args->arg0, args->arg1, args->arg2, args->arg3, args->arg4, args->arg5);
+	/*DBG("SMU_SERVICE REP: REP: 0x%x, arg0: 0x%x, arg1:0x%x, arg2:0x%x, arg3:0x%x, arg4: 0x%x, arg5: 0x%x\n",  \
+		response, args->arg0, args->arg1, args->arg2, args->arg3, args->arg4, args->arg5);*/
 
 	return response;
 }

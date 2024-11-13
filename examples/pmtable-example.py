@@ -19,7 +19,7 @@ if sys.platform == 'win32' or sys.platform == 'cygwin':
 else:
     lib = cdll.LoadLibrary('libryzenadj.so')
 
-# define ctype mappings for types which can not be mapped automatically
+# define ctype mappings for types which can not be mapped auotmatically
 lib.init_ryzenadj.restype = c_void_p
 lib.get_table_ver.argtypes = [c_void_p]
 lib.get_table_size.argtypes = [c_void_p]

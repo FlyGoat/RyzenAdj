@@ -348,3 +348,9 @@ ASALocalRun/
 healthchecksdb
 
 # End of https://www.gitignore.io/api/visualstudio
+/cmake-build-debug
+/examples/inpoutx64.dll
+/examples/libryzenadj.dll
+/examples/pmtable-example.py
+/examples/WinRing0x64.dll
+/examples/WinRing0x64.sys
