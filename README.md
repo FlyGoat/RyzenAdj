@@ -12,7 +12,7 @@ The command line interface is identical on both Windows and Unix-Like OS.
 
 You should run it with Administrator on Windows or root on Linux.
 
-You can write a shell script or bat to do it automaticly.
+You can write a shell script or bat to do it automatically.
 
 ```
 $./ryzenadj -h
@@ -118,6 +118,10 @@ Debian-based distros this is covered by installing **pcilib-dev** package:
 On Fedora:
 
     sudo dnf install cmake gcc-c++ pciutils-devel
+
+On Arch:
+
+    sudo pacman -S base-devel pciutils cmake
 
 If your Distribution is not supported, try finding the packages or use [Distrobox](https://github.com/89luca89/distrobox) or [Toolbox](https://docs.fedoraproject.org/en-US/fedora-silverblue/toolbox/) instead.
 
