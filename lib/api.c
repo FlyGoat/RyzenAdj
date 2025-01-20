@@ -2072,6 +2072,9 @@ EXP float CALL get_slow_time(ryzen_access ry) {
 }
 
 EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
+	if (core > 7)
+		return NAN;
+	
 	u32 baseOffset;
 	
 	switch (ry->table_ver) {
@@ -2107,6 +2110,9 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 }
 
 EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
+	if (core > 7)
+		return NAN;
+	
 	u32 baseOffset;
 
 	switch (ry->table_ver) {
@@ -2139,6 +2145,9 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 }
 
 EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
+	if (core > 7)
+		return NAN;
+	
 	u32 baseOffset;
 
 	switch (ry->table_ver) {
@@ -2171,6 +2180,9 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 }
 
 EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
+	if (core > 7)
+		return NAN;
+	
 	u32 baseOffset;
 
 	switch (ry->table_ver) {
