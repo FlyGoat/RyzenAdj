@@ -2139,156 +2139,35 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 }
 
 EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
-	switch (core)
-	{
-	case 0:
-		switch (ry->table_ver)
-		{
+	u32 baseOffset;
+
+	switch (ry->table_ver) {
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
 		case 0x00370003:
 		case 0x00370004:
-			_read_float_value(0x340);
+			baseOffset = 0x340;
+			break;
 		case 0x00370005:
-			_read_float_value(0x35C);
-		case 0x003F0000: // Van Gogh
-			_read_float_value(0x258); //600
+			baseOffset = 0x35C;
+			break;
+		case 0x003F0000: { // Van Gogh
+			if (core >= 4)
+				return NAN;
+
+			baseOffset = 0x258;
+		}
+			break;
 		case 0x00400004:
 		case 0x00400005:
-			_read_float_value(0x360); //864
-	default:
-		break;
+			baseOffset = 0x360;
+			break;
+		default:
+			return NAN;
 	}
-	case 1:
-		switch (ry->table_ver)
-		{
-		case 0x00370000:
-		case 0x00370001:
-		case 0x00370002:
-		case 0x00370003:
-		case 0x00370004:
-			_read_float_value(0x344);
-		case 0x00370005:
-			_read_float_value(0x360);
-		case 0x003F0000: // Van Gogh
-			_read_float_value(0x25C); //604
-		case 0x00400004:
-		case 0x00400005:
-			_read_float_value(0x364); //868
-	default:
-		break;
-	}
-	case 2:
-		switch (ry->table_ver)
-		{
-		case 0x00370000:
-		case 0x00370001:
-		case 0x00370002:
-		case 0x00370003:
-		case 0x00370004:
-			_read_float_value(0x348);
-		case 0x00370005:
-			_read_float_value(0x364);
-		case 0x003F0000: // Van Gogh
-			_read_float_value(0x260); //608
-		case 0x00400004:
-		case 0x00400005:
-			_read_float_value(0x368); //872
-	default:
-		break;
-	}
-	case 3:
-		switch (ry->table_ver)
-		{
-		case 0x00370000:
-		case 0x00370001:
-		case 0x00370002:
-		case 0x00370003:
-		case 0x00370004:
-			_read_float_value(0x34C);
-		case 0x00370005:
-			_read_float_value(0x368);
-		case 0x003F0000: // Van Gogh
-			_read_float_value(0x264); //612
-		case 0x00400004:
-		case 0x00400005:
-			_read_float_value(0x36c); //876
-	default:
-		break;
-	}
-	case 4:
-		switch (ry->table_ver)
-		{
-		case 0x00370000:
-		case 0x00370001:
-		case 0x00370002:
-		case 0x00370003:
-		case 0x00370004:
-			_read_float_value(0x350);
-		case 0x00370005:
-			_read_float_value(0x36C);
-		case 0x00400004:
-		case 0x00400005:
-			_read_float_value(0x370); //880
-	default:
-		break;
-	}
-	case 5:
-		switch (ry->table_ver)
-		{
-		case 0x00370000:
-		case 0x00370001:
-		case 0x00370002:
-		case 0x00370003:
-		case 0x00370004:
-			_read_float_value(0x354);
-		case 0x00370005:
-			_read_float_value(0x370);
-		case 0x00400004:
-		case 0x00400005:
-			_read_float_value(0x374); //884
-	default:
-		break;
-	}
-	case 6:
-		switch (ry->table_ver)
-		{
-		case 0x00370000:
-		case 0x00370001:
-		case 0x00370002:
-		case 0x00370003:
-		case 0x00370004:
-			_read_float_value(0x358);
-		case 0x00370005:
-			_read_float_value(0x374);
-		case 0x00400004:
-		case 0x00400005:
-			_read_float_value(0x378); //888
-	default:
-		break;
-	}
-	case 7:
-		switch (ry->table_ver)
-		{
-		case 0x00370000:
-		case 0x00370001:
-		case 0x00370002:
-		case 0x00370003:
-		case 0x00370004:
-			_read_float_value(0x35C);
-		case 0x00370005:
-			_read_float_value(0x378);
-		case 0x00400004:
-		case 0x00400005:
-			_read_float_value(0x37C); //892
-	default:
-		break;
-	}
-	default:
-		break;
-	}
-	return NAN;
+
+	_read_float_value(baseOffset + (core * 4));
 }
 
 EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
