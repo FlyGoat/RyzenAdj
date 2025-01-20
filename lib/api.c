@@ -1336,13 +1336,12 @@ EXP int CALL set_coper(ryzen_access ry, uint32_t value) {
 	case FAM_RENOIR:
 	case FAM_LUCIENNE:
 		_do_adjust(0x54);
+		break;
 	case FAM_REMBRANDT:
 	case FAM_PHOENIX:
-	case FAM_VANGOGH:  
-		_do_adjust(0x4b);  
-		break;
+	case FAM_VANGOGH:
 	case FAM_HAWKPOINT:
-		_do_adjust(0x4B);
+		_do_adjust(0x4b);
 		break;
 	default:
 		break;
