@@ -1248,7 +1248,6 @@ EXP int CALL set_oc_volt(ryzen_access ry, uint32_t value) {
 	case FAM_LUCIENNE:
 	case FAM_RENOIR:
 	case FAM_CEZANNE:
-	case FAM_REMBRANDT:
 		_do_adjust(0x33);
         if (err) {
             printf("%s: Retry with PSMU\n", __func__);
