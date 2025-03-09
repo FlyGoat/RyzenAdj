@@ -140,6 +140,7 @@ static int request_table_ver_and_size(ryzen_access ry)
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		get_table_ver_msg = 0x6;
 		break;
 	default:
@@ -175,9 +176,10 @@ static int request_table_ver_and_size(ryzen_access ry)
 	case 0x450004: ry->table_size = 0xA44; break;
 	case 0x450005: ry->table_size = 0xA44; break;
 	case 0x4C0006: ry->table_size = 0xAA0; break;
+	case 0x64020c: ry->table_size = 0xE50; break;
 		default:
 			//use a larger size then the largest known table to be able to test real table size of unknown tables
-			ry->table_size = 0xA00;
+			ry->table_size = 0x1000;
 	}
 
 	if (resp != REP_MSG_OK) {
@@ -210,6 +212,7 @@ static int request_table_addr(ryzen_access ry)
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		get_table_addr_msg = 0x66;
 		break;
 	default:
@@ -225,6 +228,7 @@ static int request_table_addr(ryzen_access ry)
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		ry->table_addr = (uint64_t) args.arg1 << 32 | args.arg0;
 		break;
 	default:
@@ -261,6 +265,7 @@ static int request_transfer_table(ryzen_access ry)
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		transfer_table_msg = 0x65;
 		break;
 	default:
@@ -452,6 +457,7 @@ EXP int CALL set_stapm_limit(ryzen_access ry, uint32_t value){
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust(0x14);
         if (err) {
             printf("%s: Retry with PSMU\n", __func__);
@@ -483,6 +489,7 @@ EXP int CALL set_fast_limit(ryzen_access ry, uint32_t value){
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust(0x15);
 	default:
 		break;
@@ -511,6 +518,7 @@ EXP int CALL set_slow_limit(ryzen_access ry, uint32_t value){
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust(0x16);
 	default:
 		break;
@@ -539,6 +547,7 @@ EXP int CALL set_slow_time(ryzen_access ry, uint32_t value){
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust(0x17);
 	default:
 		break;
@@ -567,6 +576,7 @@ EXP int CALL set_stapm_time(ryzen_access ry, uint32_t value){
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust(0x18);
 	default:
 		break;
@@ -595,6 +605,7 @@ EXP int CALL set_tctl_temp(ryzen_access ry, uint32_t value){
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust(0x19);
 	default:
 		break;
@@ -623,6 +634,7 @@ EXP int CALL set_vrm_current(ryzen_access ry, uint32_t value){
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust(0x1a);
 	default:
 		break;
@@ -651,6 +663,7 @@ EXP int CALL set_vrmsoc_current(ryzen_access ry, uint32_t value){
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust(0x1b);
 	default:
 		break;
@@ -704,6 +717,7 @@ EXP int CALL set_vrmmax_current(ryzen_access ry, uint32_t value){
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust(0x1c);
 		break;
 	case FAM_VANGOGH:
@@ -747,6 +761,7 @@ EXP int CALL set_vrmsocmax_current(ryzen_access ry, uint32_t value){
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust(0x1d);
 	default:
 		break;
@@ -1007,6 +1022,7 @@ EXP int CALL set_prochot_deassertion_ramp(ryzen_access ry, uint32_t value) {
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust(0x1f);
 	default:
 		break;
@@ -1059,6 +1075,7 @@ EXP int CALL set_dgpu_skin_temp_limit(ryzen_access ry, uint32_t value) {
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust(0x34);
 		break;
 	default:
@@ -1083,6 +1100,7 @@ EXP int CALL set_apu_slow_limit(ryzen_access ry, uint32_t value) {
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust(0x23);
 		break;
 	default:
@@ -1109,6 +1127,7 @@ EXP int CALL set_skin_temp_power_limit(ryzen_access ry, uint32_t value) {
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust(0x4a);
 		break;
 	default:
@@ -1160,6 +1179,7 @@ EXP int CALL set_power_saving(ryzen_access ry) {
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust(0x12);
 		break;
 	default:
@@ -1190,6 +1210,7 @@ EXP int CALL set_max_performance(ryzen_access ry) {
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust(0x11);
 		break;
 	default:
@@ -1318,6 +1339,7 @@ EXP int CALL set_coall(ryzen_access ry, uint32_t value) {
 	case FAM_VANGOGH:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust(0x4C);
 		break;
 	default:
@@ -1362,6 +1384,7 @@ EXP int CALL set_cogfx(ryzen_access ry, uint32_t value) {
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_VANGOGH:
+	case FAM_STRIXHALO:	
 		_do_adjust_psmu(0xB7);
 		break;
 	default:
@@ -1703,6 +1726,7 @@ EXP float CALL get_tctl_temp(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
+	case 0x0064020c:	
 		_read_float_value(0x58); //use core1 because core0 is not reported on dual core cpus
 	case 0x00370000:
 	case 0x00370001:
@@ -1737,6 +1761,7 @@ EXP float CALL get_tctl_temp_value(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
+	case 0x0064020c:
 		_read_float_value(0x5C); //use core1 because core0 is not reported on dual core cpus
 	case 0x00370000:
 	case 0x00370001:
@@ -1781,6 +1806,7 @@ EXP float CALL get_apu_skin_temp_limit(ryzen_access ry) {
 	case 0x004C0006:
 	case 0x004C0007:
 	case 0x004C0008:
+	case 0x0064020c:
 		_read_float_value(0x58);
 	default:
 		break;
@@ -1807,6 +1833,7 @@ EXP float CALL get_apu_skin_temp_value(ryzen_access ry) {
 	case 0x004C0006:
 	case 0x004C0007:
 	case 0x004C0008:
+	case 0x0064020c:
 		_read_float_value(0x5C);
 	default:
 		break;
@@ -1832,6 +1859,7 @@ EXP float CALL get_dgpu_skin_temp_limit(ryzen_access ry) {
 	case 0x004C0006:
 	case 0x004C0007:
 	case 0x004C0008:
+	case 0x0064020c:	
 		_read_float_value(0x60);
 	default:
 		break;
@@ -1857,6 +1885,7 @@ EXP float CALL get_dgpu_skin_temp_value(ryzen_access ry) {
 	case 0x004C0006:
 	case 0x004C0007:
 	case 0x004C0008:
+	case 0x0064020c:	
 		_read_float_value(0x64);
 	default:
 		break;
@@ -2072,11 +2101,11 @@ EXP float CALL get_slow_time(ryzen_access ry) {
 }
 
 EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
-	if (core > 7)
+	if (core > 15)
 		return NAN;
 	
 	u32 baseOffset;
-	
+	// kevin 0x104 might be power, 16 entries
 	switch (ry->table_ver) {
 		case 0x00370000:
 		case 0x00370001:
@@ -2102,6 +2131,9 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 		case 0x00400005:
 			baseOffset = 0x320;
 			break;
+		case 0x0064020c: // Strix Halo
+			baseOffset = 0xB90;
+			break;
 		default:
 			return NAN;
 	}
@@ -2110,11 +2142,11 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 }
 
 EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
-	if (core > 7)
+	if (core > 15)
 		return NAN;
 	
 	u32 baseOffset;
-
+	// kevinh 0x1cc - 17 entries?
 	switch (ry->table_ver) {
 		case 0x00370000:
 		case 0x00370001:
@@ -2137,6 +2169,9 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 		case 0x00400005:
 			baseOffset = 0x340;
 			break;
+		case 0x0064020c: // Strix Halo
+			baseOffset = 0xBD0;
+			break;
 		default:
 			return NAN;
 	}
@@ -2145,7 +2180,7 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 }
 
 EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
-	if (core > 7)
+	if (core > 15)
 		return NAN;
 	
 	u32 baseOffset;
@@ -2171,6 +2206,9 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			baseOffset = 0x360;
+			break;
+		case 0x0064020c: // Strix Halo
+			baseOffset = 0xC10;
 			break;
 		default:
 			return NAN;
