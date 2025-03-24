@@ -2220,7 +2220,7 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 }
 
 EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
-	if (core > 7)
+	if (core > 15)
 		return NAN;
 	
 	u32 baseOffset;
@@ -2246,6 +2246,9 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			baseOffset = 0x3c0;
+			break;
+		case 0x0064020c:
+			baseOffset = 0xc50;
 			break;
 		default:
 			return NAN;
