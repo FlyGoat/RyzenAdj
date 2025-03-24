@@ -23,7 +23,7 @@ jobs:
         nmake
 
     - name: Upload ryzenadj debug
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v2
       with:
         name: ryzenadj-win64-debug
         path: |
@@ -45,35 +45,35 @@ jobs:
         copy win32/* release/
         copy examples/* release/
 
-#    - name: Test Scripts
-#      shell: pwsh
-#      run: |
-#        cd release
-#        $expectedOutput = "Not AMD processor, must be kidding"
-#        $cmdDemoOutput = '' | cmd.exe /c .\demo.bat
-#        if ($cmdDemoOutput -notcontains $expectedOutput){
-#            Write-Error "$cmdDemoOutput"
-#            exit 1
-#        }
-#        $psServiceOutput = Powershell .\readjustService.ps1 -noGUI
-#        if ($psServiceOutput -ne $expectedOutput){
-#            Write-Error "$psServiceOutput"
-#            exit 1
-#        }
-#        $pythonOutput = python pmtable-example.py
-#        if ($pythonOutput -notcontains $expectedOutput){
-#            Write-Error "$pythonOutput"
-#            exit 1
-#        }
-#        $pythonOutput = python readjust.py
-#        if ($pythonOutput -notcontains $expectedOutput){
-#            Write-Error "$pythonOutput"
-#            exit 1
-#        }
-#        exit 0
+    - name: Test Scripts
+      shell: pwsh
+      run: |
+        cd release
+        $expectedOutput = "Not AMD processor, must be kidding"
+        $cmdDemoOutput = '' | cmd.exe /c .\demo.bat
+        if ($cmdDemoOutput -notcontains $expectedOutput){
+            Write-Error "$cmdDemoOutput"
+            exit 1
+        }
+        $psServiceOutput = Powershell .\readjustService.ps1 -noGUI
+        if ($psServiceOutput -ne $expectedOutput){
+            Write-Error "$psServiceOutput"
+            exit 1
+        }
+        $pythonOutput = python pmtable-example.py
+        if ($pythonOutput -notcontains $expectedOutput){
+            Write-Error "$pythonOutput"
+            exit 1
+        }
+        $pythonOutput = python readjust.py
+        if ($pythonOutput -notcontains $expectedOutput){
+            Write-Error "$pythonOutput"
+            exit 1
+        }
+        exit 0
 
     - name: Upload ryzenadj
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v2
       with:
         name: ryzenadj-win64
         path: |
@@ -82,7 +82,7 @@ jobs:
             !release/*.exp
 
     - name: Upload libryzenadj
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v2
       with:
         name: libryzenadj-win64
         path: |
@@ -113,21 +113,21 @@ jobs:
         cmake DCMAKE_BUILD_TYPE=Release ..
         make
 
-#    - name: Test Scripts
-#      shell: bash
-#      run: |
-#        cd examples
-#        export LD_LIBRARY_PATH="${{ github.workspace }}/build/"
-#        expectedOutput="Not AMD processor, must be kidding"
-#        pythonOutput=$(python pmtable-example.py 2>&1) || true
-#        if [[ ! "$pythonOutput" =~ "$expectedOutput" ]]; then
-#            echo "pmtable-example.py output: $pythonOutput"
-#            exit 1
-#        fi
-#        pythonOutput=$(python readjust.py 2>&1) || true
-#        if [[ ! "$pythonOutput" =~ "$expectedOutput" ]]; then
-#            echo "readjust.py output: $pythonOutput"
-#            exit 1
-#        fi
-#        exit 0
+    - name: Test Scripts
+      shell: bash
+      run: |
+        cd examples
+        export LD_LIBRARY_PATH="${{ github.workspace }}/build/"
+        expectedOutput="Not AMD processor, must be kidding"
+        pythonOutput=$(python pmtable-example.py 2>&1) || true
+        if [[ ! "$pythonOutput" =~ "$expectedOutput" ]]; then
+            echo "pmtable-example.py output: $pythonOutput"
+            exit 1
+        fi
+        pythonOutput=$(python readjust.py 2>&1) || true
+        if [[ ! "$pythonOutput" =~ "$expectedOutput" ]]; then
+            echo "readjust.py output: $pythonOutput"
+            exit 1
+        fi
+        exit 0
 

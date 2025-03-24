@@ -122,7 +122,7 @@ do {                                                                        \
 	}                                                                       \
 } while (0);
 
-static int request_table_ver_and_size(ryzen_access ry)
+int request_table_ver_and_size(ryzen_access ry)
 {
 	unsigned int get_table_ver_msg;
 	int resp;
@@ -137,9 +137,6 @@ static int request_table_ver_and_size(ryzen_access ry)
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
 	case FAM_REMBRANDT:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
 		get_table_ver_msg = 0x6;
 		break;
 	default:
@@ -174,7 +171,6 @@ static int request_table_ver_and_size(ryzen_access ry)
 	case 0x400005: ry->table_size = 0x944; break;
 	case 0x450004: ry->table_size = 0xA44; break;
 	case 0x450005: ry->table_size = 0xA44; break;
-	case 0x4C0006: ry->table_size = 0xAA0; break;
 		default:
 			//use a larger size then the largest known table to be able to test real table size of unknown tables
 			ry->table_size = 0xA00;
@@ -190,7 +186,7 @@ static int request_table_ver_and_size(ryzen_access ry)
 	return 0;
 }
 
-static int request_table_addr(ryzen_access ry)
+int request_table_addr(ryzen_access ry)
 {
 	unsigned int get_table_addr_msg;
 	int resp;
@@ -207,9 +203,6 @@ static int request_table_addr(ryzen_access ry)
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
 	case FAM_REMBRANDT:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
 		get_table_addr_msg = 0x66;
 		break;
 	default:
@@ -219,15 +212,9 @@ static int request_table_addr(ryzen_access ry)
 
 	resp = smu_service_req(ry->psmu, get_table_addr_msg, &args);
 
-	switch (ry->family)
-	{
-	case FAM_REMBRANDT:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
+	if (ry->family == FAM_REMBRANDT) {
 		ry->table_addr = (uint64_t) args.arg1 << 32 | args.arg0;
-		break;
-	default:
+	} else {
 		ry->table_addr = args.arg0;
 	}
 
@@ -241,7 +228,7 @@ static int request_table_addr(ryzen_access ry)
 	return 0;
 }
 
-static int request_transfer_table(ryzen_access ry)
+int request_transfer_table(ryzen_access ry)
 {
 	int resp;
 	unsigned int transfer_table_msg;
@@ -258,9 +245,6 @@ static int request_transfer_table(ryzen_access ry)
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
 	case FAM_REMBRANDT:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
 		transfer_table_msg = 0x65;
 		break;
 	default:
@@ -430,11 +414,8 @@ do {                                                \
 	return ry->table_values[OFFSET / 4];            \
 } while (0);
 
-
 EXP int CALL set_stapm_limit(ryzen_access ry, uint32_t value){
     int err = ADJ_ERR_FAM_UNSUPPORTED;
-
-	/* \_SB.ALIB (0x0c, [size, 0x05, val]) */
 
 	switch (ry->family)
 	{
@@ -449,16 +430,12 @@ EXP int CALL set_stapm_limit(ryzen_access ry, uint32_t value){
 	case FAM_VANGOGH:
 	case FAM_REMBRANDT:
 	case FAM_MENDOCINO:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
+	case FAM_PHEONIX:
 		_do_adjust(0x14);
         if (err) {
             printf("%s: Retry with PSMU\n", __func__);
 		    _do_adjust_psmu(0x31);
         }
-	default:
-		break;
 	}
 	return err;
 }
@@ -466,7 +443,6 @@ EXP int CALL set_stapm_limit(ryzen_access ry, uint32_t value){
 EXP int CALL set_fast_limit(ryzen_access ry, uint32_t value){
     int err = ADJ_ERR_FAM_UNSUPPORTED;
 
-	/* \_SB.ALIB (0x0c, [size, 0x06, val]) */
 	switch (ry->family)
 	{
 	case FAM_RAVEN:
@@ -480,20 +456,14 @@ EXP int CALL set_fast_limit(ryzen_access ry, uint32_t value){
 	case FAM_VANGOGH:
 	case FAM_REMBRANDT:
 	case FAM_MENDOCINO:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
+	case FAM_PHEONIX:
 		_do_adjust(0x15);
-	default:
-		break;
 	}
 	return err;
 }
 
 EXP int CALL set_slow_limit(ryzen_access ry, uint32_t value){
     int err = ADJ_ERR_FAM_UNSUPPORTED;
-
-	/* \_SB.ALIB (0x0c, [size, 0x07, val]) */
 
 	switch (ry->family)
 	{
@@ -508,20 +478,14 @@ EXP int CALL set_slow_limit(ryzen_access ry, uint32_t value){
 	case FAM_VANGOGH:
 	case FAM_REMBRANDT:
 	case FAM_MENDOCINO:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
+	case FAM_PHEONIX:
 		_do_adjust(0x16);
-	default:
-		break;
 	}
 	return err;
 }
 
 EXP int CALL set_slow_time(ryzen_access ry, uint32_t value){
     int err = ADJ_ERR_FAM_UNSUPPORTED;
-
-	/* \_SB.ALIB (0x0c, [size, 0x08, val]) */
 
 	switch (ry->family)
 	{
@@ -536,20 +500,14 @@ EXP int CALL set_slow_time(ryzen_access ry, uint32_t value){
 	case FAM_VANGOGH:
 	case FAM_REMBRANDT:
 	case FAM_MENDOCINO:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
+	case FAM_PHEONIX:
 		_do_adjust(0x17);
-	default:
-		break;
 	}
 	return err;
 }
 
 EXP int CALL set_stapm_time(ryzen_access ry, uint32_t value){
     int err = ADJ_ERR_FAM_UNSUPPORTED;
-
-	/* \_SB.ALIB (0x0c, [size, 0x01, val]) */
 
 	switch (ry->family)
 	{
@@ -564,20 +522,14 @@ EXP int CALL set_stapm_time(ryzen_access ry, uint32_t value){
 	case FAM_VANGOGH:
 	case FAM_REMBRANDT:
 	case FAM_MENDOCINO:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
+	case FAM_PHEONIX:
 		_do_adjust(0x18);
-	default:
-		break;
 	}
 	return err;
 }
 
 EXP int CALL set_tctl_temp(ryzen_access ry, uint32_t value){
     int err = ADJ_ERR_FAM_UNSUPPORTED;
-
-	/* \_SB.ALIB (0x0c, [size, 0x03, val]) */
 
 	switch (ry->family)
 	{
@@ -592,20 +544,14 @@ EXP int CALL set_tctl_temp(ryzen_access ry, uint32_t value){
 	case FAM_VANGOGH:
 	case FAM_REMBRANDT:
 	case FAM_MENDOCINO:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
+	case FAM_PHEONIX:
 		_do_adjust(0x19);
-	default:
-		break;
 	}
 	return err;
 }
 
 EXP int CALL set_vrm_current(ryzen_access ry, uint32_t value){
     int err = ADJ_ERR_FAM_UNSUPPORTED;
-
-	/* \_SB.ALIB (0x0c, [size, 0x0b, val]) */
 
 	switch (ry->family)
 	{
@@ -620,20 +566,14 @@ EXP int CALL set_vrm_current(ryzen_access ry, uint32_t value){
 	case FAM_VANGOGH:
 	case FAM_REMBRANDT:
 	case FAM_MENDOCINO:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
+	case FAM_PHEONIX:
 		_do_adjust(0x1a);
-	default:
-		break;
 	}
 	return err;
 }
 
 EXP int CALL set_vrmsoc_current(ryzen_access ry, uint32_t value){
     int err = ADJ_ERR_FAM_UNSUPPORTED;
-
-	/* \_SB.ALIB (0x0c, [size, 0x0e, val]) */
 
 	switch (ry->family)
 	{
@@ -648,12 +588,8 @@ EXP int CALL set_vrmsoc_current(ryzen_access ry, uint32_t value){
 	case FAM_VANGOGH:
 	case FAM_REMBRANDT:
 	case FAM_MENDOCINO:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
+	case FAM_PHEONIX:
 		_do_adjust(0x1b);
-	default:
-		break;
 	}
 	return err;
 }
@@ -665,8 +601,6 @@ EXP int CALL set_vrmgfx_current(ryzen_access ry, uint32_t value){
 	{
 	case FAM_VANGOGH:
 		_do_adjust(0x1c);
-	default:
-		break;
 	}
 	return err;
 }
@@ -678,16 +612,12 @@ EXP int CALL set_vrmcvip_current(ryzen_access ry, uint32_t value){
 	{
 	case FAM_VANGOGH:
 		_do_adjust(0x1d);
-	default:
-		break;
 	}
 	return err;
 }
 
 EXP int CALL set_vrmmax_current(ryzen_access ry, uint32_t value){
     int err = ADJ_ERR_FAM_UNSUPPORTED;
-
-	/* \_SB.ALIB (0x0c, [size, 0x0c, val]) */
 
 	switch (ry->family)
 	{
@@ -701,15 +631,11 @@ EXP int CALL set_vrmmax_current(ryzen_access ry, uint32_t value){
 	case FAM_CEZANNE:
 	case FAM_REMBRANDT:
 	case FAM_MENDOCINO:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
+	case FAM_PHEONIX:
 		_do_adjust(0x1c);
 		break;
 	case FAM_VANGOGH:
 		_do_adjust(0x1e);
-	default:
-		break;
 	}
 	return err;
 }
@@ -721,16 +647,12 @@ EXP int CALL set_vrmgfxmax_current(ryzen_access ry, uint32_t value){
 	{
 	case FAM_VANGOGH:
 		_do_adjust(0x1f);
-	default:
-		break;
 	}
 	return err;
 }
 
 EXP int CALL set_vrmsocmax_current(ryzen_access ry, uint32_t value){
     int err = ADJ_ERR_FAM_UNSUPPORTED;
-
-	/* \_SB.ALIB (0x0c, [size, 0x11, val]) */
 
 	switch (ry->family)
 	{
@@ -744,12 +666,8 @@ EXP int CALL set_vrmsocmax_current(ryzen_access ry, uint32_t value){
 	case FAM_CEZANNE:
 	case FAM_REMBRANDT:
 	case FAM_MENDOCINO:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
+	case FAM_PHEONIX:
 		_do_adjust(0x1d);
-	default:
-		break;
 	}
 	return err;
 }
@@ -768,8 +686,6 @@ EXP int CALL set_psi0_current(ryzen_access ry, uint32_t value){
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
 		_do_adjust(0x1e);
-	default:
-		break;
 	}
 	return err;
 }
@@ -781,8 +697,6 @@ EXP int CALL set_psi3cpu_current(ryzen_access ry, uint32_t value){
 	{
 	case FAM_VANGOGH:
 		_do_adjust(0x20);
-	default:
-		break;
 	}
 	return err;
 }
@@ -801,8 +715,6 @@ EXP int CALL set_psi0soc_current(ryzen_access ry, uint32_t value){
 	case FAM_LUCIENNE:
 	case FAM_CEZANNE:
 		_do_adjust(0x1f);
-	default:
-		break;
 	}
 	return err;
 }
@@ -814,8 +726,6 @@ EXP int CALL set_psi3gfx_current(ryzen_access ry, uint32_t value){
 	{
 	case FAM_VANGOGH:
 		_do_adjust(0x21);
-	default:
-		break;
 	}
 	return err;
 }
@@ -828,10 +738,7 @@ EXP int CALL set_max_gfxclk_freq(ryzen_access ry, uint32_t value) {
 	case FAM_RAVEN:
 	case FAM_PICASSO:
 	case FAM_DALI:
-	case FAM_LUCIENNE:
 		_do_adjust(0x46);
-		break;
-	default:
 		break;
 	}
 	return err;
@@ -845,10 +752,7 @@ EXP int CALL set_min_gfxclk_freq(ryzen_access ry, uint32_t value) {
 	case FAM_RAVEN:
 	case FAM_PICASSO:
 	case FAM_DALI:
-	case FAM_LUCIENNE:
 		_do_adjust(0x47);
-		break;
-	default:
 		break;
 	}
 	return err;
@@ -864,8 +768,6 @@ EXP int CALL set_max_socclk_freq(ryzen_access ry, uint32_t value){
 	case FAM_DALI:
 		_do_adjust(0x48);
 		break;
-	default:
-		break;
 	}
 	return err;
 }
@@ -879,8 +781,6 @@ EXP int CALL set_min_socclk_freq(ryzen_access ry, uint32_t value){
 	case FAM_PICASSO:
 	case FAM_DALI:
 		_do_adjust(0x49);
-		break;
-	default:
 		break;
 	}
 	return err;
@@ -896,8 +796,6 @@ EXP int CALL set_max_fclk_freq(ryzen_access ry, uint32_t value){
 	case FAM_DALI:
 		_do_adjust(0x4A);
 		break;
-	default:
-		break;
 	}
 	return err;
 }
@@ -911,8 +809,6 @@ EXP int CALL set_min_fclk_freq(ryzen_access ry, uint32_t value){
 	case FAM_PICASSO:
 	case FAM_DALI:
 		_do_adjust(0x4B);
-		break;
-	default:
 		break;
 	}
 	return err;
@@ -928,8 +824,6 @@ EXP int CALL set_max_vcn(ryzen_access ry, uint32_t value){
 	case FAM_DALI:
 		_do_adjust(0x4C);
 		break;
-	default:
-		break;
 	}
 	return err;
 }
@@ -943,8 +837,6 @@ EXP int CALL set_min_vcn(ryzen_access ry, uint32_t value){
 	case FAM_PICASSO:
 	case FAM_DALI:
 		_do_adjust(0x4D);
-		break;
-	default:
 		break;
 	}
 	return err;
@@ -960,8 +852,6 @@ EXP int CALL set_max_lclk(ryzen_access ry, uint32_t value){
 	case FAM_DALI:
 		_do_adjust(0x4E);
 		break;
-	default:
-		break;
 	}
 	return err;
 }
@@ -976,16 +866,12 @@ EXP int CALL set_min_lclk(ryzen_access ry, uint32_t value){
 	case FAM_DALI:
 		_do_adjust(0x4F);
 		break;
-	default:
-		break;
 	}
 	return err;
 }
 
 EXP int CALL set_prochot_deassertion_ramp(ryzen_access ry, uint32_t value) {
     int err = ADJ_ERR_FAM_UNSUPPORTED;
-
-	/* \_SB.ALIB (0x0c, [size, 0x09, val]) */
 
 	switch (ry->family)
 	{
@@ -1004,20 +890,14 @@ EXP int CALL set_prochot_deassertion_ramp(ryzen_access ry, uint32_t value) {
 		break;
 	case FAM_REMBRANDT:
 	case FAM_MENDOCINO:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
+	case FAM_PHEONIX:
 		_do_adjust(0x1f);
-	default:
-		break;
 	}
 	return err;
 }
 
 EXP int CALL set_apu_skin_temp_limit(ryzen_access ry, uint32_t value) {
     int err = ADJ_ERR_FAM_UNSUPPORTED;
-
-	/* \_SB.ALIB (0x0c, [size, 0x22, val]) */
 
 	value *= 256;
 	switch (ry->family)
@@ -1030,11 +910,8 @@ EXP int CALL set_apu_skin_temp_limit(ryzen_access ry, uint32_t value) {
 	case FAM_VANGOGH:
 	case FAM_REMBRANDT:
 	case FAM_MENDOCINO:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
+	case FAM_PHEONIX:
 		_do_adjust(0x33);
-		break;
-	default:
 		break;
 	}
 	return err;
@@ -1042,8 +919,6 @@ EXP int CALL set_apu_skin_temp_limit(ryzen_access ry, uint32_t value) {
 
 EXP int CALL set_dgpu_skin_temp_limit(ryzen_access ry, uint32_t value) {
     int err = ADJ_ERR_FAM_UNSUPPORTED;
-
-	/* \_SB.ALIB (0x0c, [size, 0x23, val]) */
 
 	value *= 256;
 	switch (ry->family)
@@ -1056,12 +931,8 @@ EXP int CALL set_dgpu_skin_temp_limit(ryzen_access ry, uint32_t value) {
 	case FAM_VANGOGH:
 	case FAM_REMBRANDT:
 	case FAM_MENDOCINO:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
+	case FAM_PHEONIX:
 		_do_adjust(0x34);
-		break;
-	default:
 		break;
 	}
 	return err;
@@ -1069,8 +940,6 @@ EXP int CALL set_dgpu_skin_temp_limit(ryzen_access ry, uint32_t value) {
 
 EXP int CALL set_apu_slow_limit(ryzen_access ry, uint32_t value) {
     int err = ADJ_ERR_FAM_UNSUPPORTED;
-
-	/* \_SB.ALIB (0x0c, [size, 0x13, val]) */
 
 	switch (ry->family)
 	{
@@ -1080,12 +949,8 @@ EXP int CALL set_apu_slow_limit(ryzen_access ry, uint32_t value) {
 		_do_adjust(0x21);
 		break;
 	case FAM_REMBRANDT:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
+	case FAM_PHEONIX:
 		_do_adjust(0x23);
-		break;
-	default:
 		break;
 	}
 	return err;
@@ -1093,8 +958,6 @@ EXP int CALL set_apu_slow_limit(ryzen_access ry, uint32_t value) {
 
 EXP int CALL set_skin_temp_power_limit(ryzen_access ry, uint32_t value) {
     int err = ADJ_ERR_FAM_UNSUPPORTED;
-
-    	/* \_SB.ALIB (0x0c, [size, 0x2e, val]) */
 
 	switch (ry->family)
 	{
@@ -1106,12 +969,8 @@ EXP int CALL set_skin_temp_power_limit(ryzen_access ry, uint32_t value) {
 	case FAM_VANGOGH:
 	case FAM_REMBRANDT:
 	case FAM_MENDOCINO:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
+	case FAM_PHEONIX:
 		_do_adjust(0x4a);
-		break;
-	default:
 		break;
 	}
 	return err;
@@ -1128,11 +987,8 @@ EXP int CALL set_gfx_clk(ryzen_access ry, uint32_t value) {
 	case FAM_VANGOGH:
 	case FAM_REMBRANDT:
 	case FAM_MENDOCINO:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
+	case FAM_PHEONIX:
 		_do_adjust_psmu(0x89);
-		break;
-	default:
 		break;
 	}
 	return err;
@@ -1141,8 +997,6 @@ EXP int CALL set_gfx_clk(ryzen_access ry, uint32_t value) {
 EXP int CALL set_power_saving(ryzen_access ry) {
     int err = ADJ_ERR_FAM_UNSUPPORTED;
 	uint32_t value = 0;
-
-	/* \_SB.ALIB (0x01, [size, 0x1]) */
 
 	switch (ry->family)
 	{
@@ -1157,12 +1011,8 @@ EXP int CALL set_power_saving(ryzen_access ry) {
 	case FAM_VANGOGH:
 	case FAM_REMBRANDT:
 	case FAM_MENDOCINO:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
+	case FAM_PHEONIX:
 		_do_adjust(0x12);
-		break;
-	default:
 		break;
 	}
 	return err;
@@ -1171,8 +1021,6 @@ EXP int CALL set_power_saving(ryzen_access ry) {
 EXP int CALL set_max_performance(ryzen_access ry) {
     int err = ADJ_ERR_FAM_UNSUPPORTED;
 	uint32_t value = 0;
-
-	/* \_SB.ALIB (0x01, [size, 0x0]) */
 
 	switch (ry->family)
 	{
@@ -1187,12 +1035,8 @@ EXP int CALL set_max_performance(ryzen_access ry) {
 	case FAM_VANGOGH:
 	case FAM_REMBRANDT:
 	case FAM_MENDOCINO:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_STRIXPOINT:
+	case FAM_PHEONIX:
 		_do_adjust(0x11);
-		break;
-	default:
 		break;
 	}
 	return err;
@@ -1213,8 +1057,6 @@ EXP int CALL set_oc_clk(ryzen_access ry, uint32_t value) {
 		    _do_adjust_psmu(0x19);
         }
 		break;
-	default:
-		break;
 	}
 	return err;
 }
@@ -1234,8 +1076,6 @@ EXP int CALL set_per_core_oc_clk(ryzen_access ry, uint32_t value) {
 		    _do_adjust_psmu(0x1a);
         }
 		break;
-	default:
-		break;
 	}
 	return err;
 }
@@ -1248,13 +1088,12 @@ EXP int CALL set_oc_volt(ryzen_access ry, uint32_t value) {
 	case FAM_LUCIENNE:
 	case FAM_RENOIR:
 	case FAM_CEZANNE:
+	case FAM_REMBRANDT:
 		_do_adjust(0x33);
         if (err) {
             printf("%s: Retry with PSMU\n", __func__);
 		    _do_adjust_psmu(0x1b);
         }
-		break;
-	default:
 		break;
 	}
 	return err;
@@ -1278,8 +1117,6 @@ EXP int CALL set_disable_oc(ryzen_access ry) {
 	case FAM_REMBRANDT:
 		_do_adjust_psmu(0x18);
 		break;
-	default:
-		break;
 	}
 	return err;
 }
@@ -1298,8 +1135,6 @@ EXP int CALL set_enable_oc(ryzen_access ry) {
 	case FAM_REMBRANDT:
 		_do_adjust_psmu(0x17);
 		break;
-	default:
-		break;
 	}
 	return err;
 }
@@ -1314,13 +1149,13 @@ EXP int CALL set_coall(ryzen_access ry, uint32_t value) {
 	case FAM_LUCIENNE:
 		_do_adjust(0x55);
 		break;
-	case FAM_REMBRANDT:
 	case FAM_VANGOGH:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
+	case FAM_REMBRANDT:
 		_do_adjust(0x4C);
 		break;
-	default:
+	case FAM_RAPHAEL:
+	case FAM_DRAGON_RANGE:
+		_do_adjust_psmu(0x7);
 		break;
 	}
 	return err;
@@ -1336,13 +1171,13 @@ EXP int CALL set_coper(ryzen_access ry, uint32_t value) {
 	case FAM_LUCIENNE:
 		_do_adjust(0x54);
 		break;
-	case FAM_REMBRANDT:
-	case FAM_PHOENIX:
 	case FAM_VANGOGH:
-	case FAM_HAWKPOINT:
-		_do_adjust(0x4b);
+	case FAM_REMBRANDT:
+		_do_adjust(0x4B);
 		break;
-	default:
+	case FAM_RAPHAEL:
+	case FAM_DRAGON_RANGE:
+		_do_adjust_psmu(0x6);
 		break;
 	}
 	return err;
@@ -1359,16 +1194,64 @@ EXP int CALL set_cogfx(ryzen_access ry, uint32_t value) {
 		_do_adjust(0x64);
 		break;
 	case FAM_REMBRANDT:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_VANGOGH:
 		_do_adjust_psmu(0xB7);
-		break;
-	default:
 		break;
 	}
 	return err;
 }
+
+EXP int CALL set_ppt(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
+
+	switch (ry->family)
+	{
+	case FAM_RAPHAEL:
+	case FAM_DRAGON_RANGE:
+		_do_adjust_psmu(0x56);
+		break;
+	}
+	return err;
+}
+
+EXP int CALL set_tdc(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
+
+	switch (ry->family)
+	{
+	case FAM_RAPHAEL:
+	case FAM_DRAGON_RANGE:
+		_do_adjust_psmu(0x57);
+		break;
+	}
+	return err;
+}
+
+EXP int CALL set_edc(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
+
+	switch (ry->family)
+	{
+	case FAM_RAPHAEL:
+	case FAM_DRAGON_RANGE:
+		_do_adjust_psmu(0x58);
+		break;
+	}
+	return err;
+}
+
+EXP int CALL set_htc(ryzen_access ry, uint32_t value) {
+	int err = ADJ_ERR_FAM_UNSUPPORTED;
+
+	switch (ry->family)
+	{
+	case FAM_RAPHAEL:
+	case FAM_DRAGON_RANGE:
+		_do_adjust_psmu(0x59);
+		break;
+	}
+	return err;
+}
+
 
 //PM Table section, offset of first lines are stable across multiple PM Table versions
 EXP float CALL get_stapm_limit(ryzen_access ry){_read_float_value(0x0);}
@@ -1396,12 +1279,7 @@ EXP float CALL get_apu_slow_limit(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x18);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1422,10 +1300,7 @@ EXP float CALL get_apu_slow_value(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
-	case 0x004C0006:
 		_read_float_value(0x1C);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1453,12 +1328,7 @@ EXP float CALL get_vrm_current(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x20);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1486,12 +1356,7 @@ EXP float CALL get_vrm_current_value(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x24);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1519,12 +1384,7 @@ EXP float CALL get_vrmsoc_current(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x28);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1552,12 +1412,7 @@ EXP float CALL get_vrmsoc_current_value(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x2C);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1585,12 +1440,7 @@ EXP float CALL get_vrmmax_current(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x30);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1618,12 +1468,7 @@ EXP float CALL get_vrmmax_current_value(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x34);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1651,12 +1496,7 @@ EXP float CALL get_vrmsocmax_current(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x38);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1684,12 +1524,7 @@ EXP float CALL get_vrmsocmax_current_value(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x3C);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1718,12 +1553,7 @@ EXP float CALL get_tctl_temp(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x40);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1752,12 +1582,7 @@ EXP float CALL get_tctl_temp_value(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x44);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1778,12 +1603,7 @@ EXP float CALL get_apu_skin_temp_limit(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x58);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1804,12 +1624,7 @@ EXP float CALL get_apu_skin_temp_value(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x5C);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1829,12 +1644,7 @@ EXP float CALL get_dgpu_skin_temp_limit(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x60);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1854,12 +1664,7 @@ EXP float CALL get_dgpu_skin_temp_value(ryzen_access ry) {
 	case 0x00400005:
 	case 0x00450004:
 	case 0x00450005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x64);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1886,12 +1691,7 @@ EXP float CALL get_psi0_current(ryzen_access ry) {
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x78);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1918,12 +1718,7 @@ EXP float CALL get_psi0soc_current(ryzen_access ry) {
 	case 0x00400003:
 	case 0x00400004:
 	case 0x00400005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x80);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1952,8 +1747,6 @@ EXP float CALL get_cclk_setpoint(ryzen_access ry) {
 	case 0x00400004:
 	case 0x00400005:
 		_read_float_value(0x100);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -1982,8 +1775,6 @@ EXP float CALL get_cclk_busy_value(ryzen_access ry) {
 	case 0x00400004:
 	case 0x00400005:
 		_read_float_value(0x104);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -2020,12 +1811,7 @@ EXP float CALL get_stapm_time(ryzen_access ry)
 		_read_float_value(0x920);
 	case 0x00400004:
 	case 0x00400005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x918);
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -2061,157 +1847,567 @@ EXP float CALL get_slow_time(ryzen_access ry) {
 		_read_float_value(0x924);
 	case 0x00400004:
 	case 0x00400005:
-	case 0x004C0006:
-	case 0x004C0007:
-	case 0x004C0008:
 		_read_float_value(0x91C);
-	default:
-		break;
 	}
 	return NAN;
 }
 
 EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
-	if (core > 7)
-		return NAN;
-	
-	u32 baseOffset;
-	
-	switch (ry->table_ver) {
+	switch (core)
+	{
+	case 0:
+		switch (ry->table_ver)
+		{
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
 		case 0x00370003:
 		case 0x00370004:
-			baseOffset = 0x300;
-			break;
+			_read_float_value(0x300);
 		case 0x00370005:
-			baseOffset = 0x31C;
-			break;
-		case 0x003F0000: { // Van Gogh
-			if (core >= 4)
-				return NAN;
-	
-			baseOffset = 0x238;
-		}
-			break;
+			_read_float_value(0x31C);
+		case 0x003F0000: // Van Gogh
+			_read_float_value(0x238); //568
 		case 0x00400001:
-			baseOffset = 0x304;
-			break;
+			_read_float_value(0x304); //772
 		case 0x00400004:
 		case 0x00400005:
-			baseOffset = 0x320;
-			break;
-		default:
-			return NAN;
+			_read_float_value(0x320); //800
+		}
+	case 1:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x304);
+		case 0x00370005:
+			_read_float_value(0x320);
+		case 0x003F0000: // Van Gogh
+			_read_float_value(0x23C); //572
+		case 0x00400001:
+			_read_float_value(0x308); //776
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x324); //804
+		}
+	case 2:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x308);
+		case 0x00370005:
+			_read_float_value(0x324);
+		case 0x003F0000: // Van Gogh
+			_read_float_value(0x240); //576
+		case 0x00400001:
+			_read_float_value(0x30c); //780
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x328); //808
+		}
+	case 3:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x30c);
+		case 0x00370005:
+			_read_float_value(0x328);
+		case 0x003F0000: // Van Gogh
+			_read_float_value(0x244); //580
+		case 0x00400001:
+			_read_float_value(0x310); //784
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x32c); //812
+		}
+	case 4:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x310);
+		case 0x00370005:
+			_read_float_value(0x32c);
+		case 0x00400001:
+			_read_float_value(0x314); //788
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x330); //816
+		}
+
+	case 5:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x314);
+		case 0x00370005:
+			_read_float_value(0x330);
+		case 0x00400001:
+			_read_float_value(0x318); //792
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x334); //820
+		}
+	case 6:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x318);
+		case 0x00370005:
+			_read_float_value(0x334);
+		case 0x00400001:
+			_read_float_value(0x31c); //796
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x338); //824
+		}
+	case 7:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x31c);
+		case 0x00370005:
+			_read_float_value(0x338);
+		case 0x00400001:
+			_read_float_value(0x320); //800
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x33c); //828
+		}
 	}
-	
-	_read_float_value(baseOffset + (core * 4));
+	return NAN;
 }
 
 EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
-	if (core > 7)
-		return NAN;
-	
-	u32 baseOffset;
-
-	switch (ry->table_ver) {
+	switch (core)
+	{
+	case 0:
+		switch (ry->table_ver)
+		{
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
 		case 0x00370003:
 		case 0x00370004:
-			baseOffset = 0x320;
-			break;
+			_read_float_value(0x320);
 		case 0x00370005:
-			baseOffset = 0x33C;
-			break;
-		case 0x003F0000: { // Van Gogh
-			if (core >= 4)
-				return NAN;
-
-			baseOffset = 0x248;
-		}
-			break;
+			_read_float_value(0x33C);
+		case 0x003F0000: // Van Gogh
+			_read_float_value(0x248); //584
 		case 0x00400004:
 		case 0x00400005:
-			baseOffset = 0x340;
-			break;
-		default:
-			return NAN;
-	}
+			_read_float_value(0x340); //832
+		}
+	case 1:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x324);
+		case 0x00370005:
+			_read_float_value(0x340);
+		case 0x003F0000: // Van Gogh
+			_read_float_value(0x24C); //588
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x344); //836
+		}
+	case 2:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x328);
+		case 0x00370005:
+			_read_float_value(0x344);
+		case 0x003F0000: // Van Gogh
+			_read_float_value(0x250); //592
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x348); //840
+		}
+	case 3:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x32C);
+		case 0x00370005:
+			_read_float_value(0x348);
+		case 0x003F0000: // Van Gogh
+			_read_float_value(0x254); //596
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x34c); //844
+		}
+	case 4:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x330);
+		case 0x00370005:
+			_read_float_value(0x34C);
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x350); //848
 
-	_read_float_value(baseOffset + (core * 4));
+		}
+	case 5:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x334);
+		case 0x00370005:
+			_read_float_value(0x350);
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x354); //852
+		}
+	case 6:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x338);
+		case 0x00370005:
+			_read_float_value(0x354);
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x358); //856
+		}
+	case 7:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x33C);
+		case 0x00370005:
+			_read_float_value(0x358);
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x35c); //860
+		}
+	}
+	return NAN;
 }
 
 EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
-	if (core > 7)
-		return NAN;
-	
-	u32 baseOffset;
-
-	switch (ry->table_ver) {
+	switch (core)
+	{
+	case 0:
+		switch (ry->table_ver)
+		{
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
 		case 0x00370003:
 		case 0x00370004:
-			baseOffset = 0x340;
-			break;
+			_read_float_value(0x340);
 		case 0x00370005:
-			baseOffset = 0x35C;
-			break;
-		case 0x003F0000: { // Van Gogh
-			if (core >= 4)
-				return NAN;
-
-			baseOffset = 0x258;
-		}
-			break;
+			_read_float_value(0x35C);
+		case 0x003F0000: // Van Gogh
+			_read_float_value(0x258); //600
 		case 0x00400004:
 		case 0x00400005:
-			baseOffset = 0x360;
-			break;
-		default:
-			return NAN;
+			_read_float_value(0x360); //864
+		}
+	case 1:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x344);
+		case 0x00370005:
+			_read_float_value(0x360);
+		case 0x003F0000: // Van Gogh
+			_read_float_value(0x25C); //604
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x364); //868
+		}
+	case 2:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x348);
+		case 0x00370005:
+			_read_float_value(0x364);
+		case 0x003F0000: // Van Gogh
+			_read_float_value(0x260); //608
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x368); //872
+		}
+	case 3:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x34C);
+		case 0x00370005:
+			_read_float_value(0x368);
+		case 0x003F0000: // Van Gogh
+			_read_float_value(0x264); //612
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x36c); //876
+		}
+	case 4:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x350);
+		case 0x00370005:
+			_read_float_value(0x36C);
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x370); //880
+		}
+	case 5:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x354);
+		case 0x00370005:
+			_read_float_value(0x370);
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x374); //884
+		}
+	case 6:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x358);
+		case 0x00370005:
+			_read_float_value(0x374);
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x378); //888
+		}
+	case 7:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x35C);
+		case 0x00370005:
+			_read_float_value(0x378);
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x37C); //892
+		}
 	}
-
-	_read_float_value(baseOffset + (core * 4));
+	return NAN;
 }
 
 EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
-	if (core > 7)
-		return NAN;
-	
-	u32 baseOffset;
-
-	switch (ry->table_ver) {
+	switch (core)
+	{
+	case 0:
+		switch (ry->table_ver)
+		{
 		case 0x00370000:
 		case 0x00370001:
 		case 0x00370002:
 		case 0x00370003:
 		case 0x00370004:
-			baseOffset = 0x3A0;
-			break;
+			_read_float_value(0x3A0);
 		case 0x00370005:
-			baseOffset = 0x3BC;
-			break;
-		case 0x003F0000: { // Van Gogh
-			if (core >= 4)
-				return NAN;
-			
-			baseOffset = 0x288;
-		}
-			break;
+			_read_float_value(0x3BC);
+		case 0x003F0000: // Van Gogh
+			_read_float_value(0x288); //648
 		case 0x00400004:
 		case 0x00400005:
-			baseOffset = 0x3c0;
-			break;
-		default:
-			return NAN;
+			_read_float_value(0x3c0); //960
+		}
+	case 1:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x3A4);
+		case 0x00370005:
+			_read_float_value(0x3C0);
+		case 0x003F0000: // Van Gogh
+			_read_float_value(0x2C8); //652
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x3c4); //964
+		}
+	case 2:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x3A8);
+		case 0x00370005:
+			_read_float_value(0x3C4);
+		case 0x003F0000: // Van Gogh
+			_read_float_value(0x290); //656
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x3c8); //968
+		}
+	case 3:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x3AC);
+		case 0x00370005:
+			_read_float_value(0x3C8);
+		case 0x003F0000: // Van Gogh
+			_read_float_value(0x294); //660
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x3cc); //972
+		}
+	case 4:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x3B0);
+		case 0x00370005:
+			_read_float_value(0x3CC);
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x3d0); //976
+		}
+	case 5:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x3B4);
+		case 0x00370005:
+			_read_float_value(0x3D0);
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x3d4); //980
+		}
+	case 6:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x3B8);
+		case 0x00370005:
+			_read_float_value(0x3D4);
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x3d8); //984
+		}
+	case 7:
+		switch (ry->table_ver)
+		{
+		case 0x00370000:
+		case 0x00370001:
+		case 0x00370002:
+		case 0x00370003:
+		case 0x00370004:
+			_read_float_value(0x3BC);
+		case 0x00370005:
+			_read_float_value(0x3D8);
+		case 0x00400004:
+		case 0x00400005:
+			_read_float_value(0x3dc); //988
+		}
 	}
-
-	_read_float_value(baseOffset + (core *4));
+	return NAN;
 }
 
 EXP float CALL get_l3_clk(ryzen_access ry) {
@@ -2230,8 +2426,6 @@ EXP float CALL get_l3_clk(ryzen_access ry) {
 	case 0x00400004:
 	case 0x00400005:
 		_read_float_value(0x614); //1556
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -2252,8 +2446,6 @@ EXP float CALL get_l3_logic(ryzen_access ry) {
 	case 0x00400004:
 	case 0x00400005:
 		_read_float_value(0x600); //1536
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -2274,8 +2466,6 @@ EXP float CALL get_l3_vddm(ryzen_access ry) {
 	case 0x00400004:
 	case 0x00400005:
 		_read_float_value(0x604); //1540
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -2296,8 +2486,6 @@ EXP float CALL get_l3_temp(ryzen_access ry) {
 	case 0x00400004:
 	case 0x00400005:
 		_read_float_value(0x608); //1544
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -2324,8 +2512,6 @@ EXP float CALL get_gfx_clk(ryzen_access ry) {
 		_read_float_value(0x648); //1608
 	case 0x003F0000: //Van Gogh
 		_read_float_value(0x388); //904
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -2352,8 +2538,6 @@ EXP float CALL get_gfx_volt(ryzen_access ry) {
 		_read_float_value(0x63C); //1596
 	case 0x003F0000: //Van Gogh
 		_read_float_value(0x37C); //896
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -2380,8 +2564,6 @@ EXP float CALL get_gfx_temp(ryzen_access ry) {
 		_read_float_value(0x640); //1600
 	case 0x003F0000: //Van Gogh
 		_read_float_value(0x380); //896
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -2402,8 +2584,6 @@ EXP float CALL get_fclk(ryzen_access ry) {
 	case 0x00400004:
 	case 0x00400005:
 		_read_float_value(0x664); //1636
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -2424,8 +2604,6 @@ EXP float CALL get_mem_clk(ryzen_access ry) {
 	case 0x00400004:
 	case 0x00400005:
 		_read_float_value(0x66c); //1644
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -2447,8 +2625,6 @@ EXP float CALL get_soc_volt(ryzen_access ry) {
 	case 0x00400005:
 		_read_float_value(0x19c); //412
 
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -2469,8 +2645,6 @@ EXP float CALL get_soc_power(ryzen_access ry) {
 	case 0x00400004:
 	case 0x00400005:
 		_read_float_value(0x1a4); //420
-	default:
-		break;
 	}
 	return NAN;
 }
@@ -2493,8 +2667,6 @@ EXP float CALL get_socket_power(ryzen_access ry) {
 		_read_float_value(0x98); //152
 	case 0x003F0000: //Van Gogh
 		_read_float_value(0xA8); //168
-	default:
-		break;
 	}
 	return NAN;
 }

@@ -72,10 +72,10 @@ static const char *family_name(enum ryzen_family fam)
 	case FAM_DALI: return "Dali";
 	case FAM_LUCIENNE: return "Lucienne";
 	case FAM_VANGOGH: return "Vangogh";
+	case FAM_RAPHAEL: return "Raphael";
+	case FAM_DRAGON_RANGE:
+		return "Dragon Range";
 	case FAM_REMBRANDT: return "Rembrandt";
-	case FAM_PHOENIX: return "Phoenix Point";
-	case FAM_HAWKPOINT: return "Hawk Point";
-	case FAM_STRIXPOINT: return "Strix Point";
 	default:
 		break;
 	}
@@ -102,7 +102,7 @@ static void show_info_table(ryzen_access ry)
 	}
 
 	//print table in github markdown
-	printf("|        Name         |   Value   |     Parameter      |\n");
+	printf("|        Name         |   Value   |      Paramter      |\n");
 	printf("|---------------------|-----------|--------------------|\n");
 	char tableFormat[] = "| %-19s | %9.3lf | %-18s |\n";
 	printf(tableFormat, "STAPM LIMIT", get_stapm_limit(ry), "stapm-limit");
@@ -193,8 +193,8 @@ int main(int argc, const char **argv)
 	int info = 0, dump_table = 0, any_adjust_applied = 0;
 	int power_saving = 0, max_performance = 0, enable_oc = 0x0, disable_oc = 0x0;
 	//init unsigned types with max value because we treat max value as unset
-	uint32_t stapm_limit = -1, fast_limit = -1, slow_limit = -1, slow_time = -1, stapm_time = -1, tctl_temp = -1;
-	uint32_t vrm_current = -1, vrmsoc_current = -1, vrmmax_current = -1, vrmsocmax_current = -1, psi0_current = -1, psi0soc_current = -1;
+	uint32_t stapm_limit = -1, fast_limit = -1, slow_limit = -1, slow_time = -1, stapm_time = -1, tctl_temp = -1, ppt = -1, htc = -1;
+	uint32_t vrm_current = -1, vrmsoc_current = -1, vrmmax_current = -1, vrmsocmax_current = -1, psi0_current = -1, psi0soc_current = -1, tdc = -1, edc = -1;
 	uint32_t vrmgfx_current = -1, vrmcvip_current = -1, vrmgfxmax_current = -1, psi3cpu_current = -1, psi3gfx_current = -1;
 	uint32_t max_socclk_freq = -1, min_socclk_freq = -1, max_fclk_freq = -1, min_fclk_freq = -1, max_vcn = -1, min_vcn = -1, max_lclk = -1, min_lclk = -1;
 	uint32_t max_gfxclk_freq = -1, min_gfxclk_freq = -1, prochot_deassertion_ramp = -1, apu_skin_temp_limit = -1, dgpu_skin_temp_limit = -1, apu_slow_limit = -1;
@@ -205,7 +205,7 @@ int main(int argc, const char **argv)
 	struct argparse_option options[] = {
 		OPT_HELP(),
 		OPT_GROUP("Options"),
-		OPT_BOOLEAN('i', "info", &info, "Show information and most important power metrics after adjustment"),
+		OPT_BOOLEAN('i', "info", &info, "Show information and most importand power metrics after adjustment"),
 		OPT_BOOLEAN('\0', "dump-table", &dump_table, "Show whole power metric table before and after adjustment"),
 		OPT_GROUP("Settings"),
 		OPT_U32('a', "stapm-limit", &stapm_limit, "Sustained Power Limit         - STAPM LIMIT (mW)"),
@@ -248,6 +248,10 @@ int main(int argc, const char **argv)
 		OPT_U32('\0', "set-coall", &coall, "All core Curve Optimiser"),
 		OPT_U32('\0', "set-coper", &coper, "Per core Curve Optimiser"),
 		OPT_U32('\0', "set-cogfx", &cogfx, "iGPU Curve Optimiser"),
+	    OPT_U32('\0', "set-ppt", &ppt, "PPT limit for chiplet based mobile CPUs"),
+		OPT_U32('\0', "set-tdc", &tdc, "TDC limit for chiplet based mobile CPUs"),
+		OPT_U32('\0', "set-edc", &edc, "EDC limit for chiplet based mobile CPUs"),
+		OPT_U32('\0', "set-htc", &htc, "Thermal limit for chiplet based mobile CPUs"),
 		OPT_BOOLEAN('\0', "power-saving", &power_saving, "Hidden options to improve power efficiency (is set when AC unplugged): behavior depends on CPU generation, Device and Manufacture"),
 		OPT_BOOLEAN('\0', "max-performance", &max_performance, "Hidden options to improve performance (is set when AC plugged in): behavior depends on CPU generation, Device and Manufacture"),
 		OPT_GROUP("P-State Functions"),
@@ -324,6 +328,10 @@ int main(int argc, const char **argv)
 	_do_adjust(coall);
 	_do_adjust(coper);
 	_do_adjust(cogfx);
+	_do_adjust(ppt);
+	_do_adjust(tdc);
+	_do_adjust(edc);
+	_do_adjust(htc);
 
 	if (!err) {
 		//call show table dump before anybody did call table refresh, because we want to copy the old values first

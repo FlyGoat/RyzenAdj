@@ -17,7 +17,7 @@
 static void getcpuid(unsigned int CPUInfo[4], unsigned int InfoType)
 {
 #if defined(__GNUC__)
-    __cpuid(InfoType, CPUInfo[0],CPUInfo[1],CPUInfo[2],CPUInfo[3]);
+    __cpuid(InfoType, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #elif defined(_WIN32)
     __cpuid((int*)(void*)CPUInfo, (int)InfoType);
 #endif
@@ -34,9 +34,9 @@ static enum ryzen_family cpuid_load_family()
     getcpuid(regs, 0);
 
     /* Hack Alert! Put into str buffer */
-    *(uint32_t *) &vendor[0] = regs[1];
-    *(uint32_t *) &vendor[4] = regs[3];
-    *(uint32_t *) &vendor[8] = regs[2];
+    *(uint32_t*)&vendor[0] = regs[1];
+    *(uint32_t*)&vendor[4] = regs[3];
+    *(uint32_t*)&vendor[8] = regs[2];
 
     if (strncmp(vendor, CPUID_VENDOR_AMD, strlen(CPUID_VENDOR_AMD))) {
         printf("Not AMD processor, must be kidding\n");
@@ -62,7 +62,6 @@ static enum ryzen_family cpuid_load_family()
         case 104:
             return FAM_LUCIENNE;
         case 144:
-        case 145:
             return FAM_VANGOGH;
         case 160:
             return FAM_MENDOCINO;
@@ -72,32 +71,22 @@ static enum ryzen_family cpuid_load_family()
         };
         break;
 
-    case 0x19: /* Zen3, Zen4 */
+    case 0x19: /* Zen3 */
         switch (model) {
         case 80:
             return FAM_CEZANNE;
         case 64:
         case 68:
             return FAM_REMBRANDT;
+        case 97:
+            return FAM_DRAGON_RANGE;
         case 116:
-        case 120:
-            return FAM_PHOENIX;
-        case 117:
-            return FAM_HAWKPOINT;
+            return FAM_PHEONIX;
         default:
             printf("Fam%xh: unsupported model %d\n", family, model);
             break;
         };
         break;
-    case 0x1A: /* Zen5, Zen6 */
-        switch (model) {
-        case 32:
-        case 36:
-            return FAM_STRIXPOINT;
-        default:
-            printf("Fam%xh: unsupported model %d\n", family, model);
-            break;
-        }
 
     default:
         printf("Unsupported family: %xh\n", family);

@@ -12,7 +12,7 @@ The command line interface is identical on both Windows and Unix-Like OS.
 
 You should run it with Administrator on Windows or root on Linux.
 
-You can write a shell script or bat to do it automatically.
+You can write a shell script or bat to do it automaticly.
 
 ```
 $./ryzenadj -h
@@ -23,7 +23,7 @@ Usage: ryzenadj [options]
     -h, --help                            show this help message and exit
 
 Options
-    -i, --info                            Show information and most important power metrics after adjustment
+    -i, --info                            Show information and most importand power metrics after adjustment
     --dump-table                          Show whole power metric table before and after adjustment
 
 Settings
@@ -56,13 +56,14 @@ Settings
     --skin-temp-limit=<u32>               Skin Temperature Power Limit (mW)
     --power-saving                        Hidden options to improve power efficiency (is set when AC unplugged): behavior depends on CPU generation, Device and Manufacture
     --max-performance                     Hidden options to improve performance (is set when AC plugged in): behavior depends on CPU generation, Device and Manufacture
-```
+``` 
 
 ### Demo
 If I'm going to set all the Power Limit to 45W, and Tctl to 90 °C,
 then the command line should be:
-
-    ./ryzenadj --stapm-limit=45000 --fast-limit=45000 --slow-limit=45000 --tctl-temp=90
+```
+./ryzenadj --stapm-limit=45000 --fast-limit=45000 --slow-limit=45000 --tctl-temp=90
+```
 
 ### Documentation
 - [Supported Models](https://github.com/FlyGoat/RyzenAdj/wiki/Supported-Models)
@@ -80,7 +81,7 @@ We did provide some examples for automation. And these require configuration dur
 ### Linux Installation
 
 Because it is very easy to build the latest version of RyzenAdj on Linux, we don't provide precompiled packages for distributions.
-Just follow the build instructions below and you are ready to use it.
+Just follow the build instructions and you are ready to use it.
 
 ### Windows Installation
 
@@ -97,8 +98,9 @@ Deinstallation of the Task can be done via `uninstallServiceTask.bat`
 
 Over Windows Task Scheduler you can check if it is running. It is called `RyzenAdj` below `AMD` folder.
 Or just run
-
-    SCHTASKS /query /TN "AMD\RyzenAdj"
+```
+SCHTASKS /query /TN "AMD\RyzenAdj"
+```
 
 ## Build
 
@@ -113,35 +115,18 @@ one must have pcilib library & headers available.
 Please make sure that you have libpci dependency before compiling. On
 Debian-based distros this is covered by installing **pcilib-dev** package:
 
-    sudo apt install build-essential cmake libpci-dev
+    sudo apt install libpci-dev
 
 On Fedora:
-
-    sudo dnf install cmake gcc-c++ pciutils-devel
-
-On Arch:
-
-    sudo pacman -S base-devel pciutils cmake
-
-
-On OpenSUSE Tumbleweed:
-
-    sudo zypper in cmake gcc14-c++ pciutils-devel
-
-You may need to add the `iomem=relaxed` param to your kernel params on Tumbleweed, or [you may run into errors at runtime](https://github.com/FlyGoat/RyzenAdj/issues/241). 
-
-If your Distribution is not supported, try finding the packages or use [Distrobox](https://github.com/89luca89/distrobox) or [Toolbox](https://docs.fedoraproject.org/en-US/fedora-silverblue/toolbox/) instead.
+```
+sudo dnf install pciutils-devel
+```
 
 The simplest way to build it:
 
-    git clone https://github.com/FlyGoat/RyzenAdj.git
-    cd RyzenAdj
-    rm -r win32
     mkdir build && cd build
     cmake -DCMAKE_BUILD_TYPE=Release ..
     make
-    if [ -d ~/.local/bin ]; then ln -s ryzenadj ~/.local/bin/ryzenadj && echo "symlinked to ~/.local/bin/ryzenadj"; fi
-    if [ -d ~/.bin ]; then ln -s ryzenadj ~/.bin/ryzenadj && echo "symlinked to ~/.bin/ryzenadj"; fi
 
 ### Windows
 

@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 #define RYZENADJ_REVISION_VER 0
-#define RYZENADJ_MAJOR_VER 16
+#define RYZENADJ_MAJOR_VER 13
 #define RYZENADJ_MINIOR_VER 0
 
 enum ryzen_family {
@@ -24,9 +24,9 @@ enum ryzen_family {
         FAM_VANGOGH,
         FAM_REMBRANDT,
         FAM_MENDOCINO,
-        FAM_PHOENIX,
-        FAM_HAWKPOINT,
-        FAM_STRIXPOINT,
+        FAM_PHEONIX,
+        FAM_RAPHAEL,
+        FAM_DRAGON_RANGE,
         FAM_END
 };
 
@@ -118,6 +118,10 @@ EXP int CALL set_max_performance(ryzen_access ry);
 EXP int CALL set_coall(ryzen_access ry, uint32_t value);
 EXP int CALL set_coper(ryzen_access ry, uint32_t value);
 EXP int CALL set_cogfx(ryzen_access ry, uint32_t value);
+EXP int CALL set_ppt(ryzen_access ry, uint32_t value);
+EXP int CALL set_tdc(ryzen_access ry, uint32_t value);
+EXP int CALL set_edc(ryzen_access ry, uint32_t value);
+EXP int CALL set_htc(ryzen_access ry, uint32_t value);
 
 EXP float CALL get_stapm_limit(ryzen_access ry);
 EXP float CALL get_stapm_value(ryzen_access ry);

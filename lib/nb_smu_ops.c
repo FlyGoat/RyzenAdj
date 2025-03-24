@@ -40,7 +40,7 @@ u32 smu_service_req(smu_t smu ,u32 id ,smu_service_args_t *args)
 	return response;
 }
 
-static int smu_service_test(smu_t smu)
+int smu_service_test(smu_t smu)
 {
 	u32 response = 0x0;
 
@@ -74,29 +74,28 @@ smu_t get_smu(nb_t nb, int smu_type) {
 	/* Fill SMU information */
 	switch(smu_type){
 		case TYPE_MP1:
-			switch (family) {
-			case FAM_REMBRANDT:
-			case FAM_VANGOGH:
-			case FAM_MENDOCINO:
-			case FAM_PHOENIX:
-			case FAM_HAWKPOINT:
+			if (family == FAM_REMBRANDT || family == FAM_VANGOGH || family == FAM_MENDOCINO || family == FAM_PHEONIX) {
 				smu->msg = MP1_C2PMSG_MESSAGE_ADDR_2;
 				smu->rep = MP1_C2PMSG_RESPONSE_ADDR_2;
 				smu->arg_base = MP1_C2PMSG_ARG_BASE_2;
-				break;
-			case FAM_STRIXPOINT:
+			}
+			else if(family == FAM_RAPHAEL || family == FAM_DRAGON_RANGE) {
 				smu->msg = MP1_C2PMSG_MESSAGE_ADDR_3;
 				smu->rep = MP1_C2PMSG_RESPONSE_ADDR_3;
 				smu->arg_base = MP1_C2PMSG_ARG_BASE_3;
-				break;
-			default:
+			} 
+			else {
 				smu->msg = MP1_C2PMSG_MESSAGE_ADDR_1;
 				smu->rep = MP1_C2PMSG_RESPONSE_ADDR_1;
 				smu->arg_base = MP1_C2PMSG_ARG_BASE_1;
-				break;
 			}
 			break;
 		case TYPE_PSMU:
+		if (family == FAM_RAPHAEL || family == FAM_DRAGON_RANGE) {
+			smu->msg = PSMU_C2PMSG_MESSAGE_ADDR_2;
+			smu->rep = PSMU_C2PMSG_RESPONSE_ADDR_2;
+			smu->arg_base = PSMU_C2PMSG_ARG_BASE_2;
+		}
 			smu->msg = PSMU_C2PMSG_MESSAGE_ADDR;
 			smu->rep = PSMU_C2PMSG_RESPONSE_ADDR;
 			smu->arg_base = PSMU_C2PMSG_ARG_BASE;
