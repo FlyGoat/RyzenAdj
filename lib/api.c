@@ -1362,6 +1362,7 @@ EXP int CALL set_coper(ryzen_access ry, uint32_t value) {
 	case FAM_PHOENIX:
 	case FAM_VANGOGH:
 	case FAM_HAWKPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust(0x4b);
 		break;
 	default:
@@ -1384,9 +1385,10 @@ EXP int CALL set_cogfx(ryzen_access ry, uint32_t value) {
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_VANGOGH:
-	case FAM_STRIXHALO:	
 		_do_adjust_psmu(0xB7);
 		break;
+	case FAM_STRIXHALO:
+		// 0xB7 is rejected on this architecture
 	default:
 		break;
 	}
@@ -2362,6 +2364,8 @@ EXP float CALL get_gfx_clk(ryzen_access ry) {
 		_read_float_value(0x648); //1608
 	case 0x003F0000: //Van Gogh
 		_read_float_value(0x388); //904
+	case 0x0064020c: // Strix Halo
+		_read_float_value(0x558);
 	default:
 		break;
 	}
@@ -2390,6 +2394,8 @@ EXP float CALL get_gfx_volt(ryzen_access ry) {
 		_read_float_value(0x63C); //1596
 	case 0x003F0000: //Van Gogh
 		_read_float_value(0x37C); //896
+	case 0x0064020c: // Strix Halo
+		_read_float_value(0x54C);
 	default:
 		break;
 	}
@@ -2418,6 +2424,8 @@ EXP float CALL get_gfx_temp(ryzen_access ry) {
 		_read_float_value(0x640); //1600
 	case 0x003F0000: //Van Gogh
 		_read_float_value(0x380); //896
+	case 0x0064020c: // Strix Halo
+		_read_float_value(0x550);
 	default:
 		break;
 	}
