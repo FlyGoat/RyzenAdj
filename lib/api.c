@@ -1385,7 +1385,6 @@ EXP int CALL set_cogfx(ryzen_access ry, uint32_t value) {
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_VANGOGH:
-	case FAM_STRIXHALO:	
 		_do_adjust_psmu(0xB7);
 		break;
 	case FAM_STRIXHALO:
