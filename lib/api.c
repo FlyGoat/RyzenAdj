@@ -1050,6 +1050,8 @@ EXP int CALL set_apu_skin_temp_limit(ryzen_access ry, uint32_t value) {
 	case FAM_HAWKPOINT:
 		_do_adjust(0x33);
 		break;
+	case FAM_STRIXHALO:			
+		// not implemented on StrixHalo, seems to be controlled only via tctl-temp	
 	default:
 		break;
 	}
@@ -1075,9 +1077,10 @@ EXP int CALL set_dgpu_skin_temp_limit(ryzen_access ry, uint32_t value) {
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
 	case FAM_STRIXPOINT:
-	case FAM_STRIXHALO:
 		_do_adjust(0x34);
 		break;
+	case FAM_STRIXHALO:			
+		// not implemented on StrixHalo, seems to be controlled only via tctl-temp			
 	default:
 		break;
 	}
@@ -1424,6 +1427,7 @@ EXP float CALL get_apu_slow_limit(ryzen_access ry) {
 	case 0x004C0006:
 	case 0x004C0007:
 	case 0x004C0008:
+	case 0x0064020c: // StrixHalo - looks correct from dumping table, defaults to 70W
 		_read_float_value(0x18);
 	default:
 		break;
@@ -1448,6 +1452,7 @@ EXP float CALL get_apu_slow_value(ryzen_access ry) {
 	case 0x00450004:
 	case 0x00450005:
 	case 0x004C0006:
+	case 0x0064020c: // StrixHalo - untested!	
 		_read_float_value(0x1C);
 	default:
 		break;
@@ -1728,7 +1733,7 @@ EXP float CALL get_tctl_temp(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
-	case 0x0064020c:	
+	case 0x0064020c: // StrixHalo tested
 		_read_float_value(0x58); //use core1 because core0 is not reported on dual core cpus
 	case 0x00370000:
 	case 0x00370001:
@@ -1763,7 +1768,7 @@ EXP float CALL get_tctl_temp_value(ryzen_access ry) {
 	case 0x001E0005:
 	case 0x001E000A:
 	case 0x001E0101:
-	case 0x0064020c:
+	case 0x0064020c: // StrixHalo tested
 		_read_float_value(0x5C); //use core1 because core0 is not reported on dual core cpus
 	case 0x00370000:
 	case 0x00370001:
@@ -1808,8 +1813,9 @@ EXP float CALL get_apu_skin_temp_limit(ryzen_access ry) {
 	case 0x004C0006:
 	case 0x004C0007:
 	case 0x004C0008:
-	case 0x0064020c:
+	case 0x0064020c: // StrixHalo tested	
 		_read_float_value(0x58);
+		break;	
 	default:
 		break;
 	}
@@ -1835,7 +1841,7 @@ EXP float CALL get_apu_skin_temp_value(ryzen_access ry) {
 	case 0x004C0006:
 	case 0x004C0007:
 	case 0x004C0008:
-	case 0x0064020c:
+	case 0x0064020c: // StrixHalo tested
 		_read_float_value(0x5C);
 	default:
 		break;
@@ -1861,7 +1867,7 @@ EXP float CALL get_dgpu_skin_temp_limit(ryzen_access ry) {
 	case 0x004C0006:
 	case 0x004C0007:
 	case 0x004C0008:
-	case 0x0064020c:	
+	case 0x0064020c: // StrixHalo tested
 		_read_float_value(0x60);
 	default:
 		break;
