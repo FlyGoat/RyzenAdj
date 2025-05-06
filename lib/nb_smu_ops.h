@@ -81,6 +81,11 @@ typedef struct _smu_service_args_t {
 typedef uint32_t *nb_t;
 typedef bool *pci_obj_t;
 typedef HINSTANCE *mem_obj_t;
+#elif defined LINUX_USE_RYZEN_SMU_MODULE
+typedef struct smu_kernel_module smu_kernel_module_t;
+typedef smu_kernel_module_t *pci_obj_t;
+typedef smu_kernel_module_t *nb_t;
+typedef void *mem_obj_t;
 #else
 #include <pci/pci.h>
 typedef struct pci_dev *nb_t;
