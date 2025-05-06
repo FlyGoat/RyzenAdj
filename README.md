@@ -104,11 +104,16 @@ Or just run
 
 ### Build Requirements
 
-Building this tool requires C & C++ compilers as well as **cmake**. It
-requires privileged access to NB PCI config space, in order to compile it
-one must have pcilib library & headers available.
+Building this tool requires C & C++ compilers as well as **cmake**.
 
 ### Linux
+
+RyzenAdj needs elevated access to the NB config space. This can be achieved by using either one of
+these two methods:
+* Using libpci and exposing `/dev/mem`
+* Using the ryzen\_smu kernel module
+
+#### Libpci
 
 Please make sure that you have libpci dependency before compiling. On
 Debian-based distros this is covered by installing **pcilib-dev** package:
@@ -142,6 +147,49 @@ The simplest way to build it:
     make
     if [ -d ~/.local/bin ]; then ln -s $(readlink -f ryzenadj) ~/.local/bin/ryzenadj && echo "symlinked to ~/.local/bin/ryzenadj"; fi
     if [ -d ~/.bin ]; then ln -s $(readlink -f ryzenadj) ~/.bin/ryzenadj && echo "symlinked to ~/.bin/ryzenadj"; fi
+
+#### Ryzen\_smu
+
+Install all dependencies. On Fedora:
+
+```sh
+sudo dnf install cmake gcc gcc-c++ dkms openssl
+```
+
+Clone and install ryzen\_smu:
+
+```sh
+git clone --recurse-submodules https://github.com/amkillam/ryzen_smu # Active fork of the original module
+(cd ryzen_smu/ && sudo make dkms-install)
+```
+
+If you are using secure boot, you have to enroll the UEFI keys which dkms has generated on its first
+run. These have to be added to your machines UEFI key database. This can be done with following
+command, which will ask you to set a password. This password is only needed _one single time_ later
+in the MOK manager.
+
+```sh
+sudo mokutil --import /var/lib/dkms/mok.pub
+```
+
+Restart your system. This will boot into the MOK manager. Choose `Enroll MOK`, enter your password
+and then reboot.
+[Here](https://github.com/dell/dkms/blob/f7f526c145ecc01fb4ac4eab3009b1879b14ced4/README.md#secure-boot)
+are some screenshots describing the process.
+
+The module is now loaded and visible via dmesg. It will show a message about the kernel being
+tainted, but this just means it loaded a (potentially proprietary) binary blob.
+
+Build and install RyzenAdj:
+
+```sh
+git clone --recurse-submodules https://github.com/FlyGoat/RyzenAdj
+mkdir -p RyzenAdj/build/
+cd RyzenAdj/build/
+cmake -DCMAKE_BUILD_TYPE=Release -DLINUX_USE_RYZEN_SMU_MODULE=ON ..
+make -j"$(nproc)"
+sudo cp -v ./ryzenadj /usr/local/bin/
+```
 
 ### Windows
 
