@@ -117,7 +117,7 @@ mem_obj_t init_mem_obj(uintptr_t physAddr);
 
 void free_mem_obj(mem_obj_t obj);
 
-int copy_pm_table(void *buffer, size_t size);
+int copy_pm_table(nb_t nb, void *buffer, size_t size);
 
 int compare_pm_table(void *buffer, size_t size);
 

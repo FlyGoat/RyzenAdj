@@ -99,8 +99,9 @@ void free_mem_obj(mem_obj_t obj)
 	return;
 }
 
-int copy_pm_table(void *buffer, size_t size)
+int copy_pm_table(nb_t nb, void *buffer, size_t size)
 {
+        (void)nb;
 	int read_size;
 
 	if(pm_table_fd > 0){
