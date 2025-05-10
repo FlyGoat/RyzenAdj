@@ -390,7 +390,7 @@ EXP int CALL refresh_table(ryzen_access ry)
 		return errorcode;
 	}
 
-	if(copy_pm_table(ry->table_values, ry->table_size)){
+	if(copy_pm_table(ry->nb, ry->table_values, ry->table_size)){
 		printf("refresh_table failed\n");
 		return ADJ_ERR_MEMORY_ACCESS;
 	}

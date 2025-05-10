@@ -118,8 +118,9 @@ extern "C" void free_mem_obj(mem_obj_t hInpOutDll)
     FreeLibrary((HINSTANCE)hInpOutDll);
 }
 
-extern "C" int copy_pm_table(void *buffer, size_t size)
+extern "C" int copy_pm_table(nb_t nb, void *buffer, size_t size)
 {
+    (void)nb;
     memcpy(buffer, pdwLinAddr, size);
     return 0;
 }
