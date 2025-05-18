@@ -139,6 +139,7 @@ static int request_table_ver_and_size(ryzen_access ry)
 	case FAM_REMBRANDT:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
+	case FAM_KRACKAN:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		get_table_ver_msg = 0x6;
@@ -212,6 +213,7 @@ static int request_table_addr(ryzen_access ry)
 	case FAM_REMBRANDT:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
+	case FAM_KRACKAN:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		get_table_addr_msg = 0x66;
@@ -228,6 +230,7 @@ static int request_table_addr(ryzen_access ry)
 	case FAM_REMBRANDT:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
+	case FAM_KRACKAN:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		ry->table_addr = (uint64_t) args.arg1 << 32 | args.arg0;
@@ -265,6 +268,7 @@ static int request_transfer_table(ryzen_access ry)
 	case FAM_REMBRANDT:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
+	case FAM_KRACKAN:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		transfer_table_msg = 0x65;

@@ -84,6 +84,7 @@ smu_t get_smu(nb_t nb, int smu_type) {
 				smu->rep = MP1_C2PMSG_RESPONSE_ADDR_2;
 				smu->arg_base = MP1_C2PMSG_ARG_BASE_2;
 				break;
+			case FAM_KRACKAN:
 			case FAM_STRIXPOINT:
 			case FAM_STRIXHALO:
 				smu->msg = MP1_C2PMSG_MESSAGE_ADDR_3;
