@@ -11,13 +11,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint64_t u64;
-
 #ifdef NDEBUG
 #define DBG(...)
 #else
@@ -66,12 +59,12 @@ enum SMU_TYPE{
 #define SMU_TEST_MSG 0x1
 
 typedef struct _smu_service_args_t {
-		u32 arg0;
-		u32 arg1;
-		u32 arg2;
-		u32 arg3;
-		u32 arg4;
-		u32 arg5;
+		uint32_t arg0;
+		uint32_t arg1;
+		uint32_t arg2;
+		uint32_t arg3;
+		uint32_t arg4;
+		uint32_t arg5;
 } smu_service_args_t;
 
 
@@ -95,9 +88,9 @@ typedef bool *mem_obj_t;
 
 typedef struct _smu_t {
 	nb_t nb;
-	u32 msg;
-	u32 rep;
-	u32 arg_base;
+	uint32_t msg;
+	uint32_t rep;
+	uint32_t arg_base;
 } *smu_t;
 
 
@@ -109,14 +102,14 @@ nb_t get_nb(pci_obj_t obj);
 
 void free_nb(nb_t nb);
 
-u32 smn_reg_read(nb_t nb, u32 addr);
+uint32_t smn_reg_read(nb_t nb, uint32_t addr);
 
-void smn_reg_write(nb_t nb, u32 addr, u32 data);
+void smn_reg_write(nb_t nb, uint32_t addr, uint32_t data);
 
 
 smu_t get_smu(nb_t nb, int smu_type);
 void free_smu(smu_t smu);
-u32 smu_service_req(smu_t smu ,u32 id ,smu_service_args_t *args);
+uint32_t smu_service_req(smu_t smu ,uint32_t id ,smu_service_args_t *args);
 
 mem_obj_t init_mem_obj(uintptr_t physAddr);
 

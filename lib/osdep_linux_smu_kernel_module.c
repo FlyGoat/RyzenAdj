@@ -136,7 +136,7 @@ static bool driver_compatible(void)
 	return true;
 }
 
-static bool read_pm_table_size(u32 *out)
+static bool read_pm_table_size(uint32_t *out)
 {
 	file_handle_t input = open_file("/sys/kernel/ryzen_smu_drv/pm_table_size", "rb");
 	if(input.file == NULL)
@@ -161,7 +161,7 @@ pci_obj_t init_pci_obj(void)
 		return NULL;
 	}
 
-	u32 pm_table_size = 0;
+	uint32_t pm_table_size = 0;
 	if(!read_pm_table_size(&pm_table_size))
 	{
 		fprintf(stderr, "failed to retrieve PM table size from ryzen_smu kernel module\n");
@@ -218,9 +218,9 @@ void free_mem_obj(mem_obj_t obj)
 	(void)obj;
 }
 
-u32 smn_reg_read(nb_t nb, const u32 addr)
+uint32_t smn_reg_read(nb_t nb, const uint32_t addr)
 {
-	u32 result = 0;
+	uint32_t result = 0;
 	if(!write_to_start(nb->smn, &addr, sizeof(addr)) ||
 	   !read_from_start(nb->smn, &result, sizeof(result)))
 	{
@@ -229,9 +229,9 @@ u32 smn_reg_read(nb_t nb, const u32 addr)
 	return result;
 }
 
-void smn_reg_write(nb_t nb, const u32 addr, const u32 data)
+void smn_reg_write(nb_t nb, const uint32_t addr, const uint32_t data)
 {
-	const u32 write_buffer[2] = { addr, data };
+	const uint32_t write_buffer[2] = { addr, data };
 	write_to_start(nb->smn, &write_buffer, sizeof(write_buffer));
 }
 

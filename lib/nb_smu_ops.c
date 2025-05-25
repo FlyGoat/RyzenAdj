@@ -4,9 +4,9 @@
 
 #include "ryzenadj.h"
 
-u32 smu_service_req(smu_t smu ,u32 id ,smu_service_args_t *args)
+uint32_t smu_service_req(smu_t smu ,uint32_t id ,smu_service_args_t *args)
 {
-	u32 response = 0x0;
+	uint32_t response = 0x0;
 	DBG("SMU_SERVICE REQ_ID:0x%x\n", id);
 	DBG("SMU_SERVICE REQ: arg0: 0x%x, arg1:0x%x, arg2:0x%x, arg3:0x%x, arg4: 0x%x, arg5: 0x%x\n",  \
 		args->arg0, args->arg1, args->arg2, args->arg3, args->arg4, args->arg5);
@@ -42,7 +42,7 @@ u32 smu_service_req(smu_t smu ,u32 id ,smu_service_args_t *args)
 
 static int smu_service_test(smu_t smu)
 {
-	u32 response = 0x0;
+	uint32_t response = 0x0;
 
 	/* Clear the response */
 	smn_reg_write(smu->nb, smu->rep, 0x0);
@@ -52,7 +52,7 @@ static int smu_service_test(smu_t smu)
 		printf("PCI Bus is not writeable, check secure boot\n");
 		return 0;
 	}
-	
+
 	/* Send message ID */
 	smn_reg_write(smu->nb, smu->msg, SMU_TEST_MSG);
 	/* Wait until reponse changed */
