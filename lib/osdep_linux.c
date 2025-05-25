@@ -35,13 +35,13 @@ void free_pci_obj(pci_obj_t obj){
 	pci_cleanup(obj);
 }
 
-u32 smn_reg_read(nb_t nb, u32 addr)
+uint32_t smn_reg_read(nb_t nb, uint32_t addr)
 {
 	pci_write_long(nb, NB_PCI_REG_ADDR_ADDR, (addr & (~0x3)));
 	return pci_read_long(nb, NB_PCI_REG_DATA_ADDR);
 }
 
-void smn_reg_write(nb_t nb, u32 addr, u32 data)
+void smn_reg_write(nb_t nb, uint32_t addr, uint32_t data)
 {
 	pci_write_long(nb, NB_PCI_REG_ADDR_ADDR, addr);
 	pci_write_long(nb, NB_PCI_REG_DATA_ADDR, data);
@@ -49,7 +49,7 @@ void smn_reg_write(nb_t nb, u32 addr, u32 data)
 
 mem_obj_t init_mem_obj(uintptr_t physAddr)
 {
-	int dev_mem_fd; 
+	int dev_mem_fd;
 
 	//It is to complicated to check PAT, CONFIG_NONPROMISC_DEVMEM, CONFIG_STRICT_DEVMEM or other dependencies, just try to open /dev/mem
 	dev_mem_fd = open("/dev/mem", O_RDONLY);

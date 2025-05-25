@@ -2158,8 +2158,8 @@ EXP float CALL get_slow_time(ryzen_access ry) {
 EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 	if (core > 15)
 		return NAN;
-	
-	u32 baseOffset;
+
+	uint32_t baseOffset;
 	// kevin 0x104 might be power, 16 entries
 	switch (ry->table_ver) {
 		case 0x00370000:
@@ -2199,8 +2199,8 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 	if (core > 15)
 		return NAN;
-	
-	u32 baseOffset;
+
+	uint32_t baseOffset;
 	// kevinh 0x1cc - 17 entries?
 	switch (ry->table_ver) {
 		case 0x00370000:
@@ -2237,8 +2237,8 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 	if (core > 15)
 		return NAN;
-	
-	u32 baseOffset;
+
+	uint32_t baseOffset;
 
 	switch (ry->table_ver) {
 		case 0x00370000:
@@ -2275,8 +2275,8 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 	if (core > 15)
 		return NAN;
-	
-	u32 baseOffset;
+
+	uint32_t baseOffset;
 
 	switch (ry->table_ver) {
 		case 0x00370000:

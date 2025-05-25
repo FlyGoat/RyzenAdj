@@ -18,12 +18,12 @@ HINSTANCE hInpOutDll;
 typedef BOOL (__stdcall *lpIsInpOutDriverOpen)(void);
 typedef PBYTE (__stdcall *lpMapPhysToLin)(uintptr_t pbPhysAddr, size_t dwPhysSize, HANDLE *pPhysicalMemoryHandle);
 typedef BOOL (__stdcall *lpUnmapPhysicalMemory)(HANDLE PhysicalMemoryHandle, uintptr_t pbLinAddr);
-typedef BOOL (__stdcall *lpGetPhysLong)(uintptr_t pbPhysAddr, u32 *pdwPhysVal);
+typedef BOOL (__stdcall *lpGetPhysLong)(uintptr_t pbPhysAddr, uint32_t *pdwPhysVal);
 lpIsInpOutDriverOpen gfpIsInpOutDriverOpen;
 lpGetPhysLong gfpGetPhysLong;
 lpMapPhysToLin gfpMapPhysToLin;
 lpUnmapPhysicalMemory gfpUnmapPhysicalMemory;
-u32 *pdwLinAddr;
+uint32_t *pdwLinAddr;
 HANDLE physicalMemoryHandle;
 
 
@@ -55,7 +55,7 @@ extern "C" pci_obj_t init_pci_obj(){
         default:
             printf("WinRing0 Err: unknown status code %d\n", dllStatus);
     }
-    
+
     return NULL;
 }
 
@@ -71,13 +71,13 @@ extern "C" void free_pci_obj(pci_obj_t obj){
     DeinitializeOls();
 }
 
-extern "C" u32 smn_reg_read(nb_t nb, u32 addr)
+extern "C" uint32_t smn_reg_read(nb_t nb, uint32_t addr)
 {
     WritePciConfigDword(*nb, NB_PCI_REG_ADDR_ADDR, (addr & (~0x3)));
     return ReadPciConfigDword(*nb, NB_PCI_REG_DATA_ADDR);
 }
 
-extern "C" void smn_reg_write(nb_t nb, u32 addr, u32 data)
+extern "C" void smn_reg_write(nb_t nb, uint32_t addr, uint32_t data)
 {
     WritePciConfigDword(*nb, NB_PCI_REG_ADDR_ADDR, addr);
     WritePciConfigDword(*nb, NB_PCI_REG_DATA_ADDR, data);
@@ -103,7 +103,7 @@ extern "C" mem_obj_t init_mem_obj(uintptr_t physAddr){
         return NULL;
     }
 
-    pdwLinAddr = (u32*)gfpMapPhysToLin(physAddr, 0x1000, &physicalMemoryHandle);
+    pdwLinAddr = (uint32_t*)gfpMapPhysToLin(physAddr, 0x1000, &physicalMemoryHandle);
     if (pdwLinAddr == NULL){
         printf("failed to map memory\n");
         return NULL;
