@@ -1170,6 +1170,9 @@ EXP int CALL set_gfx_clk(ryzen_access ry, uint32_t value) {
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
+	case FAM_KRACKAN: /* Added to debug on KRK, STX, & STXH */
+	case FAM_STRIXPOINT:
+	case FAM_STRIXHALO:
 		_do_adjust_psmu(0x89);
 		break;
 	default:
@@ -1362,6 +1365,8 @@ EXP int CALL set_coall(ryzen_access ry, uint32_t value) {
 	case FAM_VANGOGH:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
+	case FAM_KRACKAN:
+	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x4C);
 		break;
@@ -1385,6 +1390,8 @@ EXP int CALL set_coper(ryzen_access ry, uint32_t value) {
 	case FAM_PHOENIX:
 	case FAM_VANGOGH:
 	case FAM_HAWKPOINT:
+	case FAM_KRACKAN:
+	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x4b);
 		break;
