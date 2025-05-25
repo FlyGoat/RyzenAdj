@@ -26,7 +26,7 @@ os_access_obj_t *init_os_access_obj_mem() {
 	obj->access.mem.pci_acc = pci_alloc();
 	if (!obj->access.mem.pci_acc) {
 		fprintf(stderr, "pci_alloc failed\n");
-		return NULL;
+		goto err_exit;
 	}
 
 	pci_init(obj->access.mem.pci_acc);
@@ -34,11 +34,16 @@ os_access_obj_t *init_os_access_obj_mem() {
 	obj->access.mem.pci_dev = pci_get_dev(obj->access.mem.pci_acc, 0, 0, 0, 0);
 	if (!obj->access.mem.pci_dev) {
 		fprintf(stderr, "Unable to get pci device\n");
-		return NULL;
+		pci_cleanup(obj->access.mem.pci_acc);
+		goto err_exit;
 	}
 
 	pci_fill_info(obj->access.mem.pci_dev, PCI_FILL_IDENT | PCI_FILL_BASES | PCI_FILL_CLASS);
 	return obj;
+
+err_exit:
+	free(obj);
+	return NULL;
 }
 
 int init_mem_obj_mem([[maybe_unused]] os_access_obj_t *os_access, const uintptr_t physAddr) {
