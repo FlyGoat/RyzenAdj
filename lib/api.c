@@ -5,9 +5,7 @@
 #include "ryzenadj.h"
 #include "math.h"
 
-#ifdef _WIN32
-#include <windows.h>
-#else
+#ifndef _WIN32
 #include <unistd.h>
 #define Sleep(x) usleep((x)*1000)
 #endif

@@ -9,6 +9,9 @@
 
 #include "nb_smu_ops.h"
 
+#define NB_PCI_REG_ADDR_ADDR 0xB8
+#define NB_PCI_REG_DATA_ADDR 0xBC
+
 bool mem_obj_obj = true;
 void *phy_map = MAP_FAILED;
 

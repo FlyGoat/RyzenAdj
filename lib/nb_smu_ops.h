@@ -2,9 +2,12 @@
 /* Copyright (C) 2018-2019 Jiaxun Yang <jiaxun.yang@flygoat.com> */
 /* Ryzen NB SMU Service Request Opreations */
 
-#ifndef NB_SMU_OPS_H
-#define NB_SMU_OPS_H
+#pragma once
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -17,46 +20,17 @@
 #define DBG(...) fprintf(stderr, __VA_ARGS__)
 #endif
 
-#define NB_PCI_REG_ADDR_ADDR 0xB8
-#define NB_PCI_REG_DATA_ADDR 0xBC
-
-#define C2PMSG_ARGx_ADDR(y, x)          (y + 4 * x)
-
 enum SMU_TYPE{
 	TYPE_MP1,
 	TYPE_PSMU,
 	TYPE_COUNT,
 };
 
-#define MP1_C2PMSG_MESSAGE_ADDR_1        0x3B10528
-#define MP1_C2PMSG_RESPONSE_ADDR_1       0x3B10564
-#define MP1_C2PMSG_ARG_BASE_1            0x3B10998
-
-/* For Vangogh and Rembrandt */
-#define MP1_C2PMSG_MESSAGE_ADDR_2        0x3B10528
-#define MP1_C2PMSG_RESPONSE_ADDR_2       0x3B10578
-#define MP1_C2PMSG_ARG_BASE_2            0x3B10998
-
-/* For Strix Point */
-#define MP1_C2PMSG_MESSAGE_ADDR_3	0x3b10928
-#define MP1_C2PMSG_RESPONSE_ADDR_3	0x3b10978
-#define MP1_C2PMSG_ARG_BASE_3		0x3b10998
-
-#define PSMU_C2PMSG_MESSAGE_ADDR          0x3B10a20
-#define PSMU_C2PMSG_RESPONSE_ADDR         0x3B10a80
-#define PSMU_C2PMSG_ARG_BASE              0x3B10a88
-
 #define REP_MSG_OK                    0x1
 #define REP_MSG_Failed                0xFF
 #define REP_MSG_UnknownCmd            0xFE
 #define REP_MSG_CmdRejectedPrereq     0xFD
 #define REP_MSG_CmdRejectedBusy       0xFC
-
-/*
-* All the SMU have the same TestMessage as for now
-* Correct me if they don't
-*/
-#define SMU_TEST_MSG 0x1
 
 typedef struct _smu_service_args_t {
 		uint32_t arg0;
@@ -120,4 +94,3 @@ int copy_pm_table(nb_t nb, void *buffer, size_t size);
 int compare_pm_table(void *buffer, size_t size);
 
 bool is_using_smu_driver();
-#endif

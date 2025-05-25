@@ -4,6 +4,34 @@
 
 #include "ryzenadj.h"
 
+#define MP1_C2PMSG_MESSAGE_ADDR_1        0x3B10528
+#define MP1_C2PMSG_RESPONSE_ADDR_1       0x3B10564
+#define MP1_C2PMSG_ARG_BASE_1            0x3B10998
+
+/* For Vangogh and Rembrandt */
+#define MP1_C2PMSG_MESSAGE_ADDR_2        0x3B10528
+#define MP1_C2PMSG_RESPONSE_ADDR_2       0x3B10578
+#define MP1_C2PMSG_ARG_BASE_2            0x3B10998
+
+/* For Strix Point */
+#define MP1_C2PMSG_MESSAGE_ADDR_3	0x3b10928
+#define MP1_C2PMSG_RESPONSE_ADDR_3	0x3b10978
+#define MP1_C2PMSG_ARG_BASE_3		0x3b10998
+
+#define PSMU_C2PMSG_MESSAGE_ADDR          0x3B10a20
+#define PSMU_C2PMSG_RESPONSE_ADDR         0x3B10a80
+#define PSMU_C2PMSG_ARG_BASE              0x3B10a88
+
+/*
+* All the SMU have the same TestMessage as for now
+* Correct me if they don't
+*/
+#define SMU_TEST_MSG 0x1
+
+static uint32_t c2pmsg_argX_addr(const uint32_t base, const uint32_t offt) {
+	return base + 4 * offt;
+}
+
 uint32_t smu_service_req(smu_t smu ,uint32_t id ,smu_service_args_t *args)
 {
 	uint32_t response = 0x0;
@@ -14,12 +42,12 @@ uint32_t smu_service_req(smu_t smu ,uint32_t id ,smu_service_args_t *args)
 	/* Clear the response */
 	smn_reg_write(smu->nb, smu->rep, 0x0);
 	/* Pass arguments */
-	smn_reg_write(smu->nb, C2PMSG_ARGx_ADDR(smu->arg_base, 0), args->arg0);
-	smn_reg_write(smu->nb, C2PMSG_ARGx_ADDR(smu->arg_base, 1), args->arg1);
-	smn_reg_write(smu->nb, C2PMSG_ARGx_ADDR(smu->arg_base, 2), args->arg2);
-	smn_reg_write(smu->nb, C2PMSG_ARGx_ADDR(smu->arg_base, 3), args->arg3);
-	smn_reg_write(smu->nb, C2PMSG_ARGx_ADDR(smu->arg_base, 4), args->arg4);
-	smn_reg_write(smu->nb, C2PMSG_ARGx_ADDR(smu->arg_base, 5), args->arg5);
+	smn_reg_write(smu->nb, c2pmsg_argX_addr(smu->arg_base, 0), args->arg0);
+	smn_reg_write(smu->nb, c2pmsg_argX_addr(smu->arg_base, 1), args->arg1);
+	smn_reg_write(smu->nb, c2pmsg_argX_addr(smu->arg_base, 2), args->arg2);
+	smn_reg_write(smu->nb, c2pmsg_argX_addr(smu->arg_base, 3), args->arg3);
+	smn_reg_write(smu->nb, c2pmsg_argX_addr(smu->arg_base, 4), args->arg4);
+	smn_reg_write(smu->nb, c2pmsg_argX_addr(smu->arg_base, 5), args->arg5);
 	/* Send message ID */
 	smn_reg_write(smu->nb, smu->msg, id);
 	/* Wait until reponse changed */
@@ -27,12 +55,12 @@ uint32_t smu_service_req(smu_t smu ,uint32_t id ,smu_service_args_t *args)
 		response = smn_reg_read(smu->nb, smu->rep);
 	}
 	/* Read back arguments */
-	args->arg0 = smn_reg_read(smu->nb, C2PMSG_ARGx_ADDR(smu->arg_base, 0));
-	args->arg1 = smn_reg_read(smu->nb, C2PMSG_ARGx_ADDR(smu->arg_base, 1));
-	args->arg2 = smn_reg_read(smu->nb, C2PMSG_ARGx_ADDR(smu->arg_base, 2));
-	args->arg3 = smn_reg_read(smu->nb, C2PMSG_ARGx_ADDR(smu->arg_base, 3));
-	args->arg4 = smn_reg_read(smu->nb, C2PMSG_ARGx_ADDR(smu->arg_base, 4));
-	args->arg5 = smn_reg_read(smu->nb, C2PMSG_ARGx_ADDR(smu->arg_base, 5));
+	args->arg0 = smn_reg_read(smu->nb, c2pmsg_argX_addr(smu->arg_base, 0));
+	args->arg1 = smn_reg_read(smu->nb, c2pmsg_argX_addr(smu->arg_base, 1));
+	args->arg2 = smn_reg_read(smu->nb, c2pmsg_argX_addr(smu->arg_base, 2));
+	args->arg3 = smn_reg_read(smu->nb, c2pmsg_argX_addr(smu->arg_base, 3));
+	args->arg4 = smn_reg_read(smu->nb, c2pmsg_argX_addr(smu->arg_base, 4));
+	args->arg5 = smn_reg_read(smu->nb, c2pmsg_argX_addr(smu->arg_base, 5));
 
 	DBG("SMU_SERVICE REP: REP: 0x%x, arg0: 0x%x, arg1:0x%x, arg2:0x%x, arg3:0x%x, arg4: 0x%x, arg5: 0x%x\n",  \
 		response, args->arg0, args->arg1, args->arg2, args->arg3, args->arg4, args->arg5);
