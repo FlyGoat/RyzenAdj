@@ -1,6 +1,6 @@
 #pragma once
 
-#include "nb_smu_ops.h"
+#include "../nb_smu_ops.h"
 
 os_access_obj_t *init_os_access_obj_mem();
 int init_mem_obj_mem(os_access_obj_t *os_access, uintptr_t physAddr);
