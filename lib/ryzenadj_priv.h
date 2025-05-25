@@ -11,9 +11,7 @@
 #include  "nb_smu_ops.h"
 
 struct _ryzen_access {
-	nb_t nb;
-	pci_obj_t pci_obj;
-	mem_obj_t mem_obj;
+	os_access_obj_t *os_access;
 	smu_t mp1_smu;
 	smu_t psmu;
 	enum ryzen_family family;

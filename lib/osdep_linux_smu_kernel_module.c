@@ -1,261 +1,117 @@
 /* Backend which uses the sysfs interface provided by the ryzen_smu kernel module. */
-
 #include <errno.h>
-#include <sys/stat.h>
+#include <string.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
 
-#include "nb_smu_ops.h"
+#include "osdep_linux_smu_kernel_module.h"
 
-typedef struct
-{
-	FILE *file;
-	const char *static_file_path;
-} file_handle_t;
+static uint32_t get_pm_table_size() {
+	const int fd = open("/sys/kernel/ryzen_smu_drv/pm_table_size", O_RDONLY);
+	uint32_t table_sz = 0;
 
-struct smu_kernel_module {
-	file_handle_t smn;
-	file_handle_t pm_table;
-	size_t pm_table_size;
-};
+	if (fd == -1)
+		return -1;
 
-static bool path_exists(const char *file_path)
-{
-	const int old_errno = errno;
-	errno = 0;
-	struct stat stats;
-	const bool path_exists = lstat(file_path, &stats) == 0;
-	if(!path_exists && errno != 0 && errno != ENOENT)
-	{
-		fprintf(stderr, "failed to check existence of path: %s\n", file_path);
+	if (read(fd, &table_sz, sizeof(table_sz)) == -1) {
+		DBG("failed to retrieve PM table size: %s\n", strerror(errno));
+		close(fd);
+		return -1;
 	}
-	errno = old_errno;
-	return path_exists;
+
+	close(fd);
+	return table_sz;
 }
 
-static file_handle_t open_file(const char *static_file_path, const char *mode)
-{
-	file_handle_t result = {
-		.file = fopen(static_file_path, mode),
-		.static_file_path = static_file_path
-	};
-	if(result.file == NULL)
-	{
-		fprintf(stderr, "failed to open file: '%s': %s\n",
-			static_file_path, strerror(errno));
-	}
-	return result;
-}
+os_access_obj_t *init_os_access_obj_kmod() {
+	os_access_obj_t *obj = malloc(sizeof(os_access_obj_t));
 
-static bool close_file(file_handle_t file)
-{
-	if(fclose(file.file) != 0)
-	{
-		fprintf(stderr, "failed to close file: '%s': %s\n",
-			file.static_file_path, strerror(errno));
-		return false;
-	}
-	return true;
-}
-
-static bool read_from_start_up_to_bytes(file_handle_t input, void *out,
-					const size_t out_size,
-					size_t *out_bytes_read)
-{
-	fseek(input.file, 0, SEEK_SET);
-	const size_t bytes_read = fread(out, 1, out_size, input.file);
-	if(ferror(input.file))
-	{
-		fprintf(stderr, "failed to read from file: '%s': %s\n",
-			input.static_file_path, strerror(errno));
-		return false;
-	}
-	*out_bytes_read = bytes_read;
-	return true;
-}
-
-static bool read_from_start(file_handle_t input, void *out, const size_t out_size)
-{
-	size_t bytes_read = 0;
-	if(!read_from_start_up_to_bytes(input, out, out_size, &bytes_read))
-	{
-		return false;
-	}
-	if(bytes_read != out_size)
-	{
-		fprintf(stderr, "failed to read complete data from file: '%s'\n",
-			input.static_file_path);
-		return false;
-	}
-	return true;
-}
-
-static bool write_to_start(file_handle_t output, const void *data, const size_t data_size)
-{
-	fseek(output.file, 0, SEEK_SET);
-	const size_t bytes_written = fwrite(data, 1, data_size, output.file);
-	if(ferror(output.file))
-	{
-		fprintf(stderr, "failed to write to file: '%s': %s\n",
-			output.static_file_path, strerror(errno));
-		return false;
-	}
-	if(bytes_written != data_size)
-	{
-		fprintf(stderr, "failed to write complete data to file: '%s'\n",
-			output.static_file_path);
-		return false;
-	}
-	return true;
-}
-
-static bool driver_compatible(void)
-{
-	file_handle_t input = open_file("/sys/kernel/ryzen_smu_drv/drv_version", "rb");
-	if(input.file == NULL)
-	{
-		return false;
-	}
-
-	size_t bytes_read = 0;
-	char version[32] = {0};
-	const bool success =
-		read_from_start_up_to_bytes(input, version, sizeof(version), &bytes_read);
-	(void)close_file(input);
-	if(!success)
-	{
-		return false;
-	}
-
-	version[bytes_read] = '\0';
-	if(strstr(version, "0.") != version)
-	{
-		fprintf(stderr, "incompatible ryzen_smu module major version: %s\n", version);
-		return false;
-	}
-	return true;
-}
-
-static bool read_pm_table_size(uint32_t *out)
-{
-	file_handle_t input = open_file("/sys/kernel/ryzen_smu_drv/pm_table_size", "rb");
-	if(input.file == NULL)
-	{
-		return false;
-	}
-	const bool success = read_from_start(input, out, sizeof(*out));
-	(void)close_file(input);
-	return success;
-}
-
-pci_obj_t init_pci_obj(void)
-{
-	if(!path_exists("/sys/kernel/ryzen_smu_drv"))
-	{
+	if (obj == NULL)
 		return NULL;
-	}
-	printf("detected ryzen_smu kernel module, initializing...\n");
 
-	if(!driver_compatible())
-	{
-		return NULL;
-	}
+	memset(obj, 0, sizeof(os_access_obj_t));
 
-	uint32_t pm_table_size = 0;
-	if(!read_pm_table_size(&pm_table_size))
-	{
-		fprintf(stderr, "failed to retrieve PM table size from ryzen_smu kernel module\n");
-		return NULL;
+	obj->access.kmod.pm_table_size = get_pm_table_size();
+	if (obj->access.kmod.pm_table_size == -1)
+		goto err_exit;
+
+	obj->access.kmod.smn_fd = open("/sys/kernel/ryzen_smu_drv/smn", O_RDWR);
+	if (obj->access.kmod.smn_fd == -1) {
+		DBG("failed to open smn fd: %s\n", strerror(errno));
+		goto err_exit;
 	}
 
-	smu_kernel_module_t *result = malloc(sizeof *result);
-	if(result == NULL)
-	{
-		return NULL;
+	obj->access.kmod.pm_table_fd = open("/sys/kernel/ryzen_smu_drv/pm_table", O_RDONLY);
+	if (obj->access.kmod.pm_table_fd == -1) {
+		DBG("failed to open pm_table fd: %s\n", strerror(errno));
+		close(obj->access.kmod.smn_fd);
+		goto err_exit;
 	}
-	result->smn = open_file("/sys/kernel/ryzen_smu_drv/smn", "r+b");
-	if(result->smn.file == NULL)
-	{
-		free(result);
-		return NULL;
-	}
-	result->pm_table = open_file("/sys/kernel/ryzen_smu_drv/pm_table", "rb");
-	if(result->pm_table.file == NULL)
-	{
-		(void)close_file(result->smn);
-		free(result);
-		return NULL;
-	}
-	result->pm_table_size = pm_table_size;
-	return result;
-}
 
-void free_pci_obj(pci_obj_t obj)
-{
-	(void)close_file(obj->pm_table);
-	(void)close_file(obj->smn);
-	free(obj);
-}
-
-nb_t get_nb(pci_obj_t obj)
-{
 	return obj;
+
+err_exit:
+	free(obj);
+	return NULL;
 }
 
-void free_nb(nb_t nb)
-{
-	(void)nb;
-}
-
-mem_obj_t init_mem_obj(const uintptr_t physAddr)
-{
-	(void)physAddr;
-	return (mem_obj_t)0xDEADC0DE; /* Mem_obj is not needed in this backend. */
-}
-
-void free_mem_obj(mem_obj_t obj)
-{
-	(void)obj;
-}
-
-uint32_t smn_reg_read(nb_t nb, const uint32_t addr)
-{
-	uint32_t result = 0;
-	if(!write_to_start(nb->smn, &addr, sizeof(addr)) ||
-	   !read_from_start(nb->smn, &result, sizeof(result)))
-	{
-		return 0;
-	}
-	return result;
-}
-
-void smn_reg_write(nb_t nb, const uint32_t addr, const uint32_t data)
-{
-	const uint32_t write_buffer[2] = { addr, data };
-	write_to_start(nb->smn, &write_buffer, sizeof(write_buffer));
-}
-
-int copy_pm_table(nb_t nb, void *buffer, const size_t size)
-{
-	if(nb->pm_table_size != size)
-	{
-		fprintf(stderr, "PM table size mismatch between ryzenadj and ryzen_smu kernel module\n");
-		return -1;
-	}
-	if(!read_from_start(nb->pm_table, buffer, size))
-	{
-		return -1;
-	}
+int init_mem_obj_kmod([[maybe_unused]] os_access_obj_t *os_access, [[maybe_unused]] const uintptr_t physAddr) {
 	return 0;
 }
 
-int compare_pm_table(void *buffer, const size_t size)
-{
-	(void)buffer;
-	(void)size;
-	printf("internal error: compare_pm_table() should never be called if smu driver is available\n");
-	return -1;
+void free_os_access_obj_kmod(os_access_obj_t *obj) {
+	close(obj->access.kmod.smn_fd);
+	close(obj->access.kmod.pm_table_fd);
+	free(obj);
 }
 
-bool is_using_smu_driver(void)
-{
-	return true;
+uint32_t smn_reg_read_kmod(const os_access_obj_t *obj, const uint32_t addr) {
+	uint32_t result = 0;
+
+	lseek(obj->access.kmod.smn_fd, 0, SEEK_SET);
+
+	if (write(obj->access.kmod.smn_fd, &addr, sizeof(addr)) == -1) {
+		DBG("%s: write error: %s\n", __func__, strerror(errno));
+		return 0;
+	}
+
+	lseek(obj->access.kmod.smn_fd, 0, SEEK_SET);
+
+	if (read(obj->access.kmod.smn_fd, &result, sizeof(result)) == -1) {
+		DBG("%s: read error: %s\n", __func__, strerror(errno));
+		return 0;
+	}
+
+	return result;
+}
+
+void smn_reg_write_kmod(const os_access_obj_t *obj, const uint32_t addr, const uint32_t data) {
+	const uint32_t write_buffer[2] = { addr, data };
+
+	lseek(obj->access.kmod.smn_fd, 0, SEEK_SET);
+
+	if (write(obj->access.kmod.smn_fd, &write_buffer, sizeof(write_buffer)) == -1)
+		DBG("%s: error: %s\n", __func__, strerror(errno));
+}
+
+int copy_pm_table_kmod(const os_access_obj_t *obj, void *buffer, const size_t size) {
+	if (obj->access.kmod.pm_table_size != size) {
+		DBG("PM table size mismatch: ryzenadj (%zd) | ryzen_smu (%zd)\n", size, obj->access.kmod.pm_table_size);
+		return -1;
+	}
+
+	lseek(obj->access.kmod.pm_table_fd, 0, SEEK_SET);
+
+	if (read(obj->access.kmod.pm_table_fd, buffer, size) == -1) {
+		DBG("%s: error: %s\n", __func__, strerror(errno));
+		return -1;
+	}
+
+	return 0;
+}
+
+int compare_pm_table_kmod([[maybe_unused]] const void *buffer, [[maybe_unused]] size_t size) {
+	DBG("internal error: compare_pm_table() should never be called if ryzen_smu is loaded\n");
+	return -1;
 }

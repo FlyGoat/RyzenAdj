@@ -1,96 +1,95 @@
 // SPDX-License-Identifier: LGPL
-/* Copyright (C) 2018-2019 Jiaxun Yang <jiaxun.yang@flygoat.com> */
-/* Access PCI Config Space - libpci */
+/* Copyright (C) 2018-2019 Jiaxun Yang <jiaxun.yang@flygoat.com>
+ */
+#include <sys/stat.h>
 
-#include <sys/mman.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
+#include "osdep_linux_mem.h"
+#include "osdep_linux_smu_kernel_module.h"
 
-#include "nb_smu_ops.h"
+bool is_smu = false;
 
-#define NB_PCI_REG_ADDR_ADDR 0xB8
-#define NB_PCI_REG_DATA_ADDR 0xBC
+static bool is_ryzen_smu_driver_compatible() {
+	FILE *drv_ver = fopen("/sys/kernel/ryzen_smu_drv/drv_version", "r");
+	int major, minor, patch, ret;
 
-bool mem_obj_obj = true;
-void *phy_map = MAP_FAILED;
-
-pci_obj_t init_pci_obj(){
-	pci_obj_t obj;
-	obj = pci_alloc();
-	pci_init(obj);
-	return obj;
-}
-
-nb_t get_nb(pci_obj_t obj){
-	nb_t nb;
-	nb = pci_get_dev(obj, 0, 0, 0, 0);
-	pci_fill_info(nb, PCI_FILL_IDENT | PCI_FILL_BASES | PCI_FILL_CLASS);
-	return nb;
-}
-
-void free_nb(nb_t nb){
-	pci_free_dev(nb);
-}
-
-
-void free_pci_obj(pci_obj_t obj){
-	pci_cleanup(obj);
-}
-
-uint32_t smn_reg_read(nb_t nb, uint32_t addr)
-{
-	pci_write_long(nb, NB_PCI_REG_ADDR_ADDR, (addr & (~0x3)));
-	return pci_read_long(nb, NB_PCI_REG_DATA_ADDR);
-}
-
-void smn_reg_write(nb_t nb, uint32_t addr, uint32_t data)
-{
-	pci_write_long(nb, NB_PCI_REG_ADDR_ADDR, addr);
-	pci_write_long(nb, NB_PCI_REG_DATA_ADDR, data);
-}
-
-mem_obj_t init_mem_obj(uintptr_t physAddr)
-{
-	int dev_mem_fd;
-
-	//It is to complicated to check PAT, CONFIG_NONPROMISC_DEVMEM, CONFIG_STRICT_DEVMEM or other dependencies, just try to open /dev/mem
-	dev_mem_fd = open("/dev/mem", O_RDONLY);
-	if (dev_mem_fd > 0){
-		phy_map = mmap(NULL, 0x1000, PROT_READ, MAP_SHARED, dev_mem_fd, (long)physAddr);
-		close(dev_mem_fd);
+	if (drv_ver == NULL) {
+		DBG("failed to open drv_version");
+		return false;
 	}
 
-	return &mem_obj_obj;
-}
-
-void free_mem_obj(mem_obj_t obj)
-{
-	if(phy_map != MAP_FAILED){
-		munmap(phy_map, 0x1000);
-	}
-	return;
-}
-
-int copy_pm_table(nb_t nb, void *buffer, size_t size)
-{
-	(void)nb;
-
-	if(phy_map != MAP_FAILED){
-		memcpy(buffer, phy_map, size);
-		return 0;
+	ret = fscanf(drv_ver, "%d.%d.%d", &major, &minor, &patch);
+	if (ret == EOF || ret < 3) {
+		DBG("failed to parse ryzen_smu version string\n");
+		fclose(drv_ver);
+		return false;
 	}
 
-	printf("failed to get pm_table from /dev/mem\n");
-	return -1;
+	if (major != 0 || minor != 1 || patch < 6) {
+		fclose(drv_ver);
+		return false;
+	}
+
+	fclose(drv_ver);
+	return true;
 }
 
-int compare_pm_table(void *buffer, size_t size)
-{
-	return memcmp(buffer, phy_map, size);
+os_access_obj_t *init_os_access_obj() {
+	struct stat stats;
+
+	if (lstat("/sys/kernel/ryzen_smu_drv", &stats) == 0 && is_ryzen_smu_driver_compatible()) {
+		fprintf(stderr, "detected compatible ryzen_smu kernel module\n");
+		is_smu = true;
+		return init_os_access_obj_kmod();
+	}
+
+	fprintf(stderr, "no compatible ryzen_smu kernel module found, fallback to /dev/mem\n");
+	return init_os_access_obj_mem();
 }
 
-bool is_using_smu_driver()
-{
-	return false;
+int init_mem_obj(os_access_obj_t *os_access, const uintptr_t physAddr) {
+	if (is_smu)
+		return init_mem_obj_kmod(os_access, physAddr);
+
+	return init_mem_obj_mem(os_access, physAddr);
+}
+
+void free_os_access_obj(os_access_obj_t *obj) {
+	if (is_smu)
+		free_os_access_obj_kmod(obj);
+	else
+		free_os_access_obj_mem(obj);
+
+	is_smu = false;
+}
+
+uint32_t smn_reg_read(const os_access_obj_t *obj, const uint32_t addr) {
+	if (is_smu)
+		return smn_reg_read_kmod(obj, addr);
+
+	return smn_reg_read_mem(obj, addr);
+}
+
+void smn_reg_write(const os_access_obj_t *obj, const uint32_t addr, const uint32_t data) {
+	if (is_smu)
+		smn_reg_write_kmod(obj, addr, data);
+	else
+		smn_reg_write_mem(obj, addr, data);
+}
+
+int copy_pm_table(const os_access_obj_t *obj, void *buffer, const size_t size) {
+	if (is_smu)
+		return copy_pm_table_kmod(obj, buffer, size);
+
+	return copy_pm_table_mem(obj, buffer, size);
+}
+
+int compare_pm_table(const void *buffer, const size_t size) {
+	if (is_smu)
+		return compare_pm_table_kmod(buffer, size);
+
+	return compare_pm_table_mem(buffer, size);
+}
+
+bool is_using_smu_driver() {
+	return is_smu;
 }
