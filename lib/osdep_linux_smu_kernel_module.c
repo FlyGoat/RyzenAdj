@@ -1,8 +1,6 @@
 /* Backend which uses the sysfs interface provided by the ryzen_smu kernel module. */
 
 #include <errno.h>
-#include <stdbool.h>
-#include <stdio.h>
 #include <sys/stat.h>
 
 #include "nb_smu_ops.h"

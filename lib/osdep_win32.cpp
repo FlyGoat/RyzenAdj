@@ -5,7 +5,6 @@
 extern "C" {
 #include "nb_smu_ops.h"
 }
-#include "Windows.h"
 #include "OlsApi.h"
 #include "OlsDef.h"
 
