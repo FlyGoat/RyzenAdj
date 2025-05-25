@@ -3,6 +3,8 @@
 /* Ryzen NB SMU Service Request Tool */
 
 #include <string.h>
+#include <stdlib.h>
+
 #include "lib/ryzenadj.h"
 #include "argparse.h"
 

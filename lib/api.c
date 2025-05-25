@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: LGPL
 /* Copyright (C) 2018-2019 Jiaxun Yang <jiaxun.yang@flygoat.com> */
 /* RyzenAdj API */
+#include <stdlib.h>
+#include <string.h>
 
 #include "ryzenadj.h"
 #include "math.h"
@@ -11,19 +13,20 @@
 #endif
 
 
-EXP ryzen_access CALL init_ryzenadj()
-{
+EXP ryzen_access CALL init_ryzenadj() {
+	const enum ryzen_family family = cpuid_get_family();
 	ryzen_access ry;
-	enum ryzen_family family = cpuid_get_family();
+
 	if (family == FAM_UNKNOWN)
 		return NULL;
 
-	ry = (ryzen_access)malloc((sizeof(*ry)));
+	ry = (ryzen_access)malloc(sizeof(*ry));
 
 	if (!ry){
 		printf("Out of memory\n");
 		return NULL;
 	}
+
 	memset(ry, 0, sizeof(*ry));
 
 	ry->family = family;
@@ -31,56 +34,39 @@ EXP ryzen_access CALL init_ryzenadj()
 	ry->bios_if_ver = 0;
 	ry->table_values = NULL;
 
-	ry->pci_obj = init_pci_obj();
-	if(!ry->pci_obj){
-		printf("Unable to get PCI Obj, check permission\n");
+	ry->os_access = init_os_access_obj();
+	if(!ry->os_access){
+		printf("Unable to get os_access Obj, check permission\n");
 		return NULL;
 	}
 
-	ry->nb = get_nb(ry->pci_obj);
-	if(!ry->nb){
-		printf("Unable to get NB Obj\n");
-		goto out_free_pci_obj;
-	}
-
-	ry->mp1_smu = get_smu(ry->nb, TYPE_MP1);
+	ry->mp1_smu = get_smu(ry->os_access, TYPE_MP1);
 	if(!ry->mp1_smu){
 		printf("Unable to get MP1 SMU Obj\n");
-		goto out_free_nb;
+		goto err_exit;
 	}
 
-	ry->psmu = get_smu(ry->nb, TYPE_PSMU);
+	ry->psmu = get_smu(ry->os_access, TYPE_PSMU);
 	if(!ry->psmu){
 		printf("Unable to get RSMU Obj\n");
-		goto out_free_mp1_smu;
+		goto err_exit;
 	}
 
 	return ry;
 
-out_free_mp1_smu:
-	free_smu(ry->mp1_smu);
-out_free_nb:
-	free_nb(ry->nb);
-out_free_pci_obj:
-	free_pci_obj(ry->pci_obj);
-	free(ry);
+err_exit:
+	cleanup_ryzenadj(ry);
 	return NULL;
 }
 
-EXP void CALL cleanup_ryzenadj(ryzen_access ry){
+EXP void CALL cleanup_ryzenadj(ryzen_access ry) {
 	if (ry == NULL)
 	    return;
 
-	if (ry->table_values){
-		free(ry->table_values);
-	}
-	if (ry->mem_obj){
-		free_mem_obj(ry->mem_obj);
-	}
-	free_smu(ry->psmu);
-	free_smu(ry->mp1_smu);
-	free_nb(ry->nb);
-	free_pci_obj(ry->pci_obj);
+	free(ry->mp1_smu);
+	free(ry->psmu);
+	free_os_access_obj(ry->os_access);
+	free(ry->table_values);
 	free(ry);
 }
 
@@ -311,9 +297,7 @@ EXP int CALL init_table(ryzen_access ry)
 	}
 
 	//init memory object because it is prerequiremt to woring with physical memory address
-	ry->mem_obj = init_mem_obj(ry->table_addr);
-	if(!ry->mem_obj)
-	{
+	if (init_mem_obj(ry->os_access, ry->table_addr) < 0) {
 		printf("Unable to get memory access\n");
 		return ADJ_ERR_MEMORY_ACCESS;
 	}
@@ -392,7 +376,7 @@ EXP int CALL refresh_table(ryzen_access ry)
 		return errorcode;
 	}
 
-	if(copy_pm_table(ry->nb, ry->table_values, ry->table_size)){
+	if(copy_pm_table(ry->os_access, ry->table_values, ry->table_size)){
 		printf("refresh_table failed\n");
 		return ADJ_ERR_MEMORY_ACCESS;
 	}
@@ -1064,8 +1048,8 @@ EXP int CALL set_apu_skin_temp_limit(ryzen_access ry, uint32_t value) {
 	case FAM_HAWKPOINT:
 		_do_adjust(0x33);
 		break;
-	case FAM_STRIXHALO:			
-		// not implemented on StrixHalo, seems to be controlled only via tctl-temp	
+	case FAM_STRIXHALO:
+		// not implemented on StrixHalo, seems to be controlled only via tctl-temp
 	default:
 		break;
 	}
@@ -1093,8 +1077,8 @@ EXP int CALL set_dgpu_skin_temp_limit(ryzen_access ry, uint32_t value) {
 	case FAM_STRIXPOINT:
 		_do_adjust(0x34);
 		break;
-	case FAM_STRIXHALO:			
-		// not implemented on StrixHalo, seems to be controlled only via tctl-temp			
+	case FAM_STRIXHALO:
+		// not implemented on StrixHalo, seems to be controlled only via tctl-temp
 	default:
 		break;
 	}
@@ -1479,7 +1463,7 @@ EXP float CALL get_apu_slow_value(ryzen_access ry) {
 	case 0x00450005:
 	case 0x004C0006:
 	case 0x004C0009:
-	case 0x0064020c: // StrixHalo - untested!	
+	case 0x0064020c: // StrixHalo - untested!
 		_read_float_value(0x1C);
 	default:
 		break;
@@ -1851,9 +1835,9 @@ EXP float CALL get_apu_skin_temp_limit(ryzen_access ry) {
 	case 0x004C0007:
 	case 0x004C0008:
 	case 0x004C0009:
-	case 0x0064020c: // StrixHalo tested	
+	case 0x0064020c: // StrixHalo tested
 		_read_float_value(0x58);
-		break;	
+		break;
 	default:
 		break;
 	}
@@ -1934,7 +1918,7 @@ EXP float CALL get_dgpu_skin_temp_value(ryzen_access ry) {
 	case 0x004C0007:
 	case 0x004C0008:
 	case 0x004C0009:
-	case 0x0064020c:	
+	case 0x0064020c:
 		_read_float_value(0x64);
 	default:
 		break;
@@ -2173,7 +2157,7 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 		case 0x003F0000: { // Van Gogh
 			if (core >= 4)
 				return NAN;
-	
+
 			baseOffset = 0x238;
 		}
 			break;
@@ -2190,7 +2174,7 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 		default:
 			return NAN;
 	}
-	
+
 	_read_float_value(baseOffset + (core * 4));
 }
 
@@ -2290,7 +2274,7 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 		case 0x003F0000: { // Van Gogh
 			if (core >= 4)
 				return NAN;
-			
+
 			baseOffset = 0x288;
 		}
 			break;
