@@ -110,13 +110,19 @@ Building this tool requires C & C++ compilers as well as **cmake**.
 
 RyzenAdj needs elevated access to the NB config space. This can be achieved by using either one of
 these two methods:
+
 * Using libpci and exposing `/dev/mem`
 * Using the ryzen\_smu kernel module
 
-#### Libpci
+RyzenAdj will try ryzen\_smu first, and then fallback to /dev/mem, if no compatible smu driver is found.  
+The minimum supported version of ryzen_smu is 1.0.6.  
+If no backend is available, RyzenAdj will fail initialization.  
 
-Please make sure that you have libpci dependency before compiling. On
-Debian-based distros this is covered by installing **pcilib-dev** package:
+_**Please note that `/dev/mem` access may be restricted, for security reasons, in your kernel config**_
+
+Please make sure that you have libpci dependency before compiling.
+
+On Debian-based distros this is covered by installing **pcilib-dev** package:
 
     sudo apt install build-essential cmake libpci-dev
 
@@ -150,7 +156,9 @@ The simplest way to build it:
 
 #### Ryzen\_smu
 
-Install all dependencies. On Fedora:
+To let RyzenAdj use ryzen\_smu module, you have to install it first, it is not part of the linux kernel.
+
+On Fedora:
 
 ```sh
 sudo dnf install cmake gcc gcc-c++ dkms openssl
@@ -159,7 +167,7 @@ sudo dnf install cmake gcc gcc-c++ dkms openssl
 Clone and install ryzen\_smu:
 
 ```sh
-git clone --recurse-submodules https://github.com/amkillam/ryzen_smu # Active fork of the original module
+git clone https://github.com/amkillam/ryzen_smu # Active fork of the original module
 (cd ryzen_smu/ && sudo make dkms-install)
 ```
 
@@ -179,17 +187,6 @@ are some screenshots describing the process.
 
 The module is now loaded and visible via dmesg. It will show a message about the kernel being
 tainted, but this just means it loaded a (potentially proprietary) binary blob.
-
-Build and install RyzenAdj:
-
-```sh
-git clone --recurse-submodules https://github.com/FlyGoat/RyzenAdj
-mkdir -p RyzenAdj/build/
-cd RyzenAdj/build/
-cmake -DCMAKE_BUILD_TYPE=Release -DLINUX_USE_RYZEN_SMU_MODULE=ON ..
-make -j"$(nproc)"
-sudo cp -v ./ryzenadj /usr/local/bin/
-```
 
 ### Windows
 
