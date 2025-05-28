@@ -188,6 +188,16 @@ are some screenshots describing the process.
 The module is now loaded and visible via dmesg. It will show a message about the kernel being
 tainted, but this just means it loaded a (potentially proprietary) binary blob.
 
+Build and install RyzenAdj:
+
+```sh
+git clone https://github.com/FlyGoat/RyzenAdj
+cd RyzenAdj
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+make -C build -j"$(nproc)"
+sudo cp -v build/ryzenadj /usr/local/bin/
+```
+
 ### Windows
 
 It can be built by Visual Studio + MSVC automaticaly, or Clang + Nmake in command line.
