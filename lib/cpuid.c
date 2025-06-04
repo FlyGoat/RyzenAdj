@@ -95,7 +95,7 @@ static enum ryzen_family cpuid_load_family()
         case 36:
             return FAM_STRIXPOINT;
         case 96:
-            return FAM_KRACKAN;
+            return FAM_KRACKANPOINT;
         case 112:
             return FAM_STRIXHALO;
         default:
