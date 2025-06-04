@@ -123,7 +123,7 @@ static int request_table_ver_and_size(ryzen_access ry)
 	case FAM_REMBRANDT:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		get_table_ver_msg = 0x6;
@@ -197,7 +197,7 @@ static int request_table_addr(ryzen_access ry)
 	case FAM_REMBRANDT:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		get_table_addr_msg = 0x66;
@@ -214,7 +214,7 @@ static int request_table_addr(ryzen_access ry)
 	case FAM_REMBRANDT:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		ry->table_addr = (uint64_t) args.arg1 << 32 | args.arg0;
@@ -252,7 +252,7 @@ static int request_transfer_table(ryzen_access ry)
 	case FAM_REMBRANDT:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		transfer_table_msg = 0x65;
@@ -443,7 +443,7 @@ EXP int CALL set_stapm_limit(ryzen_access ry, uint32_t value){
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x14);
@@ -476,7 +476,7 @@ EXP int CALL set_fast_limit(ryzen_access ry, uint32_t value){
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x15);
@@ -506,7 +506,7 @@ EXP int CALL set_slow_limit(ryzen_access ry, uint32_t value){
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x16);
@@ -536,7 +536,7 @@ EXP int CALL set_slow_time(ryzen_access ry, uint32_t value){
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x17);
@@ -566,7 +566,7 @@ EXP int CALL set_stapm_time(ryzen_access ry, uint32_t value){
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x18);
@@ -596,7 +596,7 @@ EXP int CALL set_tctl_temp(ryzen_access ry, uint32_t value){
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x19);
@@ -626,7 +626,7 @@ EXP int CALL set_vrm_current(ryzen_access ry, uint32_t value){
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x1a);
@@ -656,7 +656,7 @@ EXP int CALL set_vrmsoc_current(ryzen_access ry, uint32_t value){
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x1b);
@@ -711,7 +711,7 @@ EXP int CALL set_vrmmax_current(ryzen_access ry, uint32_t value){
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x1c);
@@ -756,7 +756,7 @@ EXP int CALL set_vrmsocmax_current(ryzen_access ry, uint32_t value){
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x1d);
@@ -1018,7 +1018,7 @@ EXP int CALL set_prochot_deassertion_ramp(ryzen_access ry, uint32_t value) {
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x1f);
@@ -1100,7 +1100,7 @@ EXP int CALL set_apu_slow_limit(ryzen_access ry, uint32_t value) {
 	case FAM_REMBRANDT:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x23);
@@ -1128,7 +1128,7 @@ EXP int CALL set_skin_temp_power_limit(ryzen_access ry, uint32_t value) {
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x4a);
@@ -1152,7 +1152,7 @@ EXP int CALL set_gfx_clk(ryzen_access ry, uint32_t value) {
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN: /* Added to debug on KRK, STX, & STXH */
+	case FAM_KRACKANPOINT: /* Added to debug on KRK, STX, & STXH */
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust_psmu(0x89);
@@ -1184,7 +1184,7 @@ EXP int CALL set_power_saving(ryzen_access ry) {
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x12);
@@ -1216,7 +1216,7 @@ EXP int CALL set_max_performance(ryzen_access ry) {
 	case FAM_MENDOCINO:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x11);
@@ -1347,7 +1347,7 @@ EXP int CALL set_coall(ryzen_access ry, uint32_t value) {
 	case FAM_VANGOGH:
 	case FAM_PHOENIX:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x4C);
@@ -1372,7 +1372,7 @@ EXP int CALL set_coper(ryzen_access ry, uint32_t value) {
 	case FAM_PHOENIX:
 	case FAM_VANGOGH:
 	case FAM_HAWKPOINT:
-	case FAM_KRACKAN:
+	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x4b);
