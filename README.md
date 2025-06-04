@@ -115,7 +115,7 @@ these two methods:
 * Using the ryzen\_smu kernel module
 
 RyzenAdj will try ryzen\_smu first, and then fallback to /dev/mem, if no compatible smu driver is found.  
-The minimum supported version of ryzen_smu is 1.0.6.  
+The minimum supported version of ryzen_smu is 0.1.7  
 If no backend is available, RyzenAdj will fail initialization.  
 
 _**Please note that `/dev/mem` access may be restricted, for security reasons, in your kernel config**_

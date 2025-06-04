@@ -106,66 +106,69 @@ do {                                                                        \
 	}                                                                       \
 } while (0);
 
-static int request_table_ver_and_size(ryzen_access ry)
-{
+static int request_table_ver_and_size(ryzen_access ry) {
 	unsigned int get_table_ver_msg;
 	int resp;
-	switch (ry->family)
-	{
-	case FAM_RAVEN:
-	case FAM_PICASSO:
-	case FAM_DALI:
-		get_table_ver_msg = 0xC;
-		break;
-	case FAM_RENOIR:
-	case FAM_LUCIENNE:
-	case FAM_CEZANNE:
-	case FAM_REMBRANDT:
-	case FAM_PHOENIX:
-	case FAM_HAWKPOINT:
-	case FAM_KRACKANPOINT:
-	case FAM_STRIXPOINT:
-	case FAM_STRIXHALO:
-		get_table_ver_msg = 0x6;
-		break;
-	default:
-		printf("request_table_ver_and_size is not supported on this family\n");
-		return ADJ_ERR_FAM_UNSUPPORTED;
+
+	switch (ry->family) {
+		case FAM_RAVEN:
+		case FAM_PICASSO:
+		case FAM_DALI:
+			get_table_ver_msg = 0xC;
+			break;
+		case FAM_RENOIR:
+		case FAM_LUCIENNE:
+		case FAM_CEZANNE:
+		case FAM_REMBRANDT:
+		case FAM_PHOENIX:
+		case FAM_HAWKPOINT:
+		case FAM_KRACKANPOINT:
+		case FAM_STRIXPOINT:
+		case FAM_STRIXHALO:
+			get_table_ver_msg = 0x6;
+			break;
+		default:
+			printf("request_table_ver_and_size is not supported on this family\n");
+			return ADJ_ERR_FAM_UNSUPPORTED;
 	}
 
 	smu_service_args_t args = {0, 0, 0, 0, 0, 0};
 	resp = smu_service_req(ry->psmu, get_table_ver_msg, &args);
 	ry->table_ver = args.arg0;
 
-	switch (ry->table_ver)
-	{
-	case 0x1E0001: ry->table_size = 0x568; break;
-	case 0x1E0002: ry->table_size = 0x580; break;
-	case 0x1E0003: ry->table_size = 0x578; break;
-	case 0x1E0004: ry->table_size = 0x608; break;
-	case 0x1E0005: ry->table_size = 0x608; break;
-	case 0x1E000A: ry->table_size = 0x608; break;
-	case 0x1E0101: ry->table_size = 0x608; break;
-	case 0x370000: ry->table_size = 0x794; break;
-	case 0x370001: ry->table_size = 0x884; break;
-	case 0x370002: ry->table_size = 0x88C; break;
-	case 0x370003: ry->table_size = 0x8AC; break;
-	case 0x370004: ry->table_size = 0x8AC; break;
-	case 0x370005: ry->table_size = 0x8C8; break;
-	case 0x3F0000: ry->table_size = 0x7AC; break;
-	case 0x400001: ry->table_size = 0x910; break;
-	case 0x400002: ry->table_size = 0x928; break;
-	case 0x400003: ry->table_size = 0x94C; break;
-	case 0x400004: ry->table_size = 0x944; break;
-	case 0x400005: ry->table_size = 0x944; break;
-	case 0x450004: ry->table_size = 0xA44; break;
-	case 0x450005: ry->table_size = 0xA44; break;
-	case 0x4C0006: ry->table_size = 0xAA0; break;
-	case 0x4C0009: ry->table_size = 0xAA0; break;
-	case 0x64020c: ry->table_size = 0xE50; break;
-		default:
-			//use a larger size then the largest known table to be able to test real table size of unknown tables
-			ry->table_size = 0x1000;
+	switch (ry->table_ver) {
+		case 0x1E0001: ry->table_size = 0x568; break;
+		case 0x1E0002: ry->table_size = 0x580; break;
+		case 0x1E0003: ry->table_size = 0x578; break;
+		case 0x1E0004:
+		case 0x1E0005:
+		case 0x1E000A:
+		case 0x1E0101: ry->table_size = 0x608; break;
+		case 0x370000: ry->table_size = 0x794; break;
+		case 0x370001: ry->table_size = 0x884; break;
+		case 0x370002: ry->table_size = 0x88C; break;
+		case 0x370003:
+		case 0x370004: ry->table_size = 0x8AC; break;
+		case 0x370005: ry->table_size = 0x8C8; break;
+		case 0x3F0000: ry->table_size = 0x7AC; break;
+		case 0x400001: ry->table_size = 0x910; break;
+		case 0x400002: ry->table_size = 0x928; break;
+		case 0x400003: ry->table_size = 0x94C; break;
+		case 0x400004:
+		case 0x400005: ry->table_size = 0x944; break;
+		case 0x450004: ry->table_size = 0xAA4; break;
+		case 0x450005: ry->table_size = 0xAB0; break;
+		case 0x4C0003: ry->table_size = 0xB18; break;
+		case 0x4C0004: ry->table_size = 0xB1C; break;
+		case 0x4C0005: ry->table_size = 0xAF8; break;
+		case 0x4C0006: ry->table_size = 0xAFC; break;
+		case 0x4C0008: ry->table_size = 0xAF0; break;
+		case 0x4C0007:
+		case 0x4C0009: ry->table_size = 0xB00; break;
+		case 0x64020c: ry->table_size = 0xE50; break;
+
+		// use a larger size then the largest known table to be able to test real table size of unknown tables
+		default: ry->table_size = 0x1000; break;
 	}
 
 	if (resp != REP_MSG_OK) {
