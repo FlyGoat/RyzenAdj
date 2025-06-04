@@ -24,7 +24,7 @@ static bool is_ryzen_smu_driver_compatible() {
 		return false;
 	}
 
-	if (major != 0 || minor != 1 || patch < 6) {
+	if (major != 0 || minor != 1 || patch < 7) {
 		fclose(drv_ver);
 		return false;
 	}
