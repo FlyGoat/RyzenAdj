@@ -455,6 +455,9 @@ EXP int CALL set_stapm_limit(ryzen_access ry, uint32_t value){
             printf("%s: Retry with PSMU\n", __func__);
 		    _do_adjust_psmu(0x31);
         }
+	case FAM_DRAGONRANGE:
+	case FAM_FIRERANGE:
+		_do_adjust(0x4f);
 	default:
 		break;
 	}
@@ -484,6 +487,9 @@ EXP int CALL set_fast_limit(ryzen_access ry, uint32_t value){
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x15);
+	case FAM_DRAGONRANGE:
+	case FAM_FIRERANGE:
+		_do_adjust(0x3e);
 	default:
 		break;
 	}
@@ -514,6 +520,9 @@ EXP int CALL set_slow_limit(ryzen_access ry, uint32_t value){
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x16);
+	case FAM_DRAGONRANGE:
+	case FAM_FIRERANGE:
+		_do_adjust(0x5f);
 	default:
 		break;
 	}
@@ -544,6 +553,9 @@ EXP int CALL set_slow_time(ryzen_access ry, uint32_t value){
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x17);
+	case FAM_DRAGONRANGE:
+	case FAM_FIRERANGE:
+		_do_adjust(0x60);
 	default:
 		break;
 	}
@@ -574,6 +586,9 @@ EXP int CALL set_stapm_time(ryzen_access ry, uint32_t value){
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x18);
+	case FAM_DRAGONRANGE:
+	case FAM_FIRERANGE:
+		_do_adjust(0x4e);
 	default:
 		break;
 	}
@@ -604,6 +619,9 @@ EXP int CALL set_tctl_temp(ryzen_access ry, uint32_t value){
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x19);
+	case FAM_DRAGONRANGE:
+	case FAM_FIRERANGE:
+		_do_adjust(0x3f);
 	default:
 		break;
 	}
@@ -634,6 +652,9 @@ EXP int CALL set_vrm_current(ryzen_access ry, uint32_t value){
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x1a);
+	case FAM_DRAGONRANGE:
+	case FAM_FIRERANGE:
+		_do_adjust(0x3c);
 	default:
 		break;
 	}
@@ -1356,6 +1377,10 @@ EXP int CALL set_coall(ryzen_access ry, uint32_t value) {
 	case FAM_STRIXHALO:
 		_do_adjust(0x4C);
 		break;
+	case FAM_DRAGONRANGE:
+	case FAM_FIRERANGE:
+		_do_adjust_psmu(0x7);
+		break;
 	default:
 		break;
 	}
@@ -1380,6 +1405,10 @@ EXP int CALL set_coper(ryzen_access ry, uint32_t value) {
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x4b);
+		break;
+	case FAM_DRAGONRANGE:
+	case FAM_FIRERANGE:
+		_do_adjust_psmu(0x6);
 		break;
 	default:
 		break;

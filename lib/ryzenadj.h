@@ -26,9 +26,11 @@ enum ryzen_family {
         FAM_MENDOCINO,
         FAM_PHOENIX,
         FAM_HAWKPOINT,
+        FAM_DRAGONRANGE,
         FAM_KRACKANPOINT,
         FAM_STRIXPOINT,
         FAM_STRIXHALO,
+        FAM_FIRERANGE,
         FAM_END
 };
 
