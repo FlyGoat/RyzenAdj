@@ -19,9 +19,18 @@
 #define MP1_C2PMSG_RESPONSE_ADDR_3	0x3b10978
 #define MP1_C2PMSG_ARG_BASE_3		0x3b10998
 
-#define PSMU_C2PMSG_MESSAGE_ADDR          0x3B10a20
-#define PSMU_C2PMSG_RESPONSE_ADDR         0x3B10a80
-#define PSMU_C2PMSG_ARG_BASE              0x3B10a88
+#define PSMU_C2PMSG_MESSAGE_ADDR_1          0x3B10a20
+#define PSMU_C2PMSG_RESPONSE_ADDR_1         0x3B10a80
+#define PSMU_C2PMSG_ARG_BASE_1              0x3B10a88
+
+/* For Dragon and Fire Range */
+#define MP1_C2PMSG_MESSAGE_ADDR_4	0x3B10530
+#define MP1_C2PMSG_RESPONSE_ADDR_4	0x3B1057C
+#define MP1_C2PMSG_ARG_BASE_4		0x3B109C4
+
+#define PSMU_C2PMSG_MESSAGE_ADDR_2          0x03B10524
+#define PSMU_C2PMSG_RESPONSE_ADDR_2         0x03B10570
+#define PSMU_C2PMSG_ARG_BASE_2              0x03B10A40
 
 /*
 * All the SMU have the same TestMessage as for now
@@ -119,6 +128,12 @@ smu_t get_smu(os_access_obj_t *obj, const int smu_type) {
 				smu->rep = MP1_C2PMSG_RESPONSE_ADDR_3;
 				smu->arg_base = MP1_C2PMSG_ARG_BASE_3;
 				break;
+			case FAM_DRAGONRANGE:
+			case FAM_FIRERANGE:
+				smu->msg = MP1_C2PMSG_MESSAGE_ADDR_4;
+				smu->rep = MP1_C2PMSG_RESPONSE_ADDR_4;
+				smu->arg_base = MP1_C2PMSG_ARG_BASE_4;
+				break;
 			default:
 				smu->msg = MP1_C2PMSG_MESSAGE_ADDR_1;
 				smu->rep = MP1_C2PMSG_RESPONSE_ADDR_1;
@@ -127,10 +142,19 @@ smu_t get_smu(os_access_obj_t *obj, const int smu_type) {
 			}
 			break;
 		case TYPE_PSMU:
-			smu->msg = PSMU_C2PMSG_MESSAGE_ADDR;
-			smu->rep = PSMU_C2PMSG_RESPONSE_ADDR;
-			smu->arg_base = PSMU_C2PMSG_ARG_BASE;
-			break;
+			switch (cpuid_get_family()) {
+			case FAM_DRAGONRANGE:
+			case FAM_FIRERANGE:
+				smu->msg = PSMU_C2PMSG_MESSAGE_ADDR_2;
+				smu->rep = PSMU_C2PMSG_RESPONSE_ADDR_2;
+				smu->arg_base = PSMU_C2PMSG_ARG_BASE_2;
+				break;
+			default:
+				smu->msg = PSMU_C2PMSG_MESSAGE_ADDR_1;
+				smu->rep = PSMU_C2PMSG_RESPONSE_ADDR_1;
+				smu->arg_base = PSMU_C2PMSG_ARG_BASE_1;
+				break;
+			}
 		default:
 			DBG("Failed to get SMU, unknown SMU_TYPE: %i\n", smu_type);
 			goto err;
