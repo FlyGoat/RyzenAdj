@@ -165,7 +165,8 @@ static int request_table_ver_and_size(ryzen_access ry) {
 		case 0x4C0008: ry->table_size = 0xAF0; break;
 		case 0x4C0007:
 		case 0x4C0009: ry->table_size = 0xB00; break;
-		case 0x5D0008: ry->table_size = 0xD54; break;
+		case 0x5D0008:
+		case 0x5D0009: ry->table_size = 0xD54; break;
 		case 0x64020c: ry->table_size = 0xE50; break;
 
 		// use a larger size then the largest known table to be able to test real table size of unknown tables
