@@ -419,11 +419,11 @@ do {                                                 \
 	}                                                \
 } while (0);
 
-#define _read_float_value(OFFSET)                   \
-do {                                                \
-	if(!ry->table_values)                           \
-		return NAN;                                 \
-	return ry->table_values[OFFSET / 4];            \
+#define _read_float_value(OFFSET)                    \
+do {                                                 \
+	if(!ry->table_values)                            \
+		return NAN;                                  \
+	return ry->table_values[(OFFSET) / 4];           \
 } while (0);
 
 
