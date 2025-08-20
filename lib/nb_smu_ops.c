@@ -155,6 +155,7 @@ smu_t get_smu(os_access_obj_t *obj, const int smu_type) {
 				smu->arg_base = PSMU_C2PMSG_ARG_BASE_1;
 				break;
 			}
+			break;
 		default:
 			DBG("Failed to get SMU, unknown SMU_TYPE: %i\n", smu_type);
 			goto err;

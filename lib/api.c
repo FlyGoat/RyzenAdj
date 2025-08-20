@@ -452,13 +452,15 @@ EXP int CALL set_stapm_limit(ryzen_access ry, uint32_t value){
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x14);
-        if (err) {
-            printf("%s: Retry with PSMU\n", __func__);
-		    _do_adjust_psmu(0x31);
-        }
+		if (err) {
+			printf("%s: Retry with PSMU\n", __func__);
+				_do_adjust_psmu(0x31);
+		}
+		break;
 	case FAM_DRAGONRANGE:
 	case FAM_FIRERANGE:
 		_do_adjust(0x4f);
+		break;
 	default:
 		break;
 	}
@@ -488,9 +490,11 @@ EXP int CALL set_fast_limit(ryzen_access ry, uint32_t value){
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x15);
+		break;
 	case FAM_DRAGONRANGE:
 	case FAM_FIRERANGE:
 		_do_adjust(0x3e);
+		break;
 	default:
 		break;
 	}
@@ -521,9 +525,11 @@ EXP int CALL set_slow_limit(ryzen_access ry, uint32_t value){
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x16);
+		break;
 	case FAM_DRAGONRANGE:
 	case FAM_FIRERANGE:
 		_do_adjust(0x5f);
+		break;
 	default:
 		break;
 	}
@@ -554,9 +560,11 @@ EXP int CALL set_slow_time(ryzen_access ry, uint32_t value){
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x17);
+		break;
 	case FAM_DRAGONRANGE:
 	case FAM_FIRERANGE:
 		_do_adjust(0x60);
+		break;
 	default:
 		break;
 	}
@@ -620,9 +628,11 @@ EXP int CALL set_tctl_temp(ryzen_access ry, uint32_t value){
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x19);
+		break;
 	case FAM_DRAGONRANGE:
 	case FAM_FIRERANGE:
 		_do_adjust(0x3f);
+		break;
 	default:
 		break;
 	}
@@ -653,9 +663,11 @@ EXP int CALL set_vrm_current(ryzen_access ry, uint32_t value){
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		_do_adjust(0x1a);
+		break;
 	case FAM_DRAGONRANGE:
 	case FAM_FIRERANGE:
 		_do_adjust(0x3c);
+		break;
 	default:
 		break;
 	}
