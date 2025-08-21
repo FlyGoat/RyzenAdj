@@ -1483,6 +1483,7 @@ EXP float CALL get_apu_slow_limit(ryzen_access ry) {
 	case 0x004C0007:
 	case 0x004C0008:
 	case 0x004C0009:
+	case 0x005D0008: // Strix Point - looks correct from dumping table, defaults to 45W
 	case 0x0064020c: // StrixHalo - looks correct from dumping table, defaults to 70W
 		_read_float_value(0x18);
 	default:
@@ -1509,6 +1510,7 @@ EXP float CALL get_apu_slow_value(ryzen_access ry) {
 	case 0x00450005:
 	case 0x004C0006:
 	case 0x004C0009:
+	case 0x005D0008: // Strix Point - untested, always 0?
 	case 0x0064020c: // StrixHalo - untested!
 		_read_float_value(0x1C);
 	default:
@@ -1545,6 +1547,8 @@ EXP float CALL get_vrm_current(ryzen_access ry) {
 	case 0x004C0008:
 	case 0x004C0009:
 		_read_float_value(0x20);
+	case 0x005D0008: // Strix Point - tested, defaults to 70, max 70
+		_read_float_value(0x30);
 	default:
 		break;
 	}
@@ -1579,6 +1583,8 @@ EXP float CALL get_vrm_current_value(ryzen_access ry) {
 	case 0x004C0008:
 	case 0x004C0009:
 		_read_float_value(0x24);
+	case 0x005D0008: // Strix Point - looks correct from dumping table
+		_read_float_value(0x34);
 	default:
 		break;
 	}
@@ -1613,6 +1619,8 @@ EXP float CALL get_vrmsoc_current(ryzen_access ry) {
 	case 0x004C0008:
 	case 0x004C0009:
 		_read_float_value(0x28);
+	case 0x005D0008: // Strix Point - tested, defaults to 30, max 30
+		_read_float_value(0x38);
 	default:
 		break;
 	}
@@ -1647,6 +1655,8 @@ EXP float CALL get_vrmsoc_current_value(ryzen_access ry) {
 	case 0x004C0008:
 	case 0x004C0009:
 		_read_float_value(0x2C);
+	case 0x005D0008: // Strix Point - looks correct from dumping table
+		_read_float_value(0x3C);
 	default:
 		break;
 	}
@@ -1680,6 +1690,7 @@ EXP float CALL get_vrmmax_current(ryzen_access ry) {
 	case 0x004C0007:
 	case 0x004C0008:
 	case 0x004C0009:
+	// Strix Point - this is vrm_current; 0x1C-0x2C are all 0
 		_read_float_value(0x30);
 	default:
 		break;
@@ -1748,6 +1759,7 @@ EXP float CALL get_vrmsocmax_current(ryzen_access ry) {
 	case 0x004C0007:
 	case 0x004C0008:
 	case 0x004C0009:
+	// Strix Point - this is vrmsoc_current; 0x1C-0x2C are all 0
 		_read_float_value(0x38);
 	default:
 		break;
@@ -1818,6 +1830,7 @@ EXP float CALL get_tctl_temp(ryzen_access ry) {
 	case 0x004C0007:
 	case 0x004C0008:
 	case 0x004C0009:
+	case 0x005D0008: // Strix Point - untested, defaults to 100
 		_read_float_value(0x40);
 	default:
 		break;
@@ -1854,6 +1867,15 @@ EXP float CALL get_tctl_temp_value(ryzen_access ry) {
 	case 0x004C0007:
 	case 0x004C0008:
 	case 0x004C0009:
+	/*
+	 * Strix Point - tested
+	 * 0x44: Zen5 clst, taskset + stress-ng
+	 * 0x4C: Zen5c clst, ditto
+	 * 0x54: gfx, llama-bench/FurMark, gpu_metrics_v3_0
+	 * 0x5C: soc, all of above + memtester
+	 * Corresponding limits default to 100 (untested)
+	 */
+	case 0x005D0008:
 		_read_float_value(0x44);
 	default:
 		break;
@@ -1881,6 +1903,7 @@ EXP float CALL get_apu_skin_temp_limit(ryzen_access ry) {
 	case 0x004C0007:
 	case 0x004C0008:
 	case 0x004C0009:
+	case 0x005D0008: // Strix Point - untested
 	case 0x0064020c: // StrixHalo tested
 		_read_float_value(0x58);
 		break;
@@ -1910,6 +1933,7 @@ EXP float CALL get_apu_skin_temp_value(ryzen_access ry) {
 	case 0x004C0007:
 	case 0x004C0008:
 	case 0x004C0009:
+	case 0x005D0008: // Strix Point - this is gpu_metrics_v3_0.temperature_soc, !=gpu_metrics_v3_0.temperature_skin
 	case 0x0064020c: // StrixHalo tested
 		_read_float_value(0x5C);
 	default:
@@ -1939,6 +1963,8 @@ EXP float CALL get_dgpu_skin_temp_limit(ryzen_access ry) {
 	case 0x004C0009:
 	case 0x0064020c: // StrixHalo tested
 		_read_float_value(0x60);
+	case 0x005D0008: // Strix Point - tested
+		_read_float_value(0x68);
 	default:
 		break;
 	}
@@ -1966,6 +1992,8 @@ EXP float CALL get_dgpu_skin_temp_value(ryzen_access ry) {
 	case 0x004C0009:
 	case 0x0064020c:
 		_read_float_value(0x64);
+	case 0x005D0008: // Strix Point - calculated from corresponding limit + 0x4, 0 on my device due to no dGPU
+		_read_float_value(0x6C);
 	default:
 		break;
 	}
@@ -2135,6 +2163,10 @@ EXP float CALL get_stapm_time(ryzen_access ry)
 	case 0x004C0008:
 	case 0x004C0009:
 		_read_float_value(0x918);
+	/*
+	case 0x005D0008: // Strix Point - calculated from slow time (0x9C0 - 0x4), always 1?
+		_read_float_value(0x9BC);
+	 */
 	default:
 		break;
 	}
@@ -2177,6 +2209,8 @@ EXP float CALL get_slow_time(ryzen_access ry) {
 	case 0x004C0008:
 	case 0x004C0009:
 		_read_float_value(0x91C);
+	case 0x005D0008: // Strix Point - tested, defaults to 5 (low-power/balanced) or 15 (performance), max 30
+		_read_float_value(0x9C0);
 	default:
 		break;
 	}
@@ -2213,6 +2247,9 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			baseOffset = 0x320;
+			break;
+		case 0x005D0008: // Strix Point - manufacturer-disabled cores are 0W (12 cores in total)
+			baseOffset = 0x9D8;
 			break;
 		case 0x0064020c: // Strix Halo
 			baseOffset = 0xB90;
@@ -2252,6 +2289,9 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 		case 0x00400005:
 			baseOffset = 0x340;
 			break;
+		case 0x005D0008: // Strix Point - manufacturer-disabled cores are 0V
+			baseOffset = 0xA08;
+			break;
 		case 0x0064020c: // Strix Halo
 			baseOffset = 0xBD0;
 			break;
@@ -2289,6 +2329,9 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			baseOffset = 0x360;
+			break;
+		case 0x005D0008: // Strix Point - manufacturer-disabled cores also have temp collected
+			baseOffset = 0xA38;
 			break;
 		case 0x0064020c: // Strix Halo
 			baseOffset = 0xC10;
@@ -2328,6 +2371,9 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 		case 0x00400005:
 			baseOffset = 0x3c0;
 			break;
+		case 0x005D0008: // Strix Point - manufacturer-disabled cores are 0GHz
+			baseOffset = 0xA68;
+			break;
 		case 0x0064020c:
 			baseOffset = 0xc50;
 			break;
@@ -2335,7 +2381,7 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 			return NAN;
 	}
 
-	_read_float_value(baseOffset + (core *4));
+	_read_float_value(baseOffset + (core * 4));
 }
 
 EXP float CALL get_l3_clk(ryzen_access ry) {
@@ -2448,6 +2494,14 @@ EXP float CALL get_gfx_clk(ryzen_access ry) {
 		_read_float_value(0x648); //1608
 	case 0x003F0000: //Van Gogh
 		_read_float_value(0x388); //904
+	/*
+	 * Strix Point - tested, RAPL + gpu_metrics_v3_0 + llama-bench/FurMark/memtester + switching platform_profile
+	 * 0x4B4: gfx power, as FurMark consumes more than llama-bench when pkg power is constant
+	 *        memtester won't increase this, so this is not uncore power
+	 * 0x4B8: volt, 4BC: temp, 4C{0,4}: gfx-related clk (MHz), 4C8: unknown clk
+	 */
+	case 0x005D0008:
+		_read_float_value(0x4C0); // 4C0 and 4C4 are always close to each other, but 4C0 seems more correct
 	case 0x0064020c: // Strix Halo
 		_read_float_value(0x558);
 	default:
@@ -2478,6 +2532,8 @@ EXP float CALL get_gfx_volt(ryzen_access ry) {
 		_read_float_value(0x63C); //1596
 	case 0x003F0000: //Van Gogh
 		_read_float_value(0x37C); //896
+	case 0x005D0008: // Strix Point
+		_read_float_value(0x4B8);
 	case 0x0064020c: // Strix Halo
 		_read_float_value(0x54C);
 	default:
@@ -2508,6 +2564,8 @@ EXP float CALL get_gfx_temp(ryzen_access ry) {
 		_read_float_value(0x640); //1600
 	case 0x003F0000: //Van Gogh
 		_read_float_value(0x380); //896
+	case 0x005D0008: // Strix Point
+		_read_float_value(0x4C8);
 	case 0x0064020c: // Strix Halo
 		_read_float_value(0x550);
 	default:
@@ -2532,6 +2590,37 @@ EXP float CALL get_fclk(ryzen_access ry) {
 	case 0x00400004:
 	case 0x00400005:
 		_read_float_value(0x664); //1636
+	/*
+	 * Strix Point - tested (AI 365, LPDDR5-7500), switching platform_profile
+	 * 0x4E0-0x548 seems to be target clocks (avg between two reads)
+	 * 0x550-0x5B4 seems to be corresponding sampled clocks (avg between two reads)
+	 * 0x550-0x568 maybe 0 if platform_profile is low-power
+	 * 0x4E0/54C: fabric_clk = gpu_metrics_v3_0.average_fclk_frequency
+	 * 0x4E4/550: controller_clk? = DRM_IOCTL_AMDGPU_INFO GFX_MCLK/gpu_metrics_v3_0.average_uclk_frequency
+	 * 0x4E8/554: phy_clk? = controller_clk * 2
+	 * 0x4EC/558: transfer rate (MT/s) = phy_clk * 2 (low-power) or 4 (balanced/performance)
+	 * 0x4F0/55C: = gpu_metrics_v3_0.average_vclk_frequency
+	 * 0x4F8/564: = gpu_metrics_v3_0.average_socclk_frequency
+	 * 0x50C/578: = gpu_metrics_v3_0.average_mpipu_frequency
+	 * 0x510/57C: = gpu_metrics_v3_0.average_ipuclk_frequency
+	 * Possible 0x4E0 values:
+	 *   400, 1050, 1200, 1400, 1600, 1960 (declared at 0x240-0x254)
+	 *   400, 1050, 1200, 1400, 1500, 1600, 1800, 1960 (amdgpu sysfs pp_dpm_fclk)
+	 * Possible 0x4E4 values:
+	 *   400, 800, 937.5, 937.5, 937.5, 937.5 (declared at 0x258-0x26C)
+	 *   400, 800, 937.5 (amdgpu sysfs pp_dpm_mclk)
+	 * Possible 0x4E8 values:
+	 *   800, 1600, 1875, 1875, 1875, 1875 (declared at 0x270-0x284)
+	 * Possible 0x4EC values:
+	 *   1600, 6400, 7500, 7500, 7500, 7500 (declared at 0x288-0x29C)
+	 * Possible 0x4F0 values:
+	 *   800, 800, 1605, 1766, 1962, 2208, 2523, 2944 (amdgpu sysfs pp_dpm_vclk)
+	 * Possible 0x4F8 values:
+	 *   600, 736, 883, 981, 1104, 1261, 1261, 1472 (amdgpu sysfs pp_dpm_socclk)
+	 * See also: https://semiengineering.com/advantages-of-lpddr5-a-new-clocking-scheme/
+	 */
+	case 0x005D0008:
+		_read_float_value(0x4E0);
 	default:
 		break;
 	}
@@ -2554,6 +2643,8 @@ EXP float CALL get_mem_clk(ryzen_access ry) {
 	case 0x00400004:
 	case 0x00400005:
 		_read_float_value(0x66c); //1644
+	case 0x005D0008: // Strix Point - see above
+		_read_float_value(0x4EC); // FIXME: which one?
 	default:
 		break;
 	}
@@ -2623,6 +2714,13 @@ EXP float CALL get_socket_power(ryzen_access ry) {
 		_read_float_value(0x98); //152
 	case 0x003F0000: //Van Gogh
 		_read_float_value(0xA8); //168
+	/*
+	 * Strix Point - tested, RAPL + memtester/llama-bench + switching platform_profile
+	 * 0xA4: = RAPL pkg power - gfx power, should this be SoC power???
+	 * 0xD0: = RAPL pkg power
+	 */
+	case 0x005D0008:
+		_read_float_value(0xD0);
 	default:
 		break;
 	}
