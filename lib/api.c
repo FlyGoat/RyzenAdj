@@ -1485,6 +1485,7 @@ EXP float CALL get_apu_slow_limit(ryzen_access ry) {
 	case 0x004C0009:
 	case 0x005D0008: // Strix Point - looks correct from dumping table, defaults to 45W
 	case 0x0064020c: // StrixHalo - looks correct from dumping table, defaults to 70W
+	case 0x00650005: // Krackan Point
 		_read_float_value(0x18);
 	default:
 		break;
@@ -1512,6 +1513,7 @@ EXP float CALL get_apu_slow_value(ryzen_access ry) {
 	case 0x004C0009:
 	case 0x005D0008: // Strix Point - untested, always 0?
 	case 0x0064020c: // StrixHalo - untested!
+	case 0x00650005: // Krackan Point
 		_read_float_value(0x1C);
 	default:
 		break;
@@ -1548,6 +1550,7 @@ EXP float CALL get_vrm_current(ryzen_access ry) {
 	case 0x004C0009:
 		_read_float_value(0x20);
 	case 0x005D0008: // Strix Point - tested, defaults to 70, max 70
+	case 0x00650005: // Krackan Point
 		_read_float_value(0x30);
 	default:
 		break;
@@ -1584,6 +1587,7 @@ EXP float CALL get_vrm_current_value(ryzen_access ry) {
 	case 0x004C0009:
 		_read_float_value(0x24);
 	case 0x005D0008: // Strix Point - looks correct from dumping table
+	case 0x00650005: // Krackan Point
 		_read_float_value(0x34);
 	default:
 		break;
@@ -1620,6 +1624,7 @@ EXP float CALL get_vrmsoc_current(ryzen_access ry) {
 	case 0x004C0009:
 		_read_float_value(0x28);
 	case 0x005D0008: // Strix Point - tested, defaults to 30, max 30
+	case 0x00650005: // Krackan Point
 		_read_float_value(0x38);
 	default:
 		break;
@@ -1656,6 +1661,7 @@ EXP float CALL get_vrmsoc_current_value(ryzen_access ry) {
 	case 0x004C0009:
 		_read_float_value(0x2C);
 	case 0x005D0008: // Strix Point - looks correct from dumping table
+	case 0x00650005: // Krackan Point
 		_read_float_value(0x3C);
 	default:
 		break;
@@ -1691,6 +1697,7 @@ EXP float CALL get_vrmmax_current(ryzen_access ry) {
 	case 0x004C0008:
 	case 0x004C0009:
 	// Strix Point - this is vrm_current; 0x1C-0x2C are all 0
+	// Same for Krackan Point
 		_read_float_value(0x30);
 	default:
 		break;
@@ -1760,6 +1767,7 @@ EXP float CALL get_vrmsocmax_current(ryzen_access ry) {
 	case 0x004C0008:
 	case 0x004C0009:
 	// Strix Point - this is vrmsoc_current; 0x1C-0x2C are all 0
+	// Same for Krackan Point
 		_read_float_value(0x38);
 	default:
 		break;
@@ -1831,6 +1839,7 @@ EXP float CALL get_tctl_temp(ryzen_access ry) {
 	case 0x004C0008:
 	case 0x004C0009:
 	case 0x005D0008: // Strix Point - untested, defaults to 100
+	case 0x00650005: // Krackan Point
 		_read_float_value(0x40);
 	default:
 		break;
@@ -1876,6 +1885,7 @@ EXP float CALL get_tctl_temp_value(ryzen_access ry) {
 	 * Corresponding limits default to 100 (untested)
 	 */
 	case 0x005D0008:
+	case 0x00650005: // Krackan Point
 		_read_float_value(0x44);
 	default:
 		break;
@@ -2167,6 +2177,8 @@ EXP float CALL get_stapm_time(ryzen_access ry)
 	case 0x005D0008: // Strix Point - calculated from slow time (0x9C0 - 0x4), always 1?
 		_read_float_value(0x9BC);
 	 */
+	case 0x00650005: // Krackan Point
+		_read_float_value(0x90C);
 	default:
 		break;
 	}
@@ -2211,6 +2223,8 @@ EXP float CALL get_slow_time(ryzen_access ry) {
 		_read_float_value(0x91C);
 	case 0x005D0008: // Strix Point - tested, defaults to 5 (low-power/balanced) or 15 (performance), max 30
 		_read_float_value(0x9C0);
+	case 0x00650005: // Krackan Point
+		_read_float_value(0x910);
 	default:
 		break;
 	}
