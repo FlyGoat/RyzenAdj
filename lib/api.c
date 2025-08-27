@@ -2177,7 +2177,7 @@ EXP float CALL get_stapm_time(ryzen_access ry)
 	case 0x005D0008: // Strix Point - calculated from slow time (0x9C0 - 0x4), always 1?
 		_read_float_value(0x9BC);
 	 */
-	case 0x00650005: // Krackan Point
+	case 0x00650005: // Krackan Point, might be incorrect
 		_read_float_value(0x90C);
 	default:
 		break;
@@ -2223,7 +2223,7 @@ EXP float CALL get_slow_time(ryzen_access ry) {
 		_read_float_value(0x91C);
 	case 0x005D0008: // Strix Point - tested, defaults to 5 (low-power/balanced) or 15 (performance), max 30
 		_read_float_value(0x9C0);
-	case 0x00650005: // Krackan Point
+	case 0x00650005: // Krackan Point, might be incorrect
 		_read_float_value(0x910);
 	default:
 		break;
