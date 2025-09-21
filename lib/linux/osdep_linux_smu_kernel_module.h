@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: LGPL
 #pragma once
 
 #include "../nb_smu_ops.h"

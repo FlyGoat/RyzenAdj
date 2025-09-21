@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: LGPL
-/* Copyright (C) 2018-2019 Jiaxun Yang <jiaxun.yang@flygoat.com>
- */
+/* Copyright (C) 2018-2019 Jiaxun Yang <jiaxun.yang@flygoat.com> */
 #include <sys/stat.h>
 
 #include "osdep_linux_mem.h"
