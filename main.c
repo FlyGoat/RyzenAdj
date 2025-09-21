@@ -63,7 +63,7 @@ static const char *const usage[] = {
 	NULL,
 };
 
-static const char *family_name(enum ryzen_family fam)
+static const char *family_name(const RYZEN_FAMILY fam)
 {
 	switch (fam)
 	{

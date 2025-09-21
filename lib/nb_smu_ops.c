@@ -5,41 +5,8 @@
 
 #include "ryzenadj.h"
 
-#define MP1_C2PMSG_MESSAGE_ADDR_1        0x3B10528
-#define MP1_C2PMSG_RESPONSE_ADDR_1       0x3B10564
-#define MP1_C2PMSG_ARG_BASE_1            0x3B10998
-
-/* For Vangogh and Rembrandt */
-#define MP1_C2PMSG_MESSAGE_ADDR_2        0x3B10528
-#define MP1_C2PMSG_RESPONSE_ADDR_2       0x3B10578
-#define MP1_C2PMSG_ARG_BASE_2            0x3B10998
-
-/* For Strix Point */
-#define MP1_C2PMSG_MESSAGE_ADDR_3	0x3b10928
-#define MP1_C2PMSG_RESPONSE_ADDR_3	0x3b10978
-#define MP1_C2PMSG_ARG_BASE_3		0x3b10998
-
-#define PSMU_C2PMSG_MESSAGE_ADDR_1          0x3B10a20
-#define PSMU_C2PMSG_RESPONSE_ADDR_1         0x3B10a80
-#define PSMU_C2PMSG_ARG_BASE_1              0x3B10a88
-
-/* For Dragon and Fire Range */
-#define MP1_C2PMSG_MESSAGE_ADDR_4	0x3B10530
-#define MP1_C2PMSG_RESPONSE_ADDR_4	0x3B1057C
-#define MP1_C2PMSG_ARG_BASE_4		0x3B109C4
-
-#define PSMU_C2PMSG_MESSAGE_ADDR_2          0x03B10524
-#define PSMU_C2PMSG_RESPONSE_ADDR_2         0x03B10570
-#define PSMU_C2PMSG_ARG_BASE_2              0x03B10A40
-
-/*
-* All the SMU have the same TestMessage as for now
-* Correct me if they don't
-*/
-#define SMU_TEST_MSG 0x1
-
 static uint32_t c2pmsg_argX_addr(const uint32_t base, const uint32_t offt) {
-	return base + 4 * offt;
+	return (base + 4 * offt);
 }
 
 uint32_t smu_service_req(smu_t smu, const uint32_t id, smu_service_args_t *args) {
@@ -77,8 +44,7 @@ uint32_t smu_service_req(smu_t smu, const uint32_t id, smu_service_args_t *args)
 	return response;
 }
 
-static int smu_service_test(smu_t smu)
-{
+static int smu_service_test(smu_t smu) {
 	uint32_t response = 0x0;
 
 	/* Clear the response */
@@ -90,17 +56,104 @@ static int smu_service_test(smu_t smu)
 		return 0;
 	}
 
-	/* Send message ID */
-	smn_reg_write(smu->os_access, smu->msg, SMU_TEST_MSG);
+	/* Send message ID (all the SMU have the same TestMessage as of now, correct me if they don't) */
+	smn_reg_write(smu->os_access, smu->msg, 0x1);
+
 	/* Wait until reponse changed */
-	while(response == 0x0) {
+	while(response == 0x0)
 		response = smn_reg_read(smu->os_access, smu->rep);
-	}
 
 	return response == REP_MSG_OK;
 }
 
+static uint32_t getMP1C2PMsgMessageAddress(const RYZEN_FAMILY family) {
+	switch (family) {
+		case FAM_KRACKANPOINT:
+		case FAM_STRIXPOINT:
+		case FAM_STRIXHALO:
+			return 0x3B10928;
+		case FAM_DRAGONRANGE:
+		case FAM_FIRERANGE:
+			return 0x3B10530;
+		default:
+			break;
+	}
+
+	return 0x3B10528;
+}
+
+static uint32_t getMP1C2PMsgResponseAddress(const RYZEN_FAMILY family) {
+	switch (family) {
+		case FAM_REMBRANDT:
+		case FAM_VANGOGH:
+		case FAM_MENDOCINO:
+		case FAM_PHOENIX:
+		case FAM_HAWKPOINT:
+			return 0x3B10578;
+		case FAM_KRACKANPOINT:
+		case FAM_STRIXPOINT:
+		case FAM_STRIXHALO:
+			return 0x3B10978;
+		case FAM_DRAGONRANGE:
+		case FAM_FIRERANGE:
+			return 0x3B1057C;
+		default:
+			break;
+	}
+
+	return 0x3B10564;
+}
+
+static uint32_t getMP1C2PMsgArgBaseAddress(const RYZEN_FAMILY family) {
+	switch (family) {
+		case FAM_DRAGONRANGE:
+		case FAM_FIRERANGE:
+			return 0x3B109C4;
+		default:
+			break;
+	}
+
+	return 0x3B10998;
+}
+
+static uint32_t getPSMUC2PMsgMessageAddress(const RYZEN_FAMILY family) {
+	switch (family) {
+		case FAM_DRAGONRANGE:
+		case FAM_FIRERANGE:
+			return 0x03B10524;
+		default:
+			break;
+	}
+
+	return 0x3B10A20;
+}
+
+static uint32_t getPSMUC2PMsgResponseAddress(const RYZEN_FAMILY family) {
+	switch (family) {
+		case FAM_DRAGONRANGE:
+		case FAM_FIRERANGE:
+			return 0x03B10570;
+		default:
+			break;
+	}
+
+	return 0x3B10A80;
+}
+
+static uint32_t getPSMUC2PMsgArgBaseAddress(const RYZEN_FAMILY family) {
+	switch (family) {
+		case FAM_DRAGONRANGE:
+		case FAM_FIRERANGE:
+			return 0x03B10A40;
+		default:
+			break;
+	}
+
+	return 0x3B10A88;
+}
+
 smu_t get_smu(os_access_obj_t *obj, const int smu_type) {
+	const RYZEN_FAMILY family = cpuid_get_family();
 	smu_t smu = malloc(sizeof(*smu));
 
 	if (smu == NULL)
@@ -109,65 +162,30 @@ smu_t get_smu(os_access_obj_t *obj, const int smu_type) {
 	smu->os_access = obj;
 
 	/* Fill SMU information */
-	switch(smu_type){
-		case TYPE_MP1:
-			switch (cpuid_get_family()) {
-			case FAM_REMBRANDT:
-			case FAM_VANGOGH:
-			case FAM_MENDOCINO:
-			case FAM_PHOENIX:
-			case FAM_HAWKPOINT:
-				smu->msg = MP1_C2PMSG_MESSAGE_ADDR_2;
-				smu->rep = MP1_C2PMSG_RESPONSE_ADDR_2;
-				smu->arg_base = MP1_C2PMSG_ARG_BASE_2;
-				break;
-			case FAM_KRACKANPOINT:
-			case FAM_STRIXPOINT:
-			case FAM_STRIXHALO:
-				smu->msg = MP1_C2PMSG_MESSAGE_ADDR_3;
-				smu->rep = MP1_C2PMSG_RESPONSE_ADDR_3;
-				smu->arg_base = MP1_C2PMSG_ARG_BASE_3;
-				break;
-			case FAM_DRAGONRANGE:
-			case FAM_FIRERANGE:
-				smu->msg = MP1_C2PMSG_MESSAGE_ADDR_4;
-				smu->rep = MP1_C2PMSG_RESPONSE_ADDR_4;
-				smu->arg_base = MP1_C2PMSG_ARG_BASE_4;
-				break;
-			default:
-				smu->msg = MP1_C2PMSG_MESSAGE_ADDR_1;
-				smu->rep = MP1_C2PMSG_RESPONSE_ADDR_1;
-				smu->arg_base = MP1_C2PMSG_ARG_BASE_1;
-				break;
-			}
+	switch (smu_type) {
+		case TYPE_MP1: {
+			smu->msg = getMP1C2PMsgMessageAddress(family);
+			smu->rep = getMP1C2PMsgResponseAddress(family);
+			smu->arg_base = getMP1C2PMsgArgBaseAddress(family);
+		}
 			break;
-		case TYPE_PSMU:
-			switch (cpuid_get_family()) {
-			case FAM_DRAGONRANGE:
-			case FAM_FIRERANGE:
-				smu->msg = PSMU_C2PMSG_MESSAGE_ADDR_2;
-				smu->rep = PSMU_C2PMSG_RESPONSE_ADDR_2;
-				smu->arg_base = PSMU_C2PMSG_ARG_BASE_2;
-				break;
-			default:
-				smu->msg = PSMU_C2PMSG_MESSAGE_ADDR_1;
-				smu->rep = PSMU_C2PMSG_RESPONSE_ADDR_1;
-				smu->arg_base = PSMU_C2PMSG_ARG_BASE_1;
-				break;
-			}
+		case TYPE_PSMU: {
+			smu->msg = getPSMUC2PMsgMessageAddress(family);
+			smu->rep = getPSMUC2PMsgResponseAddress(family);
+			smu->arg_base = getPSMUC2PMsgArgBaseAddress(family);
+		}
 			break;
-		default:
+		default: {
 			DBG("Failed to get SMU, unknown SMU_TYPE: %i\n", smu_type);
 			goto err;
-			break;
+		}
 	}
 
-	if(smu_service_test(smu)){
+	if (smu_service_test(smu))
 		return smu;
-	} else {
-		DBG("Faild to get SMU, SMU_TYPE: %i\n", smu_type);
-		goto err;
-	}
+
+	DBG("Faild to get SMU, SMU_TYPE: %i\n", smu_type);
+
 err:
 	free(smu);
 	return NULL;
