@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: LGPL
 /* Backend which uses the sysfs interface provided by the ryzen_smu kernel module. */
 #include <errno.h>
 #include <string.h>

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: LGPL
+/* Copyright (C) 2018-2019 Jiaxun Yang <jiaxun.yang@flygoat.com> */
+/* Access PCI Config Space - libpci */
 #pragma once
 
 #include "../nb_smu_ops.h"
