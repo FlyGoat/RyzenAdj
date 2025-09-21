@@ -65,23 +65,23 @@ static const char *const usage[] = {
 
 static const char *family_name(enum ryzen_family fam)
 {
-	switch (fam)
-	{
-	case FAM_RAVEN: return "Raven";
-	case FAM_PICASSO: return "Picasso";
-	case FAM_RENOIR: return "Renoir";
-	case FAM_CEZANNE: return "Cezanne";
-	case FAM_DALI: return "Dali";
-	case FAM_LUCIENNE: return "Lucienne";
-	case FAM_VANGOGH: return "Vangogh";
-	case FAM_REMBRANDT: return "Rembrandt";
-	case FAM_PHOENIX: return "Phoenix Point";
-	case FAM_HAWKPOINT: return "Hawk Point";
-	case FAM_KRACKANPOINT: return "Krackan Point";
-	case FAM_STRIXPOINT: return "Strix Point";
-	case FAM_STRIXHALO: return "Strix Halo";
-	default:
-		break;
+	switch (fam) {
+		case FAM_RAVEN: return "Raven";
+		case FAM_PICASSO: return "Picasso";
+		case FAM_RENOIR: return "Renoir";
+		case FAM_CEZANNE: return "Cezanne";
+		case FAM_DALI: return "Dali";
+		case FAM_LUCIENNE: return "Lucienne";
+		case FAM_VANGOGH: return "Vangogh";
+		case FAM_REMBRANDT: return "Rembrandt";
+		case FAM_PHOENIX: return "Phoenix Point";
+		case FAM_HAWKPOINT: return "Hawk Point";
+		case FAM_DRAGONRANGE: return "Dragon Range";
+		case FAM_KRACKANPOINT: return "Krackan Point";
+		case FAM_STRIXPOINT: return "Strix Point";
+		case FAM_STRIXHALO: return "Strix Halo";
+		case FAM_FIRERANGE: return "Fire Range";
+		default: break;
 	}
 
 	return "Unknown";
