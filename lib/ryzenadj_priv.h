@@ -14,7 +14,7 @@ struct _ryzen_access {
 	os_access_obj_t *os_access;
 	smu_t mp1_smu;
 	smu_t psmu;
-	enum ryzen_family family;
+	RYZEN_FAMILY family;
 	int bios_if_ver;
 	uintptr_t table_addr;
 	uint32_t table_ver;
@@ -22,6 +22,6 @@ struct _ryzen_access {
 	float *table_values;
 };
 
-enum ryzen_family cpuid_get_family();
+RYZEN_FAMILY cpuid_get_family();
 
 #endif

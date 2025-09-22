@@ -14,7 +14,7 @@
 
 
 EXP ryzen_access CALL init_ryzenadj() {
-	const enum ryzen_family family = cpuid_get_family();
+	const RYZEN_FAMILY family = cpuid_get_family();
 	ryzen_access ry;
 
 	if (family == FAM_UNKNOWN)
@@ -70,7 +70,7 @@ EXP void CALL cleanup_ryzenadj(ryzen_access ry) {
 	free(ry);
 }
 
-EXP enum ryzen_family get_cpu_family(ryzen_access ry)
+EXP RYZEN_FAMILY get_cpu_family(ryzen_access ry)
 {
 	return ry->family;
 }

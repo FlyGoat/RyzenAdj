@@ -23,9 +23,9 @@ static void getcpuid(unsigned int CPUInfo[4], unsigned int InfoType)
 #endif
 }
 
-static enum ryzen_family cpuid_family = WAIT_FOR_LOAD;
+static RYZEN_FAMILY cpuid_family = WAIT_FOR_LOAD;
 
-static enum ryzen_family cpuid_load_family()
+static RYZEN_FAMILY cpuid_load_family()
 {
     uint32_t regs[4];
     int family, model;
@@ -123,7 +123,7 @@ static enum ryzen_family cpuid_load_family()
  * computation by entering cpuid_get_family(). This function
  * guarantees the load is done only 1 time.
  */
-enum ryzen_family cpuid_get_family() {
+RYZEN_FAMILY cpuid_get_family() {
     if (cpuid_family == WAIT_FOR_LOAD)
         cpuid_family = cpuid_load_family();
 

@@ -12,7 +12,7 @@ extern "C" {
 #define RYZENADJ_MAJOR_VER 18
 #define RYZENADJ_MINIOR_VER 0
 
-enum ryzen_family {
+typedef enum {
         WAIT_FOR_LOAD = -2,
         FAM_UNKNOWN = -1,
         FAM_RAVEN = 0,
@@ -30,9 +30,8 @@ enum ryzen_family {
         FAM_KRACKANPOINT,
         FAM_STRIXPOINT,
         FAM_STRIXHALO,
-        FAM_FIRERANGE,
-        FAM_END
-};
+        FAM_FIRERANGE
+} RYZEN_FAMILY;
 
 #ifdef _LIBRYZENADJ_INTERNAL
 #include  "ryzenadj_priv.h"
@@ -70,7 +69,7 @@ EXP ryzen_access CALL init_ryzenadj();
 
 EXP void CALL cleanup_ryzenadj(ryzen_access ry);
 
-EXP enum ryzen_family get_cpu_family(ryzen_access ry);
+EXP RYZEN_FAMILY get_cpu_family(ryzen_access ry);
 EXP int get_bios_if_ver(ryzen_access ry);
 
 EXP int CALL init_table(ryzen_access ry);
