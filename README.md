@@ -167,8 +167,8 @@ sudo dnf install cmake gcc gcc-c++ dkms openssl
 Clone and install ryzen\_smu:
 
 ```sh
-git clone https://github.com/amkillam/ryzen_smu # Active fork of the original module
-(cd ryzen_smu/ && sudo make dkms-install)
+git clone -b dev https://github.com/CkNoSFeRaTU/ryzen_smu
+cd ryzen_smu/ && sudo make dkms-install
 ```
 
 If you are using secure boot, you have to enroll the UEFI keys which dkms has generated on its first
