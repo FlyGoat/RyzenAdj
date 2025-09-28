@@ -5,6 +5,12 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
+
 #include "lib/ryzenadj.h"
 #include "argparse.h"
 
@@ -195,6 +201,7 @@ int main(int argc, const char **argv)
 	int err = 0;
 
 	int info = 0, dump_table = 0, any_adjust_applied = 0;
+	uint32_t persist_interval = 0;
 	int power_saving = 0, max_performance = 0, enable_oc = 0x0, disable_oc = 0x0;
 	//init unsigned types with max value because we treat max value as unset
 	uint32_t stapm_limit = -1, fast_limit = -1, slow_limit = -1, slow_time = -1, stapm_time = -1, tctl_temp = -1;
@@ -211,6 +218,7 @@ int main(int argc, const char **argv)
 		OPT_GROUP("Options"),
 		OPT_BOOLEAN('i', "info", &info, "Show information and most important power metrics after adjustment"),
 		OPT_BOOLEAN('\0', "dump-table", &dump_table, "Show whole power metric table before and after adjustment"),
+		OPT_U32('\0', "persist-interval", &persist_interval, "Re-apply settings every x milliseconds"),
 		OPT_GROUP("Settings"),
 		OPT_U32('a', "stapm-limit", &stapm_limit, "Sustained Power Limit         - STAPM LIMIT (mW)"),
 		OPT_U32('b', "fast-limit", &fast_limit, "Actual Power Limit            - PPT LIMIT FAST (mW)"),
@@ -285,7 +293,12 @@ int main(int argc, const char **argv)
 		}
 	}
 
+	#ifndef _WIN32
+	persist_interval *= 1000;
+	#endif
+
 	//adjust all the arguments sent to RyzenAdj.exe
+adjust_begin:
 	_do_adjust(stapm_limit);
 	_do_adjust(fast_limit);
 	_do_adjust(slow_limit);
@@ -328,6 +341,15 @@ int main(int argc, const char **argv)
 	_do_adjust(coall);
 	_do_adjust(coper);
 	_do_adjust(cogfx);
+
+	if (persist_interval) {
+		#ifdef _WIN32
+		Sleep(persist_interval);
+		#else
+		usleep(persist_interval);
+		#endif
+		goto adjust_begin;
+	}
 
 	if (!err) {
 		//call show table dump before anybody did call table refresh, because we want to copy the old values first
