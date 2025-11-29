@@ -40,7 +40,7 @@ os_access_obj_t *init_os_access_obj() {
             return obj;
         }
         case OLS_DLL_UNSUPPORTED_PLATFORM:
-            DBG("WinRing0 Err: Unsupported Plattform\n");
+            DBG("WinRing0 Err: Unsupported Platform\n");
             break;
         case OLS_DLL_DRIVER_NOT_LOADED:
             DBG("WinRing0 Err: Driver not loaded\n");

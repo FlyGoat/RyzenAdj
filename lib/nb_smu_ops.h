@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL */
 /* Copyright (C) 2018-2019 Jiaxun Yang <jiaxun.yang@flygoat.com> */
-/* Ryzen NB SMU Service Request Opreations */
+/* Ryzen NB SMU Service Request Operations */
 
 #pragma once
 

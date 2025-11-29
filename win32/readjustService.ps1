@@ -16,7 +16,7 @@ $Error.Clear()
 ################################################################################
 # WARNING: Use at your own risk!
 
-$pathToRyzenAdjDlls = Split-Path -Parent $PSCommandPath #script path is DLL path, needs to be absolut path if you define something else
+$pathToRyzenAdjDlls = Split-Path -Parent $PSCommandPath #script path is DLL path, needs to be absolute path if you define something else
 
 $showErrorPopupsDuringInit = $true
 # debug mode prints adjust success messages too instead of errorss only
@@ -30,7 +30,7 @@ $monitorPowerSlider = $true
 $monitorACLineStatus = $true
 # HWiNFO needs to be restartet after this script did run the first time with this option
 $updateHWINFOSensors = $false
-# some Zen3 devices have a locked STAPM limit, this workarround resets the stapm timer to have unlimited stapm. Use max stapm_limit and stapm_time (usually 500) to triger as less resets as possible
+# some Zen3 devices have a locked STAPM limit, this workaround resets the stapm timer to have unlimited stapm. Use max stapm_limit and stapm_time (usually 500) to trigger as less resets as possible
 $resetSTAPMUsage = $false
 
 function doAdjust_ACmode {
@@ -44,13 +44,13 @@ function doAdjust_ACmode {
     #replace any_other_field with additional adjustments. Name is equal to RyzenAdj options but it uses _ instead of -
     #adjust "any_other_field" 1234
 
-    #custom code, for example set fan controll back to auto
+    #custom code, for example set fan control back to auto
     #values (WriteRegister: 47, FanSpeedResetValue:128) extracted from similar devices at https://github.com/hirschmann/nbfc/blob/master/Configs/
     #Start-Process -NoNewWindow -Wait -filePath "C:\Program Files (x86)\NoteBook FanControl\ec-probe.exe" -ArgumentList("write", "47", "128")
 
     if($Script:acSlider -eq $Script:betterBattery){
         #put adjustments for energie saving slider position here:
-        enable "power_saving" #add 10s boost delay for usage on cable to reduce idle power consumtion
+        enable "power_saving" #add 10s boost delay for usage on cable to reduce idle power consumption
     }
 }
 
@@ -235,7 +235,7 @@ function enable ([String] $fieldName) {
 function testMonitorField {
     if($monitorField -and $Script:monitorFieldAdjTarget -eq 0){
         Write-Error ("You forgot to set $monitorField in your profile.$NL$NL" +
-            "If you ignore it, the script will apply values unnessasary often.$NL")
+            "If you ignore it, the script will apply values unnecessary often.$NL")
     }
 }
 
@@ -364,7 +364,7 @@ function updateHWINFOSensors {
 function resetSTAPMIfNeeded {
     $stapm_limit = [ryzen.adj]::get_stapm_limit($ry)
     $stapm_value = [ryzen.adj]::get_stapm_value($ry)
-    $stapm_hysteresis = 1 #Throttling starts arround ~0.9W before limit
+    $stapm_hysteresis = 1 #Throttling starts around ~0.9W before limit
 
     if ($stapm_value -gt ($stapm_limit - $stapm_hysteresis)) {
         $stapm_time = [ryzen.adj]::get_stapm_time($ry)

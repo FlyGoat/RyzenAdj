@@ -6,7 +6,7 @@ if %errorlevel% NEQ 0 (
 	exit /B 0
 )
 
-cd /D "%~dp0" 
+cd /D "%~dp0"
 choice /C YN /M "Do you want to install Service based on directory %~dp0? It can not be changed after installation."
 if %ERRORLEVEL% NEQ 1 exit /B 1
 
@@ -14,7 +14,7 @@ for %%f in (RyzenAdjServiceTask.xml.template readjustService.ps1 libryzenadj.dll
    if not exist %%f echo %%f is missing && goto failed
 )
 
-echo Please configure RyzenAdjService by adding your prefered values in the top section of the powershell script. 
+echo Please configure RyzenAdjService by adding your preferred values in the top section of the powershell script.
 timeout /t 2 > NUL
 notepad "%~dp0\readjustService.ps1"
 
@@ -29,7 +29,7 @@ timeout /t 2 > NUL
 SCHTASKS /query /TN "AMD\RyzenAdj" || goto failed
 
 echo.
-echo Installation successfull
+echo Installation successful
 pause
 exit /B 0
 

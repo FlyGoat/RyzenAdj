@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LGPL
 /* Copyright (C) 2018-2019 Jiaxun Yang <jiaxun.yang@flygoat.com> */
-/* Ryzen NB SMU Service Request Opreations */
+/* Ryzen NB SMU Service Request Operations */
 #include <stdlib.h>
 
 #include "ryzenadj.h"
@@ -59,7 +59,7 @@ uint32_t smu_service_req(smu_t smu, const uint32_t id, smu_service_args_t *args)
 	smn_reg_write(smu->os_access, c2pmsg_argX_addr(smu->arg_base, 5), args->arg5);
 	/* Send message ID */
 	smn_reg_write(smu->os_access, smu->msg, id);
-	/* Wait until reponse changed */
+	/* Wait until response changed */
 	while(response == 0x0) {
 		response = smn_reg_read(smu->os_access, smu->rep);
 	}
@@ -92,7 +92,7 @@ static int smu_service_test(smu_t smu)
 
 	/* Send message ID */
 	smn_reg_write(smu->os_access, smu->msg, SMU_TEST_MSG);
-	/* Wait until reponse changed */
+	/* Wait until response changed */
 	while(response == 0x0) {
 		response = smn_reg_read(smu->os_access, smu->rep);
 	}
@@ -165,7 +165,7 @@ smu_t get_smu(os_access_obj_t *obj, const int smu_type) {
 	if(smu_service_test(smu)){
 		return smu;
 	} else {
-		DBG("Faild to get SMU, SMU_TYPE: %i\n", smu_type);
+		DBG("Failed to get SMU, SMU_TYPE: %i\n", smu_type);
 		goto err;
 	}
 err:
