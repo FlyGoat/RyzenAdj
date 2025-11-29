@@ -114,9 +114,9 @@ these two methods:
 * Using libpci and exposing `/dev/mem`
 * Using the ryzen\_smu kernel module
 
-RyzenAdj will try ryzen\_smu first, and then fallback to /dev/mem, if no compatible smu driver is found.  
-The minimum supported version of ryzen_smu is 0.1.7  
-If no backend is available, RyzenAdj will fail initialization.  
+RyzenAdj will try ryzen\_smu first, and then fallback to /dev/mem, if no compatible smu driver is found.
+The minimum supported version of ryzen_smu is 0.1.7
+If no backend is available, RyzenAdj will fail initialization.
 
 _**Please note that `/dev/mem` access may be restricted, for security reasons, in your kernel config**_
 
@@ -139,7 +139,7 @@ On OpenSUSE Tumbleweed:
 
     sudo zypper in cmake gcc14-c++ pciutils-devel
 
-You may need to add the `iomem=relaxed` param to your kernel params on Tumbleweed, or [you may run into errors at runtime](https://github.com/FlyGoat/RyzenAdj/issues/241). 
+You may need to add the `iomem=relaxed` param to your kernel params on Tumbleweed, or [you may run into errors at runtime](https://github.com/FlyGoat/RyzenAdj/issues/241).
 
 If your Distribution is not supported, try finding the packages or use [Distrobox](https://github.com/89luca89/distrobox) or [Toolbox](https://docs.fedoraproject.org/en-US/fedora-silverblue/toolbox/) instead.
 
@@ -200,11 +200,11 @@ sudo cp -v build/ryzenadj /usr/local/bin/
 
 ### Windows
 
-It can be built by Visual Studio + MSVC automaticaly, or Clang + Nmake in command line.
+It can be built by Visual Studio + MSVC automatically, or Clang + Nmake in command line.
 However, as for now, MingW-gcc can't be used to compile for some reason.
 
 Required dll is included in ./win32 of source tree. Please put the dll
 library and sys driver in the same folder with ryzenadj.exe.
 
-We don't recommend you to build by yourself on Windows since the environment configuarion
+We don't recommend you to build by yourself on Windows since the environment configuration
 is very complicated. If you would like to use ryzenadj functions in your program, see libryzenadj.
