@@ -97,9 +97,13 @@ void smn_reg_write_kmod(const os_access_obj_t *obj, const uint32_t addr, const u
 }
 
 int copy_pm_table_kmod(const os_access_obj_t *obj, void *buffer, const size_t size) {
-	if (obj->access.kmod.pm_table_size != size) {
-		DBG("PM table size mismatch: ryzenadj (%zd) | ryzen_smu (%zd)\n", size, obj->access.kmod.pm_table_size);
+	if (obj->access.kmod.pm_table_size < size) {
+		DBG("PM table size too small: ryzenadj (%zd) | ryzen_smu (%zd)\n", size, obj->access.kmod.pm_table_size);
 		return -1;
+	}
+
+	if (obj->access.kmod.pm_table_size != size) {
+		DBG("PM table size mismatch (reading prefix): ryzenadj (%zd) | ryzen_smu (%zd)\n", size, obj->access.kmod.pm_table_size);
 	}
 
 	lseek(obj->access.kmod.pm_table_fd, 0, SEEK_SET);
