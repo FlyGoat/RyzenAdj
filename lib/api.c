@@ -311,12 +311,14 @@ EXP int CALL init_table(ryzen_access ry)
 	//when using the ryzen_smu kernel module, its reported PM table size is authoritative
 	//because it reads the real value from hardware; prefer it over the SMU-derived size,
 	//especially for unknown table versions that fall back to the 0x1000 sentinel
+#ifndef _WIN32
 	if (is_using_smu_driver() &&
 	    ry->os_access->access.kmod.pm_table_size != ry->table_size) {
 		DBG("PM table size: using kmod value (%zu) over SMU-derived value (%zu)\n",
 		    ry->os_access->access.kmod.pm_table_size, ry->table_size);
 		ry->table_size = ry->os_access->access.kmod.pm_table_size;
 	}
+#endif
 
 	//hold copy of table value in memory for our single value getters
 	ry->table_values = calloc(ry->table_size / 4, 4);
