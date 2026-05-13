@@ -39,8 +39,7 @@ jobs:
 
     - name: Package
       run: |
-        release_tag="${RELEASE_TAG//\//-}"
-        package="ryzenadj-${release_tag}-manylinux_2_28-x86_64"
+        package="ryzenadj-manylinux_2_28-x86_64"
         mkdir -p "dist/${package}"
         cp build/ryzenadj "dist/${package}/"
         cp build/libryzenadj.so "dist/${package}/"
@@ -109,8 +108,7 @@ jobs:
 
     - name: Package
       run: |
-        release_tag="${RELEASE_TAG//\//-}"
-        package="ryzenadj-${release_tag}-linux-musl-static-x86_64"
+        package="ryzenadj-linux-musl-static-x86_64"
         mkdir -p "dist-musl/${package}"
         cp build-musl/ryzenadj "dist-musl/${package}/"
         cp build-musl/libryzenadj.a "dist-musl/${package}/"
@@ -154,6 +152,11 @@ jobs:
         New-Item -ItemType Directory -Force -Path dist
         Remove-Item "release/*.lib", "release/*.exp" -ErrorAction SilentlyContinue
         Compress-Archive -Path release/* -DestinationPath "dist/ryzenadj-win64.zip"
+
+        New-Item -ItemType Directory -Force -Path lib-release
+        Copy-Item build/libryzenadj.dll, build/libryzenadj.lib, lib/ryzenadj.h -Destination lib-release
+        Copy-Item win32/inpoutx64.dll, win32/WinRing0x64.dll, win32/WinRing0x64.sys -Destination lib-release
+        Compress-Archive -Path lib-release/* -DestinationPath "dist/libryzenadj-win64.zip"
 
     - uses: actions/upload-artifact@v4
       with:
