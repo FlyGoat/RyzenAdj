@@ -13,38 +13,34 @@ env:
   RELEASE_TAG: ${{ github.event.release.tag_name || github.ref_name }}
 
 jobs:
-  manylinux2014:
-    name: manylinux2014
+  manylinux_2_28:
+    name: manylinux_2_28
     runs-on: ubuntu-latest
+    container: quay.io/pypa/manylinux_2_28_x86_64
 
     steps:
+    - name: Install build dependencies
+      run: |
+        yum install -y epel-release
+        yum install -y cmake3 git make pciutils-devel pkgconfig tar gzip
+
     - uses: actions/checkout@v4
 
     - name: Build RyzenAdj
       run: |
-        docker run --rm \
-          -e RELEASE_TAG="${RELEASE_TAG}" \
-          -v "$PWD:/work" \
-          -w /work \
-          quay.io/pypa/manylinux2014_x86_64 \
-          bash -euxc '
-            yum install -y epel-release
-            yum install -y cmake3 make pciutils-devel pkgconfig tar gzip
-
-            cmake3 -S . -B build \
-              -DCMAKE_BUILD_TYPE=Release
-            cmake3 --build build --parallel
-            ldd build/ryzenadj
-            if ! ldd build/ryzenadj | grep -q libpci; then
-              echo "ryzenadj must link against shared libpci in the manylinux2014 package"
-              exit 1
-            fi
-          '
+        cmake3 -S . -B build \
+          -DCMAKE_BUILD_TYPE=Release
+        cmake3 --build build --parallel
+        ldd build/ryzenadj
+        if ! ldd build/ryzenadj | grep -q libpci; then
+          echo "ryzenadj must link against shared libpci in the manylinux_2_28 package"
+          exit 1
+        fi
 
     - name: Package
       run: |
         release_tag="${RELEASE_TAG//\//-}"
-        package="ryzenadj-${release_tag}-manylinux2014-x86_64"
+        package="ryzenadj-${release_tag}-manylinux_2_28-x86_64"
         mkdir -p "dist/${package}"
         cp build/ryzenadj "dist/${package}/"
         cp build/libryzenadj.so "dist/${package}/"
@@ -55,7 +51,7 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: release-manylinux2014
+        name: release-manylinux_2_28
         path: dist/*.tar.gz
 
   musl-static:
@@ -171,7 +167,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'release'
     needs:
-    - manylinux2014
+    - manylinux_2_28
     - musl-static
     - windows
 
