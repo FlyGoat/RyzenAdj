@@ -16,30 +16,35 @@ jobs:
   manylinux2014:
     name: manylinux2014
     runs-on: ubuntu-latest
-    container: quay.io/pypa/manylinux2014_x86_64
 
     steps:
-    - name: Install build dependencies
-      run: |
-        yum install -y epel-release
-        yum install -y cmake3 git make pciutils-devel pkgconfig tar gzip
-
     - uses: actions/checkout@v4
 
     - name: Build RyzenAdj
       run: |
-        cmake3 -S . -B build \
-          -DCMAKE_BUILD_TYPE=Release
-        cmake3 --build build --parallel
-        ldd build/ryzenadj
-        if ! ldd build/ryzenadj | grep -q libpci; then
-          echo "ryzenadj must link against shared libpci in the manylinux2014 package"
-          exit 1
-        fi
+        docker run --rm \
+          -e RELEASE_TAG="${RELEASE_TAG}" \
+          -v "$PWD:/work" \
+          -w /work \
+          quay.io/pypa/manylinux2014_x86_64 \
+          bash -euxc '
+            yum install -y epel-release
+            yum install -y cmake3 make pciutils-devel pkgconfig tar gzip
+
+            cmake3 -S . -B build \
+              -DCMAKE_BUILD_TYPE=Release
+            cmake3 --build build --parallel
+            ldd build/ryzenadj
+            if ! ldd build/ryzenadj | grep -q libpci; then
+              echo "ryzenadj must link against shared libpci in the manylinux2014 package"
+              exit 1
+            fi
+          '
 
     - name: Package
       run: |
-        package="ryzenadj-${RELEASE_TAG}-manylinux2014-x86_64"
+        release_tag="${RELEASE_TAG//\//-}"
+        package="ryzenadj-${release_tag}-manylinux2014-x86_64"
         mkdir -p "dist/${package}"
         cp build/ryzenadj "dist/${package}/"
         cp build/libryzenadj.so "dist/${package}/"
@@ -108,7 +113,8 @@ jobs:
 
     - name: Package
       run: |
-        package="ryzenadj-${RELEASE_TAG}-linux-musl-static-x86_64"
+        release_tag="${RELEASE_TAG//\//-}"
+        package="ryzenadj-${release_tag}-linux-musl-static-x86_64"
         mkdir -p "dist-musl/${package}"
         cp build-musl/ryzenadj "dist-musl/${package}/"
         cp build-musl/libryzenadj.a "dist-musl/${package}/"
@@ -149,7 +155,8 @@ jobs:
     - name: Package
       shell: pwsh
       run: |
-        $package = "ryzenadj-${env:RELEASE_TAG}-windows-x86_64"
+        $releaseTag = $env:RELEASE_TAG -replace '[\\/]', '-'
+        $package = "ryzenadj-$releaseTag-windows-x86_64"
         Rename-Item release $package
         New-Item -ItemType Directory -Force -Path dist
         Compress-Archive -Path $package -DestinationPath "dist/$package.zip"
