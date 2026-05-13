@@ -10,7 +10,7 @@ jobs:
 
     steps:
     # Checks-out
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - uses: ilammy/msvc-dev-cmd@v1
 
@@ -29,21 +29,6 @@ jobs:
         path: |
           debug/ryzenadj.exe
           debug/libryzenadj.dll
-
-    - name: Build Release
-      run: |
-        mkdir build
-        cd build
-        cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
-        nmake
-
-    - name: Prepair Release Folder
-      run: |
-        mkdir release
-        copy build/ryzenadj.exe release/
-        copy build/libryzenadj.dll release/
-        copy win32/* release/
-        copy examples/* release/
 
 #    - name: Test Scripts
 #      shell: pwsh
@@ -72,32 +57,11 @@ jobs:
 #        }
 #        exit 0
 
-    - name: Upload ryzenadj
-      uses: actions/upload-artifact@v4
-      with:
-        name: ryzenadj-win64
-        path: |
-            release/
-            !release/*.lib
-            !release/*.exp
-
-    - name: Upload libryzenadj
-      uses: actions/upload-artifact@v4
-      with:
-        name: libryzenadj-win64
-        path: |
-            ./build/libryzenadj.dll
-            ./build/libryzenadj.lib
-            ./lib/ryzenadj.h
-            ./win32/inpoutx64.dll
-            ./win32/WinRing0x64.dll
-            ./win32/WinRing0x64.sys
-
   Linux:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Install Dependencies
       run: |
@@ -110,7 +74,7 @@ jobs:
     - name: Test make like readme
       run: |
         mkdir build && cd build
-        cmake DCMAKE_BUILD_TYPE=Release ..
+        cmake -DCMAKE_BUILD_TYPE=Release ..
         make
 
 #    - name: Test Scripts
@@ -130,4 +94,3 @@ jobs:
 #            exit 1
 #        fi
 #        exit 0
-
