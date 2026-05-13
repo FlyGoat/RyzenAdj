@@ -188,4 +188,4 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        gh release upload "${RELEASE_TAG}" artifacts/* --clobber
+        gh release upload "${RELEASE_TAG}" artifacts/* --clobber --repo "${GITHUB_REPOSITORY}"
