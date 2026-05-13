@@ -21,6 +21,7 @@ jobs:
     steps:
     - name: Install build dependencies
       run: |
+        yum install -y epel-release
         yum install -y cmake3 git make pciutils-devel pkgconfig tar gzip
 
     - uses: actions/checkout@v4
