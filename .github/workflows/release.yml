@@ -151,15 +151,13 @@ jobs:
     - name: Package
       shell: pwsh
       run: |
-        $releaseTag = $env:RELEASE_TAG -replace '[\\/]', '-'
-        $package = "ryzenadj-$releaseTag-windows-x86_64"
-        Rename-Item release $package
         New-Item -ItemType Directory -Force -Path dist
-        Compress-Archive -Path $package -DestinationPath "dist/$package.zip"
+        Remove-Item "release/*.lib", "release/*.exp" -ErrorAction SilentlyContinue
+        Compress-Archive -Path release/* -DestinationPath "dist/ryzenadj-win64.zip"
 
     - uses: actions/upload-artifact@v4
       with:
-        name: release-windows
+        name: ryzenadj-win64
         path: dist/*.zip
 
   publish:
