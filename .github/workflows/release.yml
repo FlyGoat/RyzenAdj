@@ -163,7 +163,6 @@ jobs:
   publish:
     name: publish
     runs-on: ubuntu-latest
-    if: github.event_name == 'release'
     needs:
     - manylinux_2_28
     - musl-static
@@ -175,7 +174,14 @@ jobs:
         path: artifacts
         merge-multiple: true
 
+    - name: Upload release build run artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-builds
+        path: artifacts/*
+
     - name: Upload release assets
+      if: github.event_name == 'release'
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
