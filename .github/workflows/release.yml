@@ -21,18 +21,15 @@ jobs:
     steps:
     - name: Install build dependencies
       run: |
-        yum install -y git make pciutils-devel pkgconfig tar gzip
-        PYTHON_BIN="$(find /opt/python -mindepth 2 -maxdepth 2 -name python -print -quit)"
-        "${PYTHON_BIN}" -m pip install cmake
-        dirname "${PYTHON_BIN}" >> "${GITHUB_PATH}"
+        yum install -y cmake3 git make pciutils-devel pkgconfig tar gzip
 
     - uses: actions/checkout@v4
 
     - name: Build RyzenAdj
       run: |
-        cmake -S . -B build \
+        cmake3 -S . -B build \
           -DCMAKE_BUILD_TYPE=Release
-        cmake --build build --parallel
+        cmake3 --build build --parallel
         ldd build/ryzenadj
         if ! ldd build/ryzenadj | grep -q libpci; then
           echo "ryzenadj must link against shared libpci in the manylinux2014 package"
