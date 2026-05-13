@@ -22,7 +22,7 @@ jobs:
     steps:
     - name: Install build dependencies
       run: |
-        yum install -y curl git make pkgconfig tar gzip
+        yum install -y curl git make tar gzip
         PYTHON_PIP="$(find /opt/python -mindepth 2 -maxdepth 2 -name pip -print -quit)"
         "${PYTHON_PIP}" install cmake
         dirname "${PYTHON_PIP}" >> "${GITHUB_PATH}"
@@ -38,6 +38,8 @@ jobs:
           ZLIB=no \
           DNS=no \
           HWDB=no \
+          PCI_HAVE_PM_LINUX_SYSFS=1 \
+          PCI_HAVE_PM_LINUX_PROC=1 \
           LIBKMOD=no
         make -C "pciutils-${PCIUTILS_VERSION}" install-lib \
           PREFIX=/opt/pciutils-static \
@@ -45,6 +47,8 @@ jobs:
           ZLIB=no \
           DNS=no \
           HWDB=no \
+          PCI_HAVE_PM_LINUX_SYSFS=1 \
+          PCI_HAVE_PM_LINUX_PROC=1 \
           LIBKMOD=no
 
     - name: Build RyzenAdj
@@ -98,6 +102,8 @@ jobs:
           ZLIB=no \
           DNS=no \
           HWDB=no \
+          PCI_HAVE_PM_LINUX_SYSFS=1 \
+          PCI_HAVE_PM_LINUX_PROC=1 \
           LIBKMOD=no
         make -C "pciutils-${PCIUTILS_VERSION}" install-lib \
           PREFIX=/opt/pciutils-static \
@@ -105,6 +111,8 @@ jobs:
           ZLIB=no \
           DNS=no \
           HWDB=no \
+          PCI_HAVE_PM_LINUX_SYSFS=1 \
+          PCI_HAVE_PM_LINUX_PROC=1 \
           LIBKMOD=no
 
     - name: Build RyzenAdj
@@ -155,15 +163,20 @@ jobs:
         cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
         nmake
 
+    - name: Prepare release folder
+      run: |
+        mkdir release
+        copy build/ryzenadj.exe release/
+        copy build/libryzenadj.dll release/
+        copy win32/* release/
+        copy examples/* release/
+
     - name: Package
       shell: pwsh
       run: |
         $package = "ryzenadj-${env:RELEASE_TAG}-windows-x86_64"
-        New-Item -ItemType Directory -Force -Path dist, $package
-        Copy-Item build/ryzenadj.exe, build/libryzenadj.dll, LICENSE, README.md -Destination $package
-        Copy-Item win32/* -Destination $package
-        Copy-Item examples -Destination "$package/examples" -Recurse
-        Remove-Item "$package/*.lib", "$package/*.exp" -ErrorAction SilentlyContinue
+        Rename-Item release $package
+        New-Item -ItemType Directory -Force -Path dist
         Compress-Archive -Path $package -DestinationPath "dist/$package.zip"
 
     - uses: actions/upload-artifact@v4
