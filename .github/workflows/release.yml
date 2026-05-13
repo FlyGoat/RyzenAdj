@@ -21,10 +21,10 @@ jobs:
     steps:
     - name: Install build dependencies
       run: |
-        yum install -y git make pciutils-devel tar gzip
-        PYTHON_PIP="$(find /opt/python -mindepth 2 -maxdepth 2 -name pip -print -quit)"
-        "${PYTHON_PIP}" install cmake
-        dirname "${PYTHON_PIP}" >> "${GITHUB_PATH}"
+        yum install -y git make pciutils-devel pkgconfig tar gzip
+        PYTHON_BIN="$(find /opt/python -mindepth 2 -maxdepth 2 -name python -print -quit)"
+        "${PYTHON_BIN}" -m pip install cmake
+        dirname "${PYTHON_BIN}" >> "${GITHUB_PATH}"
 
     - uses: actions/checkout@v4
 
@@ -74,6 +74,7 @@ jobs:
         curl -fsSLO "https://mj.ucw.cz/download/linux/pci/pciutils-${PCIUTILS_VERSION}.tar.gz"
         tar -xf "pciutils-${PCIUTILS_VERSION}.tar.gz"
         make -C "pciutils-${PCIUTILS_VERSION}" -j"$(nproc)" \
+          PREFIX=/opt/pciutils-static \
           SHARED=no \
           ZLIB=no \
           DNS=no \
