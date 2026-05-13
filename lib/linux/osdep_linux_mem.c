@@ -84,7 +84,7 @@ void smn_reg_write_mem(const os_access_obj_t *obj, const uint32_t addr, const ui
 }
 
 int copy_pm_table_mem([[maybe_unused]] const os_access_obj_t *obj, void *buffer, const size_t size) {
-	if (phy_map != MAP_FAILED) {
+	if (phy_map != MAP_FAILED && buffer != NULL && size <= 0x1000) {
 		memcpy(buffer, phy_map, size);
 		return 0;
 	}
