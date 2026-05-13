@@ -1,0 +1,192 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  release:
+    types: [created]
+
+permissions:
+  contents: write
+
+env:
+  PCIUTILS_VERSION: 3.13.0
+  RELEASE_TAG: ${{ github.event.release.tag_name || github.ref_name }}
+
+jobs:
+  manylinux2014:
+    name: manylinux2014
+    runs-on: ubuntu-latest
+    container: quay.io/pypa/manylinux2014_x86_64
+
+    steps:
+    - name: Install build dependencies
+      run: |
+        yum install -y curl git make pkgconfig tar gzip
+        PYTHON_PIP="$(find /opt/python -mindepth 2 -maxdepth 2 -name pip -print -quit)"
+        "${PYTHON_PIP}" install cmake
+        dirname "${PYTHON_PIP}" >> "${GITHUB_PATH}"
+
+    - uses: actions/checkout@v4
+
+    - name: Build static libpci
+      run: |
+        curl -fsSLO "https://mj.ucw.cz/download/linux/pci/pciutils-${PCIUTILS_VERSION}.tar.gz"
+        tar -xf "pciutils-${PCIUTILS_VERSION}.tar.gz"
+        make -C "pciutils-${PCIUTILS_VERSION}" -j"$(nproc)" \
+          SHARED=no \
+          ZLIB=no \
+          DNS=no \
+          HWDB=no \
+          LIBKMOD=no
+        make -C "pciutils-${PCIUTILS_VERSION}" install-lib \
+          PREFIX=/opt/pciutils-static \
+          SHARED=no \
+          ZLIB=no \
+          DNS=no \
+          HWDB=no \
+          LIBKMOD=no
+
+    - name: Build RyzenAdj
+      env:
+        PKG_CONFIG_PATH: /opt/pciutils-static/lib/pkgconfig
+      run: |
+        cmake -S . -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_SHARED_LIBS=OFF
+        cmake --build build --parallel
+        ldd build/ryzenadj
+        if ldd build/ryzenadj | grep -q libpci; then
+          echo "ryzenadj must not depend on shared libpci in the manylinux2014 package"
+          exit 1
+        fi
+
+    - name: Package
+      run: |
+        package="ryzenadj-${RELEASE_TAG}-manylinux2014-x86_64"
+        mkdir -p "dist/${package}"
+        cp build/ryzenadj "dist/${package}/"
+        cp build/libryzenadj.a "dist/${package}/"
+        cp lib/ryzenadj.h "dist/${package}/"
+        cp LICENSE README.md "dist/${package}/"
+        cp -r examples "dist/${package}/"
+        tar -czf "dist/${package}.tar.gz" -C dist "${package}"
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: release-manylinux2014
+        path: dist/*.tar.gz
+
+  musl-static:
+    name: musl-static
+    runs-on: ubuntu-latest
+    container: alpine:3.20
+
+    steps:
+    - name: Install build dependencies
+      run: |
+        apk add --no-cache build-base cmake curl file git linux-headers pkgconf tar
+
+    - uses: actions/checkout@v4
+
+    - name: Build static libpci
+      run: |
+        curl -fsSLO "https://mj.ucw.cz/download/linux/pci/pciutils-${PCIUTILS_VERSION}.tar.gz"
+        tar -xf "pciutils-${PCIUTILS_VERSION}.tar.gz"
+        make -C "pciutils-${PCIUTILS_VERSION}" -j"$(nproc)" \
+          SHARED=no \
+          ZLIB=no \
+          DNS=no \
+          HWDB=no \
+          LIBKMOD=no
+        make -C "pciutils-${PCIUTILS_VERSION}" install-lib \
+          PREFIX=/opt/pciutils-static \
+          SHARED=no \
+          ZLIB=no \
+          DNS=no \
+          HWDB=no \
+          LIBKMOD=no
+
+    - name: Build RyzenAdj
+      env:
+        PKG_CONFIG_PATH: /opt/pciutils-static/lib/pkgconfig
+      run: |
+        cmake -S . -B build-musl \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_SHARED_LIBS=OFF \
+          -DPREFER_STATIC_LINKING=ON
+        cmake --build build-musl --parallel
+
+        file build-musl/ryzenadj
+        if ! file build-musl/ryzenadj | grep -q "statically linked"; then
+          echo "ryzenadj must be a static executable in the musl-static package"
+          exit 1
+        fi
+
+    - name: Package
+      run: |
+        package="ryzenadj-${RELEASE_TAG}-linux-musl-static-x86_64"
+        mkdir -p "dist-musl/${package}"
+        cp build-musl/ryzenadj "dist-musl/${package}/"
+        cp build-musl/libryzenadj.a "dist-musl/${package}/"
+        cp lib/ryzenadj.h "dist-musl/${package}/"
+        cp LICENSE README.md "dist-musl/${package}/"
+        cp -r examples "dist-musl/${package}/"
+        tar -czf "dist-musl/${package}.tar.gz" -C dist-musl "${package}"
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: release-musl-static
+        path: dist-musl/*.tar.gz
+
+  windows:
+    name: windows
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Build RyzenAdj
+      run: |
+        mkdir build
+        cd build
+        cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
+        nmake
+
+    - name: Package
+      shell: pwsh
+      run: |
+        $package = "ryzenadj-${env:RELEASE_TAG}-windows-x86_64"
+        New-Item -ItemType Directory -Force -Path dist, $package
+        Copy-Item build/ryzenadj.exe, build/libryzenadj.dll, LICENSE, README.md -Destination $package
+        Copy-Item win32/* -Destination $package
+        Copy-Item examples -Destination "$package/examples" -Recurse
+        Remove-Item "$package/*.lib", "$package/*.exp" -ErrorAction SilentlyContinue
+        Compress-Archive -Path $package -DestinationPath "dist/$package.zip"
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: release-windows
+        path: dist/*.zip
+
+  publish:
+    name: publish
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    needs:
+    - manylinux2014
+    - musl-static
+    - windows
+
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+        merge-multiple: true
+
+    - name: Upload release assets
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        gh release upload "${RELEASE_TAG}" artifacts/* --clobber
