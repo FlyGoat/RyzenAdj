@@ -12,10 +12,21 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+void set_ryzenadj_quiet(bool quiet);
+bool ryzenadj_is_quiet(void);
+
+#define RYZENADJ_LOG(...) do { \
+	if (!ryzenadj_is_quiet()) \
+		fprintf(stderr, __VA_ARGS__); \
+} while (0)
+
 #ifdef NDEBUG
 #define DBG(...)
 #else
-#define DBG(...) fprintf(stderr, __VA_ARGS__)
+#define DBG(...) do { \
+	if (!ryzenadj_is_quiet()) \
+		fprintf(stderr, __VA_ARGS__); \
+} while (0)
 #endif
 
 enum SMU_TYPE{

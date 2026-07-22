@@ -38,6 +38,18 @@
 */
 #define SMU_TEST_MSG 0x1
 
+static bool quiet_output;
+
+bool ryzenadj_is_quiet(void)
+{
+	return quiet_output;
+}
+
+void set_ryzenadj_quiet(bool quiet)
+{
+	quiet_output = quiet;
+}
+
 static uint32_t c2pmsg_argX_addr(const uint32_t base, const uint32_t offt) {
 	return base + 4 * offt;
 }
@@ -86,7 +98,7 @@ static int smu_service_test(smu_t smu)
 	/* Test message with unique argument */
 	smn_reg_write(smu->os_access, smu->arg_base, 0x47);
 	if(smn_reg_read(smu->os_access, smu->arg_base) != 0x47){
-		printf("PCI Bus is not writeable, check secure boot\n");
+		fprintf(stderr, "PCI Bus is not writeable, check secure boot\n");
 		return 0;
 	}
 

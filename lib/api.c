@@ -23,7 +23,7 @@ EXP ryzen_access CALL init_ryzenadj() {
 	ry = (ryzen_access)malloc(sizeof(*ry));
 
 	if (!ry){
-		printf("Out of memory\n");
+		fprintf(stderr, "Out of memory\n");
 		return NULL;
 	}
 
@@ -36,19 +36,19 @@ EXP ryzen_access CALL init_ryzenadj() {
 
 	ry->os_access = init_os_access_obj();
 	if(!ry->os_access){
-		printf("Unable to get os_access Obj, check permission\n");
+		fprintf(stderr, "Unable to get os_access Obj, check permission\n");
 		return NULL;
 	}
 
 	ry->mp1_smu = get_smu(ry->os_access, TYPE_MP1);
 	if(!ry->mp1_smu){
-		printf("Unable to get MP1 SMU Obj\n");
+		fprintf(stderr, "Unable to get MP1 SMU Obj\n");
 		goto err_exit;
 	}
 
 	ry->psmu = get_smu(ry->os_access, TYPE_PSMU);
 	if(!ry->psmu){
-		printf("Unable to get RSMU Obj\n");
+		fprintf(stderr, "Unable to get RSMU Obj\n");
 		goto err_exit;
 	}
 
@@ -89,19 +89,19 @@ EXP int get_bios_if_ver(ryzen_access ry)
 #define _return_translated_smu_error(SMU_RESP)                              \
 do {                                                                        \
 	if (SMU_RESP == REP_MSG_UnknownCmd) {                                   \
-		printf("%s is unsupported\n", __func__);                            \
+		fprintf(stderr, "%s is unsupported\n", __func__);                    \
 		return ADJ_ERR_SMU_UNSUPPORTED;                                     \
 	} else if (SMU_RESP == REP_MSG_CmdRejectedPrereq){                      \
-		printf("%s was rejected\n", __func__);                              \
+		fprintf(stderr, "%s was rejected\n", __func__);                      \
 		return ADJ_ERR_SMU_REJECTED;                                        \
 	} else if (SMU_RESP == REP_MSG_CmdRejectedBusy) {                       \
-		printf("%s was rejected - busy\n", __func__);                       \
+		fprintf(stderr, "%s was rejected - busy\n", __func__);               \
 		return ADJ_ERR_SMU_REJECTED;                                        \
 	} else if (SMU_RESP == REP_MSG_Failed) {                                \
-		printf("%s failed\n", __func__);                                    \
+		fprintf(stderr, "%s failed\n", __func__);                            \
 		return ADJ_ERR_SMU_REJECTED;                                        \
 	} else {                                                                \
-		printf("%s failed with unknown response %x\n", __func__, SMU_RESP); \
+		fprintf(stderr, "%s failed with unknown response %x\n", __func__, SMU_RESP); \
 		return ADJ_ERR_SMU_REJECTED;                                        \
 	}                                                                       \
 } while (0);
@@ -128,7 +128,7 @@ static int request_table_ver_and_size(ryzen_access ry) {
 			get_table_ver_msg = 0x6;
 			break;
 		default:
-			printf("request_table_ver_and_size is not supported on this family\n");
+			fprintf(stderr, "request_table_ver_and_size is not supported on this family\n");
 			return ADJ_ERR_FAM_UNSUPPORTED;
 	}
 
@@ -178,7 +178,7 @@ static int request_table_ver_and_size(ryzen_access ry) {
 		_return_translated_smu_error(resp);
 	}
 	if(!ry->table_ver){
-		printf("request_table_ver_and_size did not return anything\n");
+		fprintf(stderr, "request_table_ver_and_size did not return anything\n");
 		return ADJ_ERR_SMU_UNSUPPORTED;
 	}
 	return 0;
@@ -209,7 +209,7 @@ static int request_table_addr(ryzen_access ry)
 		get_table_addr_msg = 0x66;
 		break;
 	default:
-		printf("request_table_addr is not supported on this family\n");
+		fprintf(stderr, "request_table_addr is not supported on this family\n");
 		return ADJ_ERR_FAM_UNSUPPORTED;
 	}
 
@@ -233,7 +233,7 @@ static int request_table_addr(ryzen_access ry)
 		_return_translated_smu_error(resp);
 	}
 	if(!ry->table_addr){
-		printf("request_table_addr did not return anything\n");
+		fprintf(stderr, "request_table_addr did not return anything\n");
 		return ADJ_ERR_SMU_UNSUPPORTED;
 	}
 	return 0;
@@ -264,7 +264,7 @@ static int request_transfer_table(ryzen_access ry)
 		transfer_table_msg = 0x65;
 		break;
 	default:
-		printf("request_transfer_table is not supported on this family\n");
+		fprintf(stderr, "request_transfer_table is not supported on this family\n");
 		return ADJ_ERR_FAM_UNSUPPORTED;
 	}
 
@@ -276,7 +276,7 @@ static int request_transfer_table(ryzen_access ry)
 		Sleep(10);
 		resp = smu_service_req(ry->psmu, transfer_table_msg, &args);
 		if(resp == REP_MSG_CmdRejectedPrereq){
-			printf("request_transfer_table was rejected twice\n");
+			RYZENADJ_LOG("request_transfer_table was rejected twice\n");
 			Sleep(100);
 			resp = smu_service_req(ry->psmu, transfer_table_msg, &args);
 		}
@@ -304,7 +304,7 @@ EXP int CALL init_table(ryzen_access ry)
 
 	//init memory object because it is prerequiremt to woring with physical memory address
 	if (init_mem_obj(ry->os_access, ry->table_addr) < 0) {
-		printf("Unable to get memory access\n");
+		fprintf(stderr, "Unable to get memory access\n");
 		return ADJ_ERR_MEMORY_ACCESS;
 	}
 
@@ -395,7 +395,7 @@ EXP int CALL refresh_table(ryzen_access ry)
 	}
 
 	if(copy_pm_table(ry->os_access, ry->table_values, ry->table_size)){
-		printf("refresh_table failed\n");
+		fprintf(stderr, "refresh_table failed\n");
 		return ADJ_ERR_MEMORY_ACCESS;
 	}
 
@@ -466,7 +466,7 @@ EXP int CALL set_stapm_limit(ryzen_access ry, uint32_t value){
 	case FAM_STRIXHALO:
 		_do_adjust(0x14);
 		if (err) {
-			printf("%s: Retry with PSMU\n", __func__);
+			RYZENADJ_LOG("%s: Retry with PSMU\n", __func__);
 				_do_adjust_psmu(0x31);
 		}
 		break;
@@ -1289,7 +1289,7 @@ EXP int CALL set_oc_clk(ryzen_access ry, uint32_t value) {
 	case FAM_REMBRANDT:
 		_do_adjust(0x31);
         if (err) {
-            printf("%s: Retry with PSMU\n", __func__);
+            RYZENADJ_LOG("%s: Retry with PSMU\n", __func__);
 		    _do_adjust_psmu(0x19);
         }
 		break;
@@ -1310,7 +1310,7 @@ EXP int CALL set_per_core_oc_clk(ryzen_access ry, uint32_t value) {
 	case FAM_REMBRANDT:
 		_do_adjust(0x32);
         if (err) {
-            printf("%s: Retry with PSMU\n", __func__);
+            RYZENADJ_LOG("%s: Retry with PSMU\n", __func__);
 		    _do_adjust_psmu(0x1a);
         }
 		break;
@@ -1330,7 +1330,7 @@ EXP int CALL set_oc_volt(ryzen_access ry, uint32_t value) {
 	case FAM_CEZANNE:
 		_do_adjust(0x33);
         if (err) {
-            printf("%s: Retry with PSMU\n", __func__);
+            RYZENADJ_LOG("%s: Retry with PSMU\n", __func__);
 		    _do_adjust_psmu(0x1b);
         }
 		break;
@@ -1351,7 +1351,7 @@ EXP int CALL set_disable_oc(ryzen_access ry) {
 	case FAM_CEZANNE:
 		_do_adjust(0x30);
         if (err) {
-            printf("%s: Retry with PSMU\n", __func__);
+            RYZENADJ_LOG("%s: Retry with PSMU\n", __func__);
 		    _do_adjust_psmu(0x1d);
         }
 		break;

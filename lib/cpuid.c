@@ -39,7 +39,7 @@ static enum ryzen_family cpuid_load_family()
     *(uint32_t *) &vendor[8] = regs[2];
 
     if (strncmp(vendor, CPUID_VENDOR_AMD, strlen(CPUID_VENDOR_AMD))) {
-        printf("Not AMD processor, must be kidding\n");
+        fprintf(stderr, "Not AMD processor, must be kidding\n");
         return FAM_UNKNOWN;
     }
 
@@ -67,7 +67,7 @@ static enum ryzen_family cpuid_load_family()
         case 160:
             return FAM_MENDOCINO;
         default:
-            printf("Fam%xh: unsupported model %d\n", family, model);
+            fprintf(stderr, "Fam%xh: unsupported model %d\n", family, model);
             break;
         };
         break;
@@ -87,7 +87,7 @@ static enum ryzen_family cpuid_load_family()
         case 117:
             return FAM_HAWKPOINT;
         default:
-            printf("Fam%xh: unsupported model %d\n", family, model);
+            fprintf(stderr, "Fam%xh: unsupported model %d\n", family, model);
             break;
         };
         break;
@@ -103,16 +103,16 @@ static enum ryzen_family cpuid_load_family()
         case 112:
             return FAM_STRIXHALO;
         default:
-            printf("Fam%xh: unsupported model %d\n", family, model);
+            fprintf(stderr, "Fam%xh: unsupported model %d\n", family, model);
             break;
         }
 
     default:
-        printf("Unsupported family: %xh\n", family);
+        fprintf(stderr, "Unsupported family: %xh\n", family);
         break;
     }
 
-    printf("Only Ryzen Mobile Series are supported\n");
+    fprintf(stderr, "Only Ryzen Mobile Series are supported\n");
     return FAM_UNKNOWN;
 }
 

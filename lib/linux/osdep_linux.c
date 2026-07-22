@@ -36,12 +36,12 @@ os_access_obj_t *init_os_access_obj() {
 	struct stat stats;
 
 	if (lstat("/sys/kernel/ryzen_smu_drv", &stats) == 0 && is_ryzen_smu_driver_compatible()) {
-		fprintf(stderr, "detected compatible ryzen_smu kernel module\n");
+		RYZENADJ_LOG("detected compatible ryzen_smu kernel module\n");
 		is_smu = true;
 		return init_os_access_obj_kmod();
 	}
 
-	fprintf(stderr, "no compatible ryzen_smu kernel module found, fallback to /dev/mem\n");
+	RYZENADJ_LOG("no compatible ryzen_smu kernel module found, fallback to /dev/mem\n");
 	return init_os_access_obj_mem();
 }
 
