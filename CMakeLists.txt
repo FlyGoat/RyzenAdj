@@ -77,3 +77,21 @@ else()
 endif()
 #SET_TARGET_PROPERTIES(libryzenadj PROPERTIES LINKER_LANGUAGE C)
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+include(CTest)
+if(BUILD_TESTING)
+    add_executable(ryzenadj_json_output_test tests/json_output_test.c json_output.c)
+    add_test(NAME json-output COMMAND ryzenadj_json_output_test)
+    add_test(NAME json-bare COMMAND ${CMAKE_COMMAND}
+        -DPROGRAM=$<TARGET_FILE:${PROJECT_NAME}>
+        -DCASE=bare
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/check_cli_json.cmake)
+    add_test(NAME json-repeated-bare COMMAND ${CMAKE_COMMAND}
+        -DPROGRAM=$<TARGET_FILE:${PROJECT_NAME}>
+        -DCASE=repeated-bare
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/check_cli_json.cmake)
+    add_test(NAME json-dump-table COMMAND ${CMAKE_COMMAND}
+        -DPROGRAM=$<TARGET_FILE:${PROJECT_NAME}>
+        -DCASE=dump-table
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/check_cli_json.cmake)
+endif()

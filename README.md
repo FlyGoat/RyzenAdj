@@ -24,6 +24,7 @@ Usage: ryzenadj [options]
 
 Options
     -i, --info                            Show information and most important power metrics after adjustment
+    --json                                Format command results as JSON
     --dump-table                          Show whole power metric table before and after adjustment
 
 Settings
@@ -63,6 +64,29 @@ If I'm going to set all the Power Limit to 45W, and Tctl to 90 °C,
 then the command line should be:
 
     ./ryzenadj --stapm-limit=45000 --fast-limit=45000 --slow-limit=45000 --tctl-temp=90
+
+Use `--json` for machine-readable adjustment results:
+
+    ./ryzenadj --stapm-limit=45000 --fast-limit=45000 --json
+
+It can also include monitoring data collected after the adjustments:
+
+    ./ryzenadj --stapm-limit=45000 --info --json
+
+JSON output always uses the same top-level fields:
+
+    {
+      "success": true,
+      "adjustments": [
+        {"option": "stapm-limit", "value": 45000, "status": "success", "code": 0}
+      ],
+      "info": null,
+      "error": null
+    }
+
+For recognized `--json` invocations, the JSON document is written to standard output on success and runtime failure. Successful JSON commands leave standard error empty; runtime diagnostics may be written there when a command fails. The process also returns a nonzero exit status when `success` is `false`. Adjustment failures are reported in the corresponding `adjustments` entry. The singular `error` field describes a command-level failure, such as initialization or information-table refresh failure.
+
+Most metric names include their units (`_w`, `_a`, `_c`, or `_s`), and metrics that are unavailable on the current platform are represented by `null`. CCLK values do not have a consistent unit across all supported PM table versions, so their keys do not claim one. `--json` requires at least one adjustment or `--info`, and it cannot be combined with `--dump-table`.
 
 ### Documentation
 - [Supported Models](https://github.com/FlyGoat/RyzenAdj/wiki/Supported-Models)

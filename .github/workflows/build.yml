@@ -22,6 +22,9 @@ jobs:
         cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
         nmake
 
+    - name: Run tests
+      run: ctest --test-dir debug --output-on-failure
+
     - name: Upload ryzenadj debug
       uses: actions/upload-artifact@v4
       with:
@@ -76,6 +79,9 @@ jobs:
         mkdir build && cd build
         cmake -DCMAKE_BUILD_TYPE=Release ..
         make
+
+    - name: Run tests
+      run: ctest --test-dir build --output-on-failure
 
 #    - name: Test Scripts
 #      shell: bash
