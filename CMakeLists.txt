@@ -58,7 +58,7 @@ endif()
 set(COMMON_SOURCES lib/nb_smu_ops.c lib/api.c lib/cpuid.c)
 add_definitions(-D_LIBRYZENADJ_INTERNAL)
 
-ADD_EXECUTABLE(${PROJECT_NAME} ${OS_SOURCE} ${COMMON_SOURCES} argparse.c main.c)
+ADD_EXECUTABLE(${PROJECT_NAME} ${OS_SOURCE} ${COMMON_SOURCES} argparse.c json_output.c main.c)
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND (PREFER_STATIC_LINKING OR NOT BUILD_SHARED_LIBS))
     if(PREFER_STATIC_LINKING)
         set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS " -static")

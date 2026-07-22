@@ -4,56 +4,61 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "lib/ryzenadj.h"
 #include "argparse.h"
+#include "json_output.h"
 
 #define STRINGIFY2(X) #X
 #define STRINGIFY(X) STRINGIFY2(X)
+#define ARRAY_SIZE(ARRAY) (sizeof(ARRAY) / sizeof((ARRAY)[0]))
 
-#define _do_adjust(ARG) \
+#define _do_adjust(ARG, OPTION) \
 do {                                                                              \
 	/* ignore max unsigned integer values */                                      \
-	if (ARG != -1) {                                                              \
-		int adjerr = set_##ARG(ry, ARG);                                          \
+	if ((ARG) != UINT32_MAX) {                                                    \
+		int adjerr = set_##ARG(ry, (ARG));                                        \
+		if (json) {                                                               \
+			if (record_adjustment(adjustment_results,                           \
+				ARRAY_SIZE(adjustment_results), &result.adjustment_count,       \
+				OPTION, RYZENADJ_JSON_VALUE_U32, (ARG), adjerr)) {               \
+				set_json_error(&result, &json_error, "internal", "failed", -1); \
+				json_exit_code = -1;                                           \
+			}                                                                     \
+		} else {                                                                  \
+			print_adjustment_result(STRINGIFY(ARG), (ARG), 0, adjerr);            \
+		}                                                                         \
 		if (!adjerr){                                                             \
 			any_adjust_applied = 1;                                               \
-			printf("Successfully set " STRINGIFY(ARG) " to %u\n", ARG);            \
-		} else if (adjerr == ADJ_ERR_FAM_UNSUPPORTED) {                           \
-			printf("set_" STRINGIFY(ARG) " is not supported on this family\n");   \
-			err = -1;                                                             \
-		} else if (adjerr == ADJ_ERR_SMU_UNSUPPORTED) {                           \
-			printf("set_" STRINGIFY(ARG) " is not supported on this SMU\n");      \
-			err = -1;                                                             \
-		} else if (adjerr == ADJ_ERR_SMU_REJECTED) {                              \
-			printf("set_" STRINGIFY(ARG) " is rejected by SMU\n");                \
-			err = -1;                                                             \
 		} else {                                                                  \
-			printf("Failed to set" STRINGIFY(ARG) " \n");                         \
 			err = -1;                                                             \
+			if (!json_exit_code)                                                  \
+				json_exit_code = -1;                                             \
 		}                                                                         \
 	}                                                                             \
 } while(0);
 
-#define _do_enable(ARG) \
+#define _do_enable(ARG, OPTION) \
 do {                                                                              \
 	if (ARG) {                                                                    \
 		int adjerr = set_##ARG(ry);                                               \
+		if (json) {                                                               \
+			if (record_adjustment(adjustment_results,                           \
+				ARRAY_SIZE(adjustment_results), &result.adjustment_count,       \
+				OPTION, RYZENADJ_JSON_VALUE_BOOLEAN, 1, adjerr)) {               \
+				set_json_error(&result, &json_error, "internal", "failed", -1); \
+				json_exit_code = -1;                                           \
+			}                                                                     \
+		} else {                                                                  \
+			print_adjustment_result(STRINGIFY(ARG), 1, 1, adjerr);                \
+		}                                                                         \
 		if (!adjerr){                                                             \
 			any_adjust_applied = 1;                                               \
-			printf("Successfully enable " STRINGIFY(ARG) "\n");                    \
-		} else if (adjerr == ADJ_ERR_FAM_UNSUPPORTED) {                           \
-			printf("set_" STRINGIFY(ARG) " is not supported on this family\n");   \
-			err = -1;                                                             \
-		} else if (adjerr == ADJ_ERR_SMU_UNSUPPORTED) {                           \
-			printf("set_" STRINGIFY(ARG) " is not supported on this SMU\n");      \
-			err = -1;                                                             \
-		} else if (adjerr == ADJ_ERR_SMU_REJECTED) {                              \
-			printf("set_" STRINGIFY(ARG) " is rejected by SMU\n");                \
-			err = -1;                                                             \
 		} else {                                                                  \
-			printf("Failed to set" STRINGIFY(ARG) " \n");                         \
 			err = -1;                                                             \
+			if (!json_exit_code)                                                  \
+				json_exit_code = -1;                                             \
 		}                                                                         \
 	}                                                                             \
 } while(0);
@@ -62,6 +67,71 @@ static const char *const usage[] = {
 	"ryzenadj [options]",
 	NULL,
 };
+
+static int only_json_arguments(int argc, const char **argv)
+{
+	int index;
+
+	if (argc < 2)
+		return 0;
+
+	for (index = 1; index < argc; index++) {
+		if (strcmp(argv[index], "--json") != 0)
+			return 0;
+	}
+
+	return 1;
+}
+
+static int record_adjustment(struct ryzenadj_json_adjustment *adjustments,
+	size_t capacity, size_t *count, const char *option,
+	enum ryzenadj_json_value_type value_type, uint32_t value, int code)
+{
+	struct ryzenadj_json_adjustment *adjustment;
+
+	if (*count >= capacity)
+		return -1;
+
+	adjustment = &adjustments[(*count)++];
+	adjustment->option = option;
+	adjustment->value_type = value_type;
+	adjustment->value = value;
+	adjustment->code = code;
+
+	return 0;
+}
+
+static void set_json_error(struct ryzenadj_json_result *result,
+	struct ryzenadj_json_error *error, const char *stage,
+	const char *status, int code)
+{
+	if (result->error)
+		return;
+
+	error->stage = stage;
+	error->status = status;
+	error->code = code;
+	result->error = error;
+}
+
+static void print_adjustment_result(const char *name, uint32_t value,
+	int is_boolean, int code)
+{
+	if (!code) {
+		if (is_boolean)
+			printf("Successfully enable %s\n", name);
+		else
+			printf("Successfully set %s to %u\n", name, value);
+	} else if (code == ADJ_ERR_FAM_UNSUPPORTED) {
+		printf("set_%s is not supported on this family\n", name);
+	} else if (code == ADJ_ERR_SMU_UNSUPPORTED) {
+		printf("set_%s is not supported on this SMU\n", name);
+	} else if (code == ADJ_ERR_SMU_REJECTED) {
+		printf("set_%s is rejected by SMU\n", name);
+	} else {
+		printf("Failed to set%s \n", name);
+	}
+}
 
 static const char *family_name(enum ryzen_family fam)
 {
@@ -87,6 +157,42 @@ static const char *family_name(enum ryzen_family fam)
 	return "Unknown";
 }
 
+struct info_metric {
+	const char *key;
+	const char *name;
+	const char *parameter;
+	float (CALL *get_value)(ryzen_access ry);
+};
+
+static const struct info_metric info_metrics[] = {
+	{ "stapm_limit_w", "STAPM LIMIT", "stapm-limit", get_stapm_limit },
+	{ "stapm_value_w", "STAPM VALUE", "", get_stapm_value },
+	{ "fast_limit_w", "PPT LIMIT FAST", "fast-limit", get_fast_limit },
+	{ "fast_value_w", "PPT VALUE FAST", "", get_fast_value },
+	{ "slow_limit_w", "PPT LIMIT SLOW", "slow-limit", get_slow_limit },
+	{ "slow_value_w", "PPT VALUE SLOW", "", get_slow_value },
+	{ "stapm_time_s", "StapmTimeConst", "stapm-time", get_stapm_time },
+	{ "slow_time_s", "SlowPPTTimeConst", "slow-time", get_slow_time },
+	{ "apu_slow_limit_w", "PPT LIMIT APU", "apu-slow-limit", get_apu_slow_limit },
+	{ "apu_slow_value_w", "PPT VALUE APU", "", get_apu_slow_value },
+	{ "vrm_current_a", "TDC LIMIT VDD", "vrm-current", get_vrm_current },
+	{ "vrm_current_value_a", "TDC VALUE VDD", "", get_vrm_current_value },
+	{ "vrmsoc_current_a", "TDC LIMIT SOC", "vrmsoc-current", get_vrmsoc_current },
+	{ "vrmsoc_current_value_a", "TDC VALUE SOC", "", get_vrmsoc_current_value },
+	{ "vrmmax_current_a", "EDC LIMIT VDD", "vrmmax-current", get_vrmmax_current },
+	{ "vrmmax_current_value_a", "EDC VALUE VDD", "", get_vrmmax_current_value },
+	{ "vrmsocmax_current_a", "EDC LIMIT SOC", "vrmsocmax-current", get_vrmsocmax_current },
+	{ "vrmsocmax_current_value_a", "EDC VALUE SOC", "", get_vrmsocmax_current_value },
+	{ "tctl_temp_limit_c", "THM LIMIT CORE", "tctl-temp", get_tctl_temp },
+	{ "tctl_temp_value_c", "THM VALUE CORE", "", get_tctl_temp_value },
+	{ "apu_skin_temp_limit_c", "STT LIMIT APU", "apu-skin-temp", get_apu_skin_temp_limit },
+	{ "apu_skin_temp_value_c", "STT VALUE APU", "", get_apu_skin_temp_value },
+	{ "dgpu_skin_temp_limit_c", "STT LIMIT dGPU", "dgpu-skin-temp", get_dgpu_skin_temp_limit },
+	{ "dgpu_skin_temp_value_c", "STT VALUE dGPU", "", get_dgpu_skin_temp_value },
+	{ "cclk_setpoint", "CCLK Boost SETPOINT", "power-saving /", get_cclk_setpoint },
+	{ "cclk_busy_value", "CCLK BUSY VALUE", "max-performance", get_cclk_busy_value },
+};
+
 static void show_info_header(ryzen_access ry)
 {
 	printf("CPU Family: %s\n", family_name(get_cpu_family(ry)));
@@ -96,6 +202,8 @@ static void show_info_header(ryzen_access ry)
 
 static void show_info_table(ryzen_access ry)
 {
+	size_t index;
+
 	printf("PM Table Version: %x\n", get_table_ver(ry));
 
 	//get refresh table after adjust
@@ -109,32 +217,35 @@ static void show_info_table(ryzen_access ry)
 	printf("|        Name         |   Value   |     Parameter      |\n");
 	printf("|---------------------|-----------|--------------------|\n");
 	char tableFormat[] = "| %-19s | %9.3lf | %-18s |\n";
-	printf(tableFormat, "STAPM LIMIT", get_stapm_limit(ry), "stapm-limit");
-	printf(tableFormat, "STAPM VALUE", get_stapm_value(ry), "");
-	printf(tableFormat, "PPT LIMIT FAST", get_fast_limit(ry), "fast-limit");
-	printf(tableFormat, "PPT VALUE FAST", get_fast_value(ry), "");
-	printf(tableFormat, "PPT LIMIT SLOW", get_slow_limit(ry), "slow-limit");
-	printf(tableFormat, "PPT VALUE SLOW", get_slow_value(ry), "");
-	printf(tableFormat, "StapmTimeConst", get_stapm_time(ry), "stapm-time");
-	printf(tableFormat, "SlowPPTTimeConst", get_slow_time(ry), "slow-time");
-	printf(tableFormat, "PPT LIMIT APU", get_apu_slow_limit(ry), "apu-slow-limit");
-	printf(tableFormat, "PPT VALUE APU", get_apu_slow_value(ry), "");
-	printf(tableFormat, "TDC LIMIT VDD", get_vrm_current(ry), "vrm-current");
-	printf(tableFormat, "TDC VALUE VDD", get_vrm_current_value(ry), "");
-	printf(tableFormat, "TDC LIMIT SOC", get_vrmsoc_current(ry), "vrmsoc-current");
-	printf(tableFormat, "TDC VALUE SOC", get_vrmsoc_current_value(ry), "");
-	printf(tableFormat, "EDC LIMIT VDD", get_vrmmax_current(ry), "vrmmax-current");
-	printf(tableFormat, "EDC VALUE VDD", get_vrmmax_current_value(ry), "");
-	printf(tableFormat, "EDC LIMIT SOC", get_vrmsocmax_current(ry), "vrmsocmax-current");
-	printf(tableFormat, "EDC VALUE SOC", get_vrmsocmax_current_value(ry), "");
-	printf(tableFormat, "THM LIMIT CORE", get_tctl_temp(ry), "tctl-temp");
-	printf(tableFormat, "THM VALUE CORE", get_tctl_temp_value(ry), "");
-	printf(tableFormat, "STT LIMIT APU", get_apu_skin_temp_limit(ry), "apu-skin-temp");
-	printf(tableFormat, "STT VALUE APU", get_apu_skin_temp_value(ry), "");
-	printf(tableFormat, "STT LIMIT dGPU", get_dgpu_skin_temp_limit(ry), "dgpu-skin-temp");
-	printf(tableFormat, "STT VALUE dGPU", get_dgpu_skin_temp_value(ry), "");
-	printf(tableFormat, "CCLK Boost SETPOINT", get_cclk_setpoint(ry), "power-saving /");
-	printf(tableFormat, "CCLK BUSY VALUE", get_cclk_busy_value(ry), "max-performance");
+	for (index = 0; index < sizeof(info_metrics) / sizeof(info_metrics[0]); index++) {
+		printf(tableFormat, info_metrics[index].name,
+			info_metrics[index].get_value(ry), info_metrics[index].parameter);
+	}
+}
+
+static int collect_info_json(ryzen_access ry, struct ryzenadj_json_info *info,
+	struct ryzenadj_json_metric *metrics, size_t metric_capacity)
+{
+	size_t index;
+	int errorcode = refresh_table(ry);
+
+	if (errorcode)
+		return errorcode;
+	if (metric_capacity < ARRAY_SIZE(info_metrics))
+		return -1;
+
+	info->cpu_family = family_name(get_cpu_family(ry));
+	info->smu_bios_interface_version = get_bios_if_ver(ry);
+	info->ryzenadj_version = STRINGIFY(RYZENADJ_REVISION_VER) "." STRINGIFY(RYZENADJ_MAJOR_VER) "." STRINGIFY(RYZENADJ_MINIOR_VER);
+	info->pm_table_version = get_table_ver(ry);
+	for (index = 0; index < ARRAY_SIZE(info_metrics); index++) {
+		metrics[index].key = info_metrics[index].key;
+		metrics[index].value = info_metrics[index].get_value(ry);
+	}
+	info->metrics = metrics;
+	info->metric_count = ARRAY_SIZE(info_metrics);
+
+	return 0;
 }
 
 static void show_table_dump(ryzen_access ry, int any_adjust_applied)
@@ -192,24 +303,26 @@ static void show_table_dump(ryzen_access ry, int any_adjust_applied)
 int main(int argc, const char **argv)
 {
 	ryzen_access ry;
-	int err = 0;
+	int err = 0, json_exit_code = 0, table_error = 0;
+	int json_only = only_json_arguments(argc, argv);
 
-	int info = 0, dump_table = 0, any_adjust_applied = 0;
+	int info = 0, json = 0, dump_table = 0, any_adjust_applied = 0;
 	int power_saving = 0, max_performance = 0, enable_oc = 0x0, disable_oc = 0x0;
 	//init unsigned types with max value because we treat max value as unset
-	uint32_t stapm_limit = -1, fast_limit = -1, slow_limit = -1, slow_time = -1, stapm_time = -1, tctl_temp = -1;
-	uint32_t vrm_current = -1, vrmsoc_current = -1, vrmmax_current = -1, vrmsocmax_current = -1, psi0_current = -1, psi0soc_current = -1;
-	uint32_t vrmgfx_current = -1, vrmcvip_current = -1, vrmgfxmax_current = -1, psi3cpu_current = -1, psi3gfx_current = -1;
-	uint32_t max_socclk_freq = -1, min_socclk_freq = -1, max_fclk_freq = -1, min_fclk_freq = -1, max_vcn = -1, min_vcn = -1, max_lclk = -1, min_lclk = -1;
-	uint32_t max_gfxclk_freq = -1, min_gfxclk_freq = -1, prochot_deassertion_ramp = -1, apu_skin_temp_limit = -1, dgpu_skin_temp_limit = -1, apu_slow_limit = -1;
-	uint32_t skin_temp_power_limit = -1;
-	uint32_t gfx_clk = -1, oc_clk = -1, oc_volt = -1, coall = -1, coper = -1, cogfx = -1;
+	uint32_t stapm_limit = UINT32_MAX, fast_limit = UINT32_MAX, slow_limit = UINT32_MAX, slow_time = UINT32_MAX, stapm_time = UINT32_MAX, tctl_temp = UINT32_MAX;
+	uint32_t vrm_current = UINT32_MAX, vrmsoc_current = UINT32_MAX, vrmmax_current = UINT32_MAX, vrmsocmax_current = UINT32_MAX, psi0_current = UINT32_MAX, psi0soc_current = UINT32_MAX;
+	uint32_t vrmgfx_current = UINT32_MAX, vrmcvip_current = UINT32_MAX, vrmgfxmax_current = UINT32_MAX, psi3cpu_current = UINT32_MAX, psi3gfx_current = UINT32_MAX;
+	uint32_t max_socclk_freq = UINT32_MAX, min_socclk_freq = UINT32_MAX, max_fclk_freq = UINT32_MAX, min_fclk_freq = UINT32_MAX, max_vcn = UINT32_MAX, min_vcn = UINT32_MAX, max_lclk = UINT32_MAX, min_lclk = UINT32_MAX;
+	uint32_t max_gfxclk_freq = UINT32_MAX, min_gfxclk_freq = UINT32_MAX, prochot_deassertion_ramp = UINT32_MAX, apu_skin_temp_limit = UINT32_MAX, dgpu_skin_temp_limit = UINT32_MAX, apu_slow_limit = UINT32_MAX;
+	uint32_t skin_temp_power_limit = UINT32_MAX;
+	uint32_t gfx_clk = UINT32_MAX, oc_clk = UINT32_MAX, oc_volt = UINT32_MAX, coall = UINT32_MAX, coper = UINT32_MAX, cogfx = UINT32_MAX;
 
 	//create structure for parsing
 	struct argparse_option options[] = {
 		OPT_HELP(),
 		OPT_GROUP("Options"),
 		OPT_BOOLEAN('i', "info", &info, "Show information and most important power metrics after adjustment"),
+		OPT_BOOLEAN('\0', "json", &json, "Format command results as JSON"),
 		OPT_BOOLEAN('\0', "dump-table", &dump_table, "Show whole power metric table before and after adjustment"),
 		OPT_GROUP("Settings"),
 		OPT_U32('a', "stapm-limit", &stapm_limit, "Sustained Power Limit         - STAPM LIMIT (mW)"),
@@ -257,90 +370,137 @@ int main(int argc, const char **argv)
 		OPT_GROUP("P-State Functions"),
 		OPT_END(),
 	};
-
-
+	struct ryzenadj_json_adjustment adjustment_results[ARRAY_SIZE(options)] = { 0 };
+	struct ryzenadj_json_metric metric_values[ARRAY_SIZE(info_metrics)] = { 0 };
+	struct ryzenadj_json_info json_info = { 0 };
+	struct ryzenadj_json_error json_error = { 0 };
+	struct ryzenadj_json_result result = { 0 };
 	struct argparse argparse;
+
+	result.adjustments = adjustment_results;
+
 	argparse_init(&argparse, options, usage, ARGPARSE_NON_OPTION_IS_INVALID);
 	argparse_describe(&argparse, "\n Ryzen Power Management adjust tool.", "\nWARNING: Use at your own risk!\nBy Jiaxun Yang <jiaxun.yang@flygoat.com>, Under LGPL.\nVersion: v" STRINGIFY(RYZENADJ_REVISION_VER) "." STRINGIFY(RYZENADJ_MAJOR_VER) "." STRINGIFY(RYZENADJ_MINIOR_VER));
-	argc = argparse_parse(&argparse, argc, argv);
+	(void)argparse_parse(&argparse, argc, argv);
+
+	set_ryzenadj_quiet(json != 0);
+
+	if (json && dump_table) {
+		set_json_error(&result, &json_error, "arguments", "invalid_arguments", 2);
+		ryzenadj_json_print_result(stdout, &result);
+		return 2;
+	}
+	if (json && json_only) {
+		set_json_error(&result, &json_error, "arguments", "invalid_arguments", 2);
+		ryzenadj_json_print_result(stdout, &result);
+		return 2;
+	}
 
 
 	//init RyzenAdj and validate that it was able to
 	ry = init_ryzenadj();
 	if(!ry){
-		printf("Unable to init ryzenadj\n");
+		if (json) {
+			set_json_error(&result, &json_error, "initialization", "failed", -1);
+			ryzenadj_json_print_result(stdout, &result);
+		} else {
+			printf("Unable to init ryzenadj\n");
+		}
 		return -1;
 	}
 
 	//shows info header before init_table
-	if (info) {
+	if (info && !json) {
 		show_info_header(ry);
 	}
 
 	if (info || dump_table) {
 		//init before adjustment to get the default values
-		err = init_table(ry);
-		if (err) {
-			printf("Unable to init power metric table: %d, this does not affect adjustments because it is only needed for monitoring.\n", err);
+		table_error = init_table(ry);
+		if (table_error) {
+			err = table_error;
+			if (json) {
+				set_json_error(&result, &json_error, "info_initialization",
+					ryzenadj_json_status_from_code(table_error), table_error);
+				json_exit_code = table_error;
+			} else {
+				printf("Unable to init power metric table: %d, this does not affect adjustments because it is only needed for monitoring.\n", table_error);
+			}
 		}
 	}
 
 	//adjust all the arguments sent to RyzenAdj.exe
-	_do_adjust(stapm_limit);
-	_do_adjust(fast_limit);
-	_do_adjust(slow_limit);
-	_do_adjust(slow_time);
-	_do_adjust(stapm_time);
-	_do_adjust(tctl_temp);
-	_do_adjust(vrm_current);
-	_do_adjust(vrmsoc_current);
-	_do_adjust(vrmgfx_current);
-	_do_adjust(vrmcvip_current);
-	_do_adjust(vrmmax_current);
-	_do_adjust(vrmsocmax_current);
-	_do_adjust(vrmgfxmax_current);
-	_do_adjust(psi0_current);
-	_do_adjust(psi3cpu_current);
-	_do_adjust(psi0soc_current);
-	_do_adjust(psi3gfx_current);
-	_do_adjust(max_socclk_freq);
-	_do_adjust(min_socclk_freq);
-	_do_adjust(max_fclk_freq);
-	_do_adjust(min_fclk_freq);
-	_do_adjust(max_vcn);
-	_do_adjust(min_vcn);
-	_do_adjust(max_lclk);
-	_do_adjust(min_lclk);
-	_do_adjust(max_gfxclk_freq);
-	_do_adjust(min_gfxclk_freq);
-	_do_adjust(prochot_deassertion_ramp);
-	_do_adjust(apu_skin_temp_limit);
-	_do_adjust(dgpu_skin_temp_limit);
-	_do_adjust(apu_slow_limit);
-	_do_adjust(skin_temp_power_limit);
-	_do_adjust(gfx_clk);
-	_do_adjust(oc_clk);
-	_do_adjust(oc_volt);
-	_do_enable(power_saving);
-	_do_enable(max_performance);
-	_do_enable(enable_oc)
-	_do_enable(disable_oc);
-	_do_adjust(coall);
-	_do_adjust(coper);
-	_do_adjust(cogfx);
+	_do_adjust(stapm_limit, "stapm-limit");
+	_do_adjust(fast_limit, "fast-limit");
+	_do_adjust(slow_limit, "slow-limit");
+	_do_adjust(slow_time, "slow-time");
+	_do_adjust(stapm_time, "stapm-time");
+	_do_adjust(tctl_temp, "tctl-temp");
+	_do_adjust(vrm_current, "vrm-current");
+	_do_adjust(vrmsoc_current, "vrmsoc-current");
+	_do_adjust(vrmgfx_current, "vrmgfx-current");
+	_do_adjust(vrmcvip_current, "vrmcvip-current");
+	_do_adjust(vrmmax_current, "vrmmax-current");
+	_do_adjust(vrmsocmax_current, "vrmsocmax-current");
+	_do_adjust(vrmgfxmax_current, "vrmgfxmax_current");
+	_do_adjust(psi0_current, "psi0-current");
+	_do_adjust(psi3cpu_current, "psi3cpu_current");
+	_do_adjust(psi0soc_current, "psi0soc-current");
+	_do_adjust(psi3gfx_current, "psi3gfx_current");
+	_do_adjust(max_socclk_freq, "max-socclk-frequency");
+	_do_adjust(min_socclk_freq, "min-socclk-frequency");
+	_do_adjust(max_fclk_freq, "max-fclk-frequency");
+	_do_adjust(min_fclk_freq, "min-fclk-frequency");
+	_do_adjust(max_vcn, "max-vcn");
+	_do_adjust(min_vcn, "min-vcn");
+	_do_adjust(max_lclk, "max-lclk");
+	_do_adjust(min_lclk, "min-lclk");
+	_do_adjust(max_gfxclk_freq, "max-gfxclk");
+	_do_adjust(min_gfxclk_freq, "min-gfxclk");
+	_do_adjust(prochot_deassertion_ramp, "prochot-deassertion-ramp");
+	_do_adjust(apu_skin_temp_limit, "apu-skin-temp");
+	_do_adjust(dgpu_skin_temp_limit, "dgpu-skin-temp");
+	_do_adjust(apu_slow_limit, "apu-slow-limit");
+	_do_adjust(skin_temp_power_limit, "skin-temp-limit");
+	_do_adjust(gfx_clk, "gfx-clk");
+	_do_adjust(oc_clk, "oc-clk");
+	_do_adjust(oc_volt, "oc-volt");
+	_do_enable(power_saving, "power-saving");
+	_do_enable(max_performance, "max-performance");
+	_do_enable(enable_oc, "enable-oc");
+	_do_enable(disable_oc, "disable-oc");
+	_do_adjust(coall, "set-coall");
+	_do_adjust(coper, "set-coper");
+	_do_adjust(cogfx, "set-cogfx");
 
-	if (!err) {
+	if (!json && !err) {
 		//call show table dump before anybody did call table refresh, because we want to copy the old values first
 		if (dump_table) {
 			show_table_dump(ry, any_adjust_applied);
 		}
 		//show power table after apply settings
-		if (info) {
+		if (info)
 			show_info_table(ry);
+	}
+
+	if (json && info && !table_error) {
+		int info_error = collect_info_json(ry, &json_info, metric_values,
+			ARRAY_SIZE(metric_values));
+		if (info_error) {
+			set_json_error(&result, &json_error, "info_refresh",
+				ryzenadj_json_status_from_code(info_error), info_error);
+			json_exit_code = info_error;
+		} else {
+			result.info = &json_info;
 		}
 	}
 
 	cleanup_ryzenadj(ry);
+
+	if (json) {
+		ryzenadj_json_print_result(stdout, &result);
+		return json_exit_code;
+	}
 
 	return err;
 }
