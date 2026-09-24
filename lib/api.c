@@ -2325,6 +2325,13 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 		case 0x00400005:
 			baseOffset = 0x320;
 			break;
+		case 0x004C0008: { // Phoenix - tested with a single-core load, clock matches cpufreq
+			if (core >= 8)
+				return NAN;
+
+			baseOffset = 0x7F4;
+		}
+			break;
 		case 0x005D0008: // Strix Point - manufacturer-disabled cores are 0W (12 cores in total)
 		case 0x005D0009:
 	case 0x005D000B:
@@ -2367,6 +2374,13 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			baseOffset = 0x340;
+			break;
+		case 0x004C0008: { // Phoenix - tested with a single-core load, clock matches cpufreq
+			if (core >= 8)
+				return NAN;
+
+			baseOffset = 0x814;
+		}
 			break;
 		case 0x005D0008: // Strix Point - manufacturer-disabled cores are 0V
 		case 0x005D0009:
@@ -2411,6 +2425,13 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 		case 0x00400005:
 			baseOffset = 0x360;
 			break;
+		case 0x004C0008: { // Phoenix - tested with a single-core load, clock matches cpufreq
+			if (core >= 8)
+				return NAN;
+
+			baseOffset = 0x834;
+		}
+			break;
 		case 0x005D0008: // Strix Point - manufacturer-disabled cores also have temp collected
 		case 0x005D0009:
 	case 0x005D000B:
@@ -2453,6 +2474,13 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 		case 0x00400004:
 		case 0x00400005:
 			baseOffset = 0x3c0;
+			break;
+		case 0x004C0008: { // Phoenix - tested with a single-core load, clock matches cpufreq
+			if (core >= 8)
+				return NAN;
+
+			baseOffset = 0x894;
+		}
 			break;
 		case 0x005D0008: // Strix Point - manufacturer-disabled cores are 0GHz
 		case 0x005D0009:
