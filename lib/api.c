@@ -127,6 +127,10 @@ static int request_table_ver_and_size(ryzen_access ry) {
 		case FAM_STRIXHALO:
 			get_table_ver_msg = 0x6;
 			break;
+		case FAM_DRAGONRANGE:
+		case FAM_FIRERANGE:
+			get_table_ver_msg = 0x5;
+			break;
 		default:
 			printf("request_table_ver_and_size is not supported on this family\n");
 			return ADJ_ERR_FAM_UNSUPPORTED;
@@ -169,6 +173,8 @@ static int request_table_ver_and_size(ryzen_access ry) {
 		case 0x5D0009:
 		case 0x5D000B: ry->table_size = 0xD54; break;
 		case 0x64020c: ry->table_size = 0xE50; break;
+		// Dragon Range / Raphael
+		case 0x540208: ry->table_size = 0x8D0; break;
 
 		// use a larger size then the largest known table to be able to test real table size of unknown tables
 		default: ry->table_size = 0x1000; break;
@@ -208,6 +214,12 @@ static int request_table_addr(ryzen_access ry)
 	case FAM_STRIXHALO:
 		get_table_addr_msg = 0x66;
 		break;
+	case FAM_DRAGONRANGE:
+	case FAM_FIRERANGE:
+		args.arg0 = 1;
+		args.arg1 = 1;
+		get_table_addr_msg = 0x4;
+		break;
 	default:
 		printf("request_table_addr is not supported on this family\n");
 		return ADJ_ERR_FAM_UNSUPPORTED;
@@ -223,6 +235,8 @@ static int request_table_addr(ryzen_access ry)
 	case FAM_KRACKANPOINT:
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
+	case FAM_DRAGONRANGE:
+	case FAM_FIRERANGE:
 		ry->table_addr = (uint64_t) args.arg1 << 32 | args.arg0;
 		break;
 	default:
@@ -262,6 +276,10 @@ static int request_transfer_table(ryzen_access ry)
 	case FAM_STRIXPOINT:
 	case FAM_STRIXHALO:
 		transfer_table_msg = 0x65;
+		break;
+	case FAM_DRAGONRANGE:
+	case FAM_FIRERANGE:
+		transfer_table_msg = 0x3;
 		break;
 	default:
 		printf("request_transfer_table is not supported on this family\n");
@@ -1565,6 +1583,7 @@ EXP float CALL get_vrm_current(ryzen_access ry) {
 	case 0x004C0007:
 	case 0x004C0008:
 	case 0x004C0009:
+	case 0x00540208: // Dragon Range / Raphael
 		_read_float_value(0x20);
 	case 0x005D0008: // Strix Point - tested, defaults to 70, max 70
 	case 0x005D0009:
@@ -1604,6 +1623,7 @@ EXP float CALL get_vrm_current_value(ryzen_access ry) {
 	case 0x004C0007:
 	case 0x004C0008:
 	case 0x004C0009:
+	case 0x00540208: // Dragon Range / Raphael
 		_read_float_value(0x24);
 	case 0x005D0008: // Strix Point - looks correct from dumping table
 	case 0x005D0009:
@@ -1861,6 +1881,8 @@ EXP float CALL get_tctl_temp(ryzen_access ry) {
 	case 0x001E0101:
 	case 0x0064020c: // StrixHalo tested
 		_read_float_value(0x58); //use core1 because core0 is not reported on dual core cpus
+	case 0x00540208: // Dragon Range / Raphael
+		_read_float_value(0x28);
 	case 0x00370000:
 	case 0x00370001:
 	case 0x00370002:
@@ -1901,6 +1923,8 @@ EXP float CALL get_tctl_temp_value(ryzen_access ry) {
 	case 0x001E0101:
 	case 0x0064020c: // StrixHalo tested
 		_read_float_value(0x5C); //use core1 because core0 is not reported on dual core cpus
+	case 0x00540208: // Dragon Range / Raphael
+		_read_float_value(0x2C);
 	case 0x00370000:
 	case 0x00370001:
 	case 0x00370002:
