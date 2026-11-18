@@ -18,7 +18,7 @@ do {                                                                            
 		int adjerr = set_##ARG(ry, ARG);                                          \
 		if (!adjerr){                                                             \
 			any_adjust_applied = 1;                                               \
-			printf("Successfully set " STRINGIFY(ARG) " to %u\n", ARG);            \
+			printf("Successfully set " STRINGIFY(ARG) " to %d\n", (int32_t)ARG);  \
 		} else if (adjerr == ADJ_ERR_FAM_UNSUPPORTED) {                           \
 			printf("set_" STRINGIFY(ARG) " is not supported on this family\n");   \
 			err = -1;                                                             \

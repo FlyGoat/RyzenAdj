@@ -139,13 +139,13 @@ On OpenSUSE Tumbleweed:
 
     sudo zypper in cmake gcc14-c++ pciutils-devel
 
-You may need to add the `iomem=relaxed` param to your kernel params on Tumbleweed, or [you may run into errors at runtime](https://github.com/FlyGoat/RyzenAdj/issues/241).
+You may need to add the `iomem=relaxed` param to your kernel params on Tumbleweed, or [you may run into errors at runtime](https://github.com/FlyGoat/RyzenAdj/issues/241).L
 
 If your Distribution is not supported, try finding the packages or use [Distrobox](https://github.com/89luca89/distrobox) or [Toolbox](https://docs.fedoraproject.org/en-US/fedora-silverblue/toolbox/) instead.
 
 The simplest way to build it:
 
-    git clone https://github.com/FlyGoat/RyzenAdj.git
+    git clone https://github.com/shadowed1/RyzenAdj.git
     cd RyzenAdj
     rm -r win32
     mkdir build && cd build
