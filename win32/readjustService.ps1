@@ -38,6 +38,7 @@ function doAdjust_ACmode {
     adjust "fast_limit" 46000
     adjust "slow_limit" 25000
     #adjust "slow_time" 30
+    #adjust "coall" 4294967266    #Curve optimizer at -30
     #adjust "tctl_temp" 93
     #adjust "apu_skin_temp_limit" 50
     #adjust "vrmmax_current" 100000
@@ -108,6 +109,9 @@ $apiHeader = @'
 [DllImport("libryzenadj.dll")] public static extern int set_apu_skin_temp_limit(IntPtr ry, [In]uint value);
 [DllImport("libryzenadj.dll")] public static extern int set_dgpu_skin_temp_limit(IntPtr ry, [In]uint value);
 [DllImport("libryzenadj.dll")] public static extern int set_apu_slow_limit(IntPtr ry, [In]uint value);
+[DllImport("libryzenadj.dll")] public static extern int set_coall(IntPtr ry, [In]uint value);
+[DllImport("libryzenadj.dll")] public static extern int set_coper(IntPtr ry, [In]uint value);
+[DllImport("libryzenadj.dll")] public static extern int set_cogfx(IntPtr ry, [In]uint value);
 [DllImport("libryzenadj.dll")] public static extern int set_power_saving(IntPtr ry);
 [DllImport("libryzenadj.dll")] public static extern int set_max_performance(IntPtr ry);
 
