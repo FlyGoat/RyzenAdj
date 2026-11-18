@@ -86,7 +86,10 @@ static int smu_service_test(smu_t smu)
 	/* Test message with unique argument */
 	smn_reg_write(smu->os_access, smu->arg_base, 0x47);
 	if(smn_reg_read(smu->os_access, smu->arg_base) != 0x47){
-		printf("PCI Bus is not writeable, check secure boot\n");
+		if (is_using_smu_driver())
+			DBG("ryzen_smu SMN write test failed, continuing with read-only PM table access\n");
+		else
+			printf("PCI Bus is not writeable, check secure boot\n");
 		return 0;
 	}
 

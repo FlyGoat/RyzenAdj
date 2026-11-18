@@ -31,6 +31,7 @@ enum ryzen_family {
         FAM_STRIXPOINT,
         FAM_STRIXHALO,
         FAM_FIRERANGE,
+        FAM_MATISSE,
         FAM_END
 };
 
@@ -72,6 +73,11 @@ EXP void CALL cleanup_ryzenadj(ryzen_access ry);
 
 EXP enum ryzen_family get_cpu_family(ryzen_access ry);
 EXP int get_bios_if_ver(ryzen_access ry);
+EXP unsigned int get_smu_version(ryzen_access ry);
+EXP float CALL get_core_freqeff(ryzen_access ry, uint32_t core);
+EXP float CALL get_core_c0(ryzen_access ry, uint32_t core);
+EXP float CALL get_core_cc1(ryzen_access ry, uint32_t core);
+EXP float CALL get_core_cc6(ryzen_access ry, uint32_t core);
 
 EXP int CALL init_table(ryzen_access ry);
 EXP uint32_t CALL get_table_ver(ryzen_access ry);
@@ -162,12 +168,20 @@ EXP float CALL get_l3_logic(ryzen_access ry);
 EXP float CALL get_l3_vddm(ryzen_access ry);
 EXP float CALL get_l3_temp(ryzen_access ry);
 
+EXP float CALL get_gfx_power(ryzen_access ry);
 EXP float CALL get_gfx_clk(ryzen_access ry);
 EXP float CALL get_gfx_temp(ryzen_access ry);
 EXP float CALL get_gfx_volt(ryzen_access ry);
 
 EXP float CALL get_mem_clk(ryzen_access ry);
+EXP float CALL get_uclk(ryzen_access ry);
 EXP float CALL get_fclk(ryzen_access ry);
+EXP float CALL get_mem_phy_clk(ryzen_access ry);
+EXP float CALL get_mem_transfer_rate(ryzen_access ry);
+EXP float CALL get_vclk(ryzen_access ry);
+EXP float CALL get_socclk(ryzen_access ry);
+EXP float CALL get_mpipu_clk(ryzen_access ry);
+EXP float CALL get_ipu_clk(ryzen_access ry);
 
 EXP float CALL get_soc_power(ryzen_access ry);
 EXP float CALL get_soc_volt(ryzen_access ry);

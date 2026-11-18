@@ -13,16 +13,37 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 option(PREFER_STATIC_LINKING "Prefer static linking for the ryzenadj executable" OFF)
+option(ENABLE_IPO "Enable IPO/LTO when supported" ON)
+option(STRIP_X86_ISA_NOTE "Remove x86 GNU property ISA note after linking" ON)
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 #Enable LTO
-include(CheckIPOSupported)
-check_ipo_supported(RESULT supported OUTPUT error)
-if( supported )
-    message(STATUS "IPO / LTO enabled")
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+if(ENABLE_IPO)
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT supported OUTPUT error)
+    if( supported )
+        message(STATUS "IPO / LTO enabled")
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+    else()
+        message(STATUS "IPO / LTO unavailable: ${error}")
+    endif()
+else()
+    message(STATUS "IPO / LTO disabled")
 endif()
+
+function(strip_x86_isa_note target)
+    if(STRIP_X86_ISA_NOTE AND CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64)$")
+        if(CMAKE_OBJCOPY)
+            add_custom_command(TARGET ${target} POST_BUILD
+                COMMAND ${CMAKE_OBJCOPY} --remove-section .note.gnu.property $<TARGET_FILE:${target}>
+                COMMENT "Removing x86 GNU property ISA note from $<TARGET_FILE_NAME:${target}>"
+            )
+        else()
+            message(WARNING "STRIP_X86_ISA_NOTE requested but objcopy was not found")
+        endif()
+    endif()
+endfunction()
 
 AUX_SOURCE_DIRECTORY(./ SRC_DIR)
 
@@ -67,6 +88,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND (PREFER_STATIC_LINKING OR NOT BUILD_SH
 else()
     target_link_libraries(${PROJECT_NAME} ${OS_LINK_LIBRARY})
 endif()
+strip_x86_isa_note(${PROJECT_NAME})
 #SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE C)
 ADD_LIBRARY (libryzenadj ${OS_SOURCE} ${COMMON_SOURCES})
 set_target_properties(libryzenadj PROPERTIES PREFIX "")
@@ -75,5 +97,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT BUILD_SHARED_LIBS)
 else()
     target_link_libraries(libryzenadj ${OS_LINK_LIBRARY})
 endif()
+strip_x86_isa_note(libryzenadj)
 #SET_TARGET_PROPERTIES(libryzenadj PROPERTIES LINKER_LANGUAGE C)
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})

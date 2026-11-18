@@ -11,6 +11,8 @@
 #define STRINGIFY2(X) #X
 #define STRINGIFY(X) STRINGIFY2(X)
 
+#define MAX_INFO_CORES 16
+
 #define _do_adjust(ARG) \
 do {                                                                              \
 	/* ignore max unsigned integer values */                                      \
@@ -73,24 +75,67 @@ static const char *family_name(enum ryzen_family fam)
 		case FAM_DALI: return "Dali";
 		case FAM_LUCIENNE: return "Lucienne";
 		case FAM_VANGOGH: return "Vangogh";
+		case FAM_MATISSE: return "Matisse";
 		case FAM_REMBRANDT: return "Rembrandt";
+		case FAM_MENDOCINO: return "Mendocino";
 		case FAM_PHOENIX: return "Phoenix Point";
 		case FAM_HAWKPOINT: return "Hawk Point";
-		case FAM_DRAGONRANGE: return "Dragon Range";
+		case FAM_DRAGONRANGE: return "Raphael / Dragon Range";
 		case FAM_KRACKANPOINT: return "Krackan Point";
 		case FAM_STRIXPOINT: return "Strix Point";
 		case FAM_STRIXHALO: return "Strix Halo";
-		case FAM_FIRERANGE: return "Fire Range";
+		case FAM_FIRERANGE: return "Granite Ridge / Fire Range";
 		default: break;
 	}
 
 	return "Unknown";
 }
 
+static void print_info_value_if_valid(const char *tableFormat, const char *name, float value, const char *parameter)
+{
+	if (value == value)
+		printf(tableFormat, name, value, parameter);
+}
+
+static int info_core_count(ryzen_access ry)
+{
+	switch (get_table_ver(ry)) {
+		case 0x00540004:
+		case 0x00620205:
+			return 16;
+		case 0x00620105:
+			return 8;
+		case 0x005D0008:
+		case 0x005D0009:
+		case 0x005D000A:
+		case 0x005D000B:
+		case 0x00650005:
+		case 0x00650007:
+			return 12;
+		case 0x0064020c:
+			return 16;
+		default:
+			return 8;
+	}
+}
+
+static int info_core_values_valid(float power, float volt, float temp, float clk)
+{
+	return power == power && power > 0.0f && power < 300.0f &&
+	       volt == volt && volt > 0.0f && volt < 2.0f &&
+	       temp == temp && temp > 0.0f && temp < 130.0f &&
+	       clk == clk && clk > 0.0f && clk < 10.0f;
+}
+
 static void show_info_header(ryzen_access ry)
 {
 	printf("CPU Family: %s\n", family_name(get_cpu_family(ry)));
 	printf("SMU BIOS Interface Version: %d\n", get_bios_if_ver(ry));
+	unsigned int smufw = get_smu_version(ry);
+	if ((smufw >> 24) & 0xff)
+		printf("SMU FW Version: %d.%d.%d.%d\n", (smufw >> 24) & 0xff, (smufw >> 16) & 0xff, (smufw >> 8) & 0xff, smufw & 0xff);
+	else
+		printf("SMU FW Version: %d.%d.%d\n", (smufw >> 16) & 0xff, (smufw >> 8) & 0xff, smufw & 0xff);
 	printf("Version: v" STRINGIFY(RYZENADJ_REVISION_VER) "." STRINGIFY(RYZENADJ_MAJOR_VER) "." STRINGIFY(RYZENADJ_MINIOR_VER) " \n");
 }
 
@@ -109,32 +154,113 @@ static void show_info_table(ryzen_access ry)
 	printf("|        Name         |   Value   |     Parameter      |\n");
 	printf("|---------------------|-----------|--------------------|\n");
 	char tableFormat[] = "| %-19s | %9.3lf | %-18s |\n";
-	printf(tableFormat, "STAPM LIMIT", get_stapm_limit(ry), "stapm-limit");
-	printf(tableFormat, "STAPM VALUE", get_stapm_value(ry), "");
-	printf(tableFormat, "PPT LIMIT FAST", get_fast_limit(ry), "fast-limit");
-	printf(tableFormat, "PPT VALUE FAST", get_fast_value(ry), "");
-	printf(tableFormat, "PPT LIMIT SLOW", get_slow_limit(ry), "slow-limit");
-	printf(tableFormat, "PPT VALUE SLOW", get_slow_value(ry), "");
-	printf(tableFormat, "StapmTimeConst", get_stapm_time(ry), "stapm-time");
-	printf(tableFormat, "SlowPPTTimeConst", get_slow_time(ry), "slow-time");
-	printf(tableFormat, "PPT LIMIT APU", get_apu_slow_limit(ry), "apu-slow-limit");
-	printf(tableFormat, "PPT VALUE APU", get_apu_slow_value(ry), "");
-	printf(tableFormat, "TDC LIMIT VDD", get_vrm_current(ry), "vrm-current");
-	printf(tableFormat, "TDC VALUE VDD", get_vrm_current_value(ry), "");
-	printf(tableFormat, "TDC LIMIT SOC", get_vrmsoc_current(ry), "vrmsoc-current");
-	printf(tableFormat, "TDC VALUE SOC", get_vrmsoc_current_value(ry), "");
-	printf(tableFormat, "EDC LIMIT VDD", get_vrmmax_current(ry), "vrmmax-current");
-	printf(tableFormat, "EDC VALUE VDD", get_vrmmax_current_value(ry), "");
-	printf(tableFormat, "EDC LIMIT SOC", get_vrmsocmax_current(ry), "vrmsocmax-current");
-	printf(tableFormat, "EDC VALUE SOC", get_vrmsocmax_current_value(ry), "");
-	printf(tableFormat, "THM LIMIT CORE", get_tctl_temp(ry), "tctl-temp");
-	printf(tableFormat, "THM VALUE CORE", get_tctl_temp_value(ry), "");
-	printf(tableFormat, "STT LIMIT APU", get_apu_skin_temp_limit(ry), "apu-skin-temp");
-	printf(tableFormat, "STT VALUE APU", get_apu_skin_temp_value(ry), "");
-	printf(tableFormat, "STT LIMIT dGPU", get_dgpu_skin_temp_limit(ry), "dgpu-skin-temp");
-	printf(tableFormat, "STT VALUE dGPU", get_dgpu_skin_temp_value(ry), "");
-	printf(tableFormat, "CCLK Boost SETPOINT", get_cclk_setpoint(ry), "power-saving /");
-	printf(tableFormat, "CCLK BUSY VALUE", get_cclk_busy_value(ry), "max-performance");
+	print_info_value_if_valid(tableFormat, "STAPM LIMIT", get_stapm_limit(ry), "stapm-limit");
+	print_info_value_if_valid(tableFormat, "STAPM VALUE", get_stapm_value(ry), "");
+	print_info_value_if_valid(tableFormat, "PPT LIMIT FAST", get_fast_limit(ry), "fast-limit");
+	print_info_value_if_valid(tableFormat, "PPT VALUE FAST", get_fast_value(ry), "");
+	print_info_value_if_valid(tableFormat, "PPT LIMIT SLOW", get_slow_limit(ry), "slow-limit");
+	print_info_value_if_valid(tableFormat, "PPT VALUE SLOW", get_slow_value(ry), "");
+	print_info_value_if_valid(tableFormat, "StapmTimeConst", get_stapm_time(ry), "stapm-time");
+	print_info_value_if_valid(tableFormat, "SlowPPTTimeConst", get_slow_time(ry), "slow-time");
+	print_info_value_if_valid(tableFormat, "PPT LIMIT APU", get_apu_slow_limit(ry), "apu-slow-limit");
+	print_info_value_if_valid(tableFormat, "PPT VALUE APU", get_apu_slow_value(ry), "");
+	print_info_value_if_valid(tableFormat, "TDC LIMIT VDD", get_vrm_current(ry), "vrm-current");
+	print_info_value_if_valid(tableFormat, "TDC VALUE VDD", get_vrm_current_value(ry), "");
+	print_info_value_if_valid(tableFormat, "TDC LIMIT SOC", get_vrmsoc_current(ry), "vrmsoc-current");
+	print_info_value_if_valid(tableFormat, "TDC VALUE SOC", get_vrmsoc_current_value(ry), "");
+	print_info_value_if_valid(tableFormat, "EDC LIMIT VDD", get_vrmmax_current(ry), "vrmmax-current");
+	print_info_value_if_valid(tableFormat, "EDC VALUE VDD", get_vrmmax_current_value(ry), "");
+	print_info_value_if_valid(tableFormat, "EDC LIMIT SOC", get_vrmsocmax_current(ry), "vrmsocmax-current");
+	print_info_value_if_valid(tableFormat, "EDC VALUE SOC", get_vrmsocmax_current_value(ry), "");
+	print_info_value_if_valid(tableFormat, "PSI0 CURRENT", get_psi0_current(ry), "psi0-current");
+	print_info_value_if_valid(tableFormat, "PSI0 SOC CURRENT", get_psi0soc_current(ry), "psi0soc-current");
+	print_info_value_if_valid(tableFormat, "THM LIMIT CORE", get_tctl_temp(ry), "tctl-temp");
+	print_info_value_if_valid(tableFormat, "THM VALUE CORE", get_tctl_temp_value(ry), "");
+	print_info_value_if_valid(tableFormat, "STT LIMIT APU", get_apu_skin_temp_limit(ry), "apu-skin-temp");
+	print_info_value_if_valid(tableFormat, "STT VALUE APU", get_apu_skin_temp_value(ry), "");
+	print_info_value_if_valid(tableFormat, "STT LIMIT dGPU", get_dgpu_skin_temp_limit(ry), "dgpu-skin-temp");
+	print_info_value_if_valid(tableFormat, "STT VALUE dGPU", get_dgpu_skin_temp_value(ry), "");
+	print_info_value_if_valid(tableFormat, "CCLK Boost SETPOINT", get_cclk_setpoint(ry), "power-saving /");
+	print_info_value_if_valid(tableFormat, "CCLK BUSY VALUE", get_cclk_busy_value(ry), "max-performance");
+	print_info_value_if_valid(tableFormat, "SOCKET POWER", get_socket_power(ry), "");
+	print_info_value_if_valid(tableFormat, "SOC POWER", get_soc_power(ry), "");
+	print_info_value_if_valid(tableFormat, "SOC VOLT", get_soc_volt(ry), "");
+	print_info_value_if_valid(tableFormat, "GFX POWER", get_gfx_power(ry), "");
+	print_info_value_if_valid(tableFormat, "GFX CLK (MHz)", get_gfx_clk(ry), "");
+	print_info_value_if_valid(tableFormat, "GFX VOLT", get_gfx_volt(ry), "");
+	print_info_value_if_valid(tableFormat, "GFX TEMP", get_gfx_temp(ry), "");
+	print_info_value_if_valid(tableFormat, "L3 CLK (MHz)", get_l3_clk(ry), "");
+	print_info_value_if_valid(tableFormat, "L3 LOGIC", get_l3_logic(ry), "");
+	print_info_value_if_valid(tableFormat, "L3 VDDM", get_l3_vddm(ry), "");
+	print_info_value_if_valid(tableFormat, "L3 TEMP", get_l3_temp(ry), "");
+	print_info_value_if_valid(tableFormat, "FCLK (MHz)", get_fclk(ry), "");
+	float uclk = get_uclk(ry);
+	if (uclk == uclk)
+		print_info_value_if_valid(tableFormat, "UCLK (MHz)", uclk, "");
+	else
+		print_info_value_if_valid(tableFormat, "MEM CLK (MHz)", get_mem_clk(ry), "");
+	print_info_value_if_valid(tableFormat, "MEM PHY CLK (MHz)", get_mem_phy_clk(ry), "");
+	print_info_value_if_valid(tableFormat, "MEM RATE (MT/s)", get_mem_transfer_rate(ry), "");
+	print_info_value_if_valid(tableFormat, "VCLK (MHz)", get_vclk(ry), "");
+	print_info_value_if_valid(tableFormat, "SOCCLK (MHz)", get_socclk(ry), "");
+	print_info_value_if_valid(tableFormat, "MPIPU CLK (MHz)", get_mpipu_clk(ry), "");
+	print_info_value_if_valid(tableFormat, "IPU CLK (MHz)", get_ipu_clk(ry), "");
+
+	//per-core detail: power/volt/temp/reported clock plus effective clock and
+	//C-state residency (effective clock and residencies are new metrics)
+	{
+		int core, printed_any = 0, has_freqeff = 0, has_c0 = 0, has_cc1 = 0, has_c6 = 0;
+		int core_count = info_core_count(ry);
+		float power[MAX_INFO_CORES], volt[MAX_INFO_CORES], temp[MAX_INFO_CORES], clk[MAX_INFO_CORES];
+		float freqeff[MAX_INFO_CORES], c0[MAX_INFO_CORES], cc1[MAX_INFO_CORES], c6[MAX_INFO_CORES];
+
+		for (core = 0; core < core_count; core++) {
+			power[core] = get_core_power(ry, core);
+			if (!(power[core] > 0.0f))
+				continue; //skip disabled/absent cores (0W) and unsupported tables (nan)
+			volt[core] = get_core_volt(ry, core);
+			temp[core] = get_core_temp(ry, core);
+			clk[core] = get_core_clk(ry, core);
+			freqeff[core] = get_core_freqeff(ry, core);
+			c0[core] = get_core_c0(ry, core);
+			cc1[core] = get_core_cc1(ry, core);
+			c6[core] = get_core_cc6(ry, core);
+			if (!info_core_values_valid(power[core], volt[core], temp[core], clk[core]))
+				continue;
+			has_freqeff |= (freqeff[core] == freqeff[core]);
+			has_c0 |= (c0[core] == c0[core]);
+			has_cc1 |= (cc1[core] == cc1[core]);
+			has_c6 |= (c6[core] == c6[core]);
+			printed_any = 1;
+		}
+		if (printed_any) {
+			printf("\n| Core | Power(W) | Volt(V) | Temp(C) | Freq(GHz) |");
+			if (has_freqeff) printf(" FreqEff |");
+			if (has_c0) printf(" C0%%  |");
+			if (has_cc1) printf(" CC1%% |");
+			if (has_c6) printf(" C6%%  |");
+			printf("\n|------|----------|---------|---------|-----------|");
+			if (has_freqeff) printf("---------|");
+			if (has_c0) printf("------|");
+			if (has_cc1) printf("------|");
+			if (has_c6) printf("------|");
+			printf("\n");
+
+			for (core = 0; core < core_count; core++) {
+				if (!(power[core] > 0.0f))
+					continue;
+				if (!info_core_values_valid(power[core], volt[core], temp[core], clk[core]))
+					continue;
+				printf("| %4d | %8.3f | %7.3f | %7.1f | %9.3f |",
+					core, power[core], volt[core], temp[core], clk[core]);
+				if (has_freqeff) printf(" %7.3f |", freqeff[core]);
+				if (has_c0) printf(" %4.0f |", c0[core]);
+				if (has_cc1) printf(" %4.0f |", cc1[core]);
+				if (has_c6) printf(" %4.0f |", c6[core]);
+				printf("\n");
+			}
+		}
+	}
 }
 
 static void show_table_dump(ryzen_access ry, int any_adjust_applied)
@@ -203,7 +329,7 @@ int main(int argc, const char **argv)
 	uint32_t max_socclk_freq = -1, min_socclk_freq = -1, max_fclk_freq = -1, min_fclk_freq = -1, max_vcn = -1, min_vcn = -1, max_lclk = -1, min_lclk = -1;
 	uint32_t max_gfxclk_freq = -1, min_gfxclk_freq = -1, prochot_deassertion_ramp = -1, apu_skin_temp_limit = -1, dgpu_skin_temp_limit = -1, apu_slow_limit = -1;
 	uint32_t skin_temp_power_limit = -1;
-	uint32_t gfx_clk = -1, oc_clk = -1, oc_volt = -1, coall = -1, coper = -1, cogfx = -1;
+	uint32_t gfx_clk = -1, oc_clk = -1, per_core_oc_clk = -1, oc_volt = -1, coall = -1, coper = -1, cogfx = -1;
 
 	//create structure for parsing
 	struct argparse_option options[] = {
@@ -224,11 +350,11 @@ int main(int argc, const char **argv)
 		OPT_U32('\0', "vrmcvip-current", &vrmcvip_current, "VRM CVIP Current Limit - TDC LIMIT CVIP (mA)"),
 		OPT_U32('k', "vrmmax-current", &vrmmax_current, "VRM Maximum Current Limit     - EDC LIMIT VDD (mA)"),
 		OPT_U32('l', "vrmsocmax-current", &vrmsocmax_current, "VRM SoC Maximum Current Limit - EDC LIMIT SoC (mA)"),
-		OPT_U32('\0', "vrmgfxmax_current", &vrmgfxmax_current, "VRM GFX Maximum Current Limit - EDC LIMIT GFX (mA)"),
+		OPT_U32('\0', "vrmgfxmax-current", &vrmgfxmax_current, "VRM GFX Maximum Current Limit - EDC LIMIT GFX (mA)"),
 		OPT_U32('m', "psi0-current", &psi0_current, "PSI0 VDD Current Limit (mA)"),
-		OPT_U32('\0', "psi3cpu_current", &psi3cpu_current, "PSI3 CPU Current Limit (mA)"),
+		OPT_U32('\0', "psi3cpu-current", &psi3cpu_current, "PSI3 CPU Current Limit (mA)"),
 		OPT_U32('n', "psi0soc-current", &psi0soc_current, "PSI0 SoC Current Limit (mA)"),
-		OPT_U32('\0', "psi3gfx_current", &psi3gfx_current, "PSI3 GFX Current Limit (mA)"),
+		OPT_U32('\0', "psi3gfx-current", &psi3gfx_current, "PSI3 GFX Current Limit (mA)"),
 		OPT_U32('o', "max-socclk-frequency", &max_socclk_freq, "Maximum SoC Clock Frequency (MHz)"),
 		OPT_U32('p', "min-socclk-frequency", &min_socclk_freq, "Minimum SoC Clock Frequency (MHz)"),
 		OPT_U32('q', "max-fclk-frequency", &max_fclk_freq, "Maximum Transmission (CPU-GPU) Frequency (MHz)"),
@@ -246,6 +372,7 @@ int main(int argc, const char **argv)
 		OPT_U32('\0', "skin-temp-limit", &skin_temp_power_limit, "Skin Temperature Power Limit (mW)"),
 		OPT_U32('\0', "gfx-clk", &gfx_clk, "Forced Clock Speed MHz (Renoir Only)"),
 		OPT_U32('\0', "oc-clk", &oc_clk, "Forced Core Clock Speed MHz (Renoir and up Only)"),
+		OPT_U32('\0', "oc-clk-per-core", &per_core_oc_clk, "Forced Per Core Clock Speed MHz (Renoir, Cezanne, Rembrandt Only)"),
 		OPT_U32('\0', "oc-volt", &oc_volt, "Forced Core VID: Must follow this calculation (1.55 - [VID you want to set e.g. 1.25 for 1.25v]) / 0.00625 (Renoir and up Only)"),
 		OPT_BOOLEAN('\0', "enable-oc", &enable_oc, "Enable OC (Renoir and up Only)"),
 		OPT_BOOLEAN('\0', "disable-oc", &disable_oc, "Disable OC (Renoir and up Only)"),
@@ -254,7 +381,6 @@ int main(int argc, const char **argv)
 		OPT_U32('\0', "set-cogfx", &cogfx, "iGPU Curve Optimiser"),
 		OPT_BOOLEAN('\0', "power-saving", &power_saving, "Hidden options to improve power efficiency (is set when AC unplugged): behavior depends on CPU generation, Device and Manufacture"),
 		OPT_BOOLEAN('\0', "max-performance", &max_performance, "Hidden options to improve performance (is set when AC plugged in): behavior depends on CPU generation, Device and Manufacture"),
-		OPT_GROUP("P-State Functions"),
 		OPT_END(),
 	};
 
@@ -320,6 +446,7 @@ int main(int argc, const char **argv)
 	_do_adjust(skin_temp_power_limit);
 	_do_adjust(gfx_clk);
 	_do_adjust(oc_clk);
+	_do_adjust(per_core_oc_clk);
 	_do_adjust(oc_volt);
 	_do_enable(power_saving);
 	_do_enable(max_performance);

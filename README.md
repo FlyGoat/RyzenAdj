@@ -35,10 +35,15 @@ Settings
     -f, --tctl-temp=<u32>                 Tctl Temperature Limit (degree C)
     -g, --vrm-current=<u32>               VRM Current Limit             - TDC LIMIT VDD (mA)
     -j, --vrmsoc-current=<u32>            VRM SoC Current Limit         - TDC LIMIT SoC (mA)
+    --vrmgfx-current=<u32>                VRM GFX Current Limit - TDC LIMIT GFX (mA)
+    --vrmcvip-current=<u32>               VRM CVIP Current Limit - TDC LIMIT CVIP (mA)
     -k, --vrmmax-current=<u32>            VRM Maximum Current Limit     - EDC LIMIT VDD (mA)
     -l, --vrmsocmax-current=<u32>         VRM SoC Maximum Current Limit - EDC LIMIT SoC (mA)
+    --vrmgfxmax-current=<u32>             VRM GFX Maximum Current Limit - EDC LIMIT GFX (mA)
     -m, --psi0-current=<u32>              PSI0 VDD Current Limit (mA)
+    --psi3cpu-current=<u32>               PSI3 CPU Current Limit (mA)
     -n, --psi0soc-current=<u32>           PSI0 SoC Current Limit (mA)
+    --psi3gfx-current=<u32>               PSI3 GFX Current Limit (mA)
     -o, --max-socclk-frequency=<u32>      Maximum SoC Clock Frequency (MHz)
     -p, --min-socclk-frequency=<u32>      Minimum SoC Clock Frequency (MHz)
     -q, --max-fclk-frequency=<u32>        Maximum Transmission (CPU-GPU) Frequency (MHz)
@@ -54,6 +59,14 @@ Settings
     --dgpu-skin-temp=<u32>                dGPU Skin Temperature Limit   - STT LIMIT dGPU (degree C)
     --apu-slow-limit=<u32>                APU PPT Slow Power limit for A+A dGPU platform - PPT LIMIT APU (mW)
     --skin-temp-limit=<u32>               Skin Temperature Power Limit (mW)
+    --gfx-clk=<u32>                       Forced Clock Speed MHz (Renoir Only)
+    --oc-clk=<u32>                        Forced Core Clock Speed MHz (Renoir and up Only)
+    --oc-volt=<u32>                       Forced Core VID: Must follow this calculation (1.55 - [VID you want to set e.g. 1.25 for 1.25v]) / 0.00625 (Renoir and up Only)
+    --enable-oc                           Enable OC (Renoir and up Only)
+    --disable-oc                          Disable OC (Renoir and up Only)
+    --set-coall=<u32>                     All core Curve Optimiser
+    --set-coper=<u32>                     Per core Curve Optimiser
+    --set-cogfx=<u32>                     iGPU Curve Optimiser
     --power-saving                        Hidden options to improve power efficiency (is set when AC unplugged): behavior depends on CPU generation, Device and Manufacture
     --max-performance                     Hidden options to improve performance (is set when AC plugged in): behavior depends on CPU generation, Device and Manufacture
 ```

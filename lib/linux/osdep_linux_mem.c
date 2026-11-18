@@ -35,7 +35,6 @@ os_access_obj_t *init_os_access_obj_mem() {
 		goto err_exit;
 	}
 
-	pci_fill_info(obj->access.mem.pci_dev, PCI_FILL_IDENT | PCI_FILL_BASES | PCI_FILL_CLASS);
 	return obj;
 
 err_exit:
@@ -43,8 +42,17 @@ err_exit:
 	return NULL;
 }
 
+void cleanup_mem_pm_table(void) {
+	if (phy_map != MAP_FAILED) {
+		munmap(phy_map, 0x1000);
+		phy_map = MAP_FAILED;
+	}
+}
+
 int init_mem_obj_mem([[maybe_unused]] os_access_obj_t *os_access, const uintptr_t physAddr) {
 	const int dev_mem_fd = open("/dev/mem", O_RDONLY);
+
+	cleanup_mem_pm_table();
 
 	// It is too complicated to check PAT, CONFIG_NONPROMISC_DEVMEM, CONFIG_STRICT_DEVMEM or other dependencies, just try to open /dev/mem
 	if (dev_mem_fd > 0) {
@@ -65,10 +73,7 @@ void free_os_access_obj_mem(os_access_obj_t *obj) {
 	if (obj->access.mem.pci_acc)
 		pci_cleanup(obj->access.mem.pci_acc);
 
-	if (phy_map != MAP_FAILED) {
-		munmap(phy_map, 0x1000);
-		phy_map = MAP_FAILED;
-	}
+	cleanup_mem_pm_table();
 
 	free(obj);
 }

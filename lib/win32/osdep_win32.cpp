@@ -127,6 +127,18 @@ bool is_using_smu_driver() {
     return false;
 }
 
+bool kmod_has_pm_table([[maybe_unused]] const os_access_obj_t *obj) {
+    return false;
+}
+
+bool kmod_smn_writable([[maybe_unused]] const os_access_obj_t *obj) {
+    return false;
+}
+
+bool pm_table_uses_devmem([[maybe_unused]] const os_access_obj_t *obj) {
+    return false;
+}
+
 #ifdef __cplusplus
 }
 #endif
