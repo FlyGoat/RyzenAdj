@@ -94,7 +94,7 @@ static void show_info_header(ryzen_access ry)
 	printf("Version: v" STRINGIFY(RYZENADJ_REVISION_VER) "." STRINGIFY(RYZENADJ_MAJOR_VER) "." STRINGIFY(RYZENADJ_MINIOR_VER) " \n");
 }
 
-static void show_info_table(ryzen_access ry)
+static int show_info_table(ryzen_access ry)
 {
 	printf("PM Table Version: %x\n", get_table_ver(ry));
 
@@ -102,7 +102,7 @@ static void show_info_table(ryzen_access ry)
 	int errorcode = refresh_table(ry);
 	if(errorcode){
 		printf("Unable to refresh power metric table: %d\n", errorcode);
-		return;
+		return errorcode;
 	}
 
 	//print table in github markdown
@@ -135,9 +135,10 @@ static void show_info_table(ryzen_access ry)
 	printf(tableFormat, "STT VALUE dGPU", get_dgpu_skin_temp_value(ry), "");
 	printf(tableFormat, "CCLK Boost SETPOINT", get_cclk_setpoint(ry), "power-saving /");
 	printf(tableFormat, "CCLK BUSY VALUE", get_cclk_busy_value(ry), "max-performance");
+	return 0;
 }
 
-static void show_table_dump(ryzen_access ry, int any_adjust_applied)
+static int show_table_dump(ryzen_access ry, int any_adjust_applied)
 {
 	size_t index, table_size;
 	uint32_t *table_data_copy;
@@ -159,6 +160,9 @@ static void show_table_dump(ryzen_access ry, int any_adjust_applied)
 		int errorcode = refresh_table(ry);
 		if(errorcode){
 			printf("Unable to refresh power metric table: %d\n", errorcode);
+			free(old_table_values);
+			free(table_data_copy);
+			return errorcode;
 		}
 
 		//print table in github markdown
@@ -186,6 +190,7 @@ static void show_table_dump(ryzen_access ry, int any_adjust_applied)
 
 	free(table_data_copy);
 	//don't free current_table_values because this would deinitialize our table
+	return 0;
 }
 
 
@@ -332,11 +337,13 @@ int main(int argc, const char **argv)
 	if (!err) {
 		//call show table dump before anybody did call table refresh, because we want to copy the old values first
 		if (dump_table) {
-			show_table_dump(ry, any_adjust_applied);
+			err = show_table_dump(ry, any_adjust_applied);
 		}
 		//show power table after apply settings
 		if (info) {
-			show_info_table(ry);
+			int info_error = show_info_table(ry);
+			if (!err)
+				err = info_error;
 		}
 	}
 
