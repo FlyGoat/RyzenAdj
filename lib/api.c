@@ -2352,6 +2352,9 @@ EXP float CALL get_core_power(ryzen_access ry, uint32_t core) {
 		case 0x005D0008: // Strix Point - manufacturer-disabled cores are 0W (12 cores in total)
 		case 0x005D0009:
 	case 0x005D000B:
+			if (core >= 12)
+				return NAN;
+
 			baseOffset = 0x9D8;
 			break;
 		case 0x0064020c: // Strix Halo
@@ -2395,6 +2398,9 @@ EXP float CALL get_core_volt(ryzen_access ry, uint32_t core) {
 		case 0x005D0008: // Strix Point - manufacturer-disabled cores are 0V
 		case 0x005D0009:
 	case 0x005D000B:
+			if (core >= 12)
+				return NAN;
+
 			baseOffset = 0xA08;
 			break;
 		case 0x0064020c: // Strix Halo
@@ -2438,6 +2444,9 @@ EXP float CALL get_core_temp(ryzen_access ry, uint32_t core) {
 		case 0x005D0008: // Strix Point - manufacturer-disabled cores also have temp collected
 		case 0x005D0009:
 	case 0x005D000B:
+			if (core >= 12)
+				return NAN;
+
 			baseOffset = 0xA38;
 			break;
 		case 0x0064020c: // Strix Halo
@@ -2481,6 +2490,9 @@ EXP float CALL get_core_clk(ryzen_access ry, uint32_t core) {
 		case 0x005D0008: // Strix Point - manufacturer-disabled cores are 0GHz
 		case 0x005D0009:
 	case 0x005D000B:
+			if (core >= 12)
+				return NAN;
+
 			baseOffset = 0xA68;
 			break;
 		case 0x0064020c:
